@@ -1,0 +1,1 @@
+SFML version 2.6.1. VS2022. C++2017. 64bit.
