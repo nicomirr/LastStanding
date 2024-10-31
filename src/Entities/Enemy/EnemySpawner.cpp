@@ -166,19 +166,22 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	for (int i = 0; i < totalEnemies; i++)
 	{
-		if (i > 34)
+		/*waveThreeEnemies.push_back(enemies[normalZombiesIndex]);
+		normalZombiesIndex++;*/
+
+		if (i > 40)
 		{
 			waveThreeEnemies.push_back(enemies[fatZombiesIndex]);
 			fatZombiesIndex++;
 		}
 		else if (i > 17)
 		{
-			waveTwoEnemies.push_back(enemies[kidZombiesIndex]);
+			waveThreeEnemies.push_back(enemies[kidZombiesIndex]);
 			kidZombiesIndex++;
 		}
 		else
 		{
-			waveTwoEnemies.push_back(enemies[normalZombiesIndex]);
+			waveThreeEnemies.push_back(enemies[normalZombiesIndex]);
 			normalZombiesIndex++;
 		}
 
@@ -200,19 +203,19 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	for (int i = 0; i < totalEnemies; i++)
 	{
-		if (i > 29)
+		if (i > 34)
 		{
-			waveThreeEnemies.push_back(enemies[fatZombiesIndex]);
+			waveFourEnemies.push_back(enemies[fatZombiesIndex]);
 			fatZombiesIndex++;
 		}
 		else if (i > 15)
 		{
-			waveTwoEnemies.push_back(enemies[kidZombiesIndex]);
+			waveFourEnemies.push_back(enemies[kidZombiesIndex]);
 			kidZombiesIndex++;
 		}
 		else
 		{
-			waveTwoEnemies.push_back(enemies[normalZombiesIndex]);
+			waveFourEnemies.push_back(enemies[normalZombiesIndex]);
 			normalZombiesIndex++;
 		}
 	}
@@ -233,19 +236,19 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	for (int i = 0; i < totalEnemies; i++)
 	{
-		if (i > 25)
+		if (i > 30)
 		{
-			waveThreeEnemies.push_back(enemies[fatZombiesIndex]);
+			waveFiveEnemies.push_back(enemies[fatZombiesIndex]);
 			fatZombiesIndex++;
 		}
 		else if (i > 10)
 		{
-			waveTwoEnemies.push_back(enemies[kidZombiesIndex]);
+			waveFiveEnemies.push_back(enemies[kidZombiesIndex]);
 			kidZombiesIndex++;
 		}
 		else
 		{
-			waveTwoEnemies.push_back(enemies[normalZombiesIndex]);
+			waveFiveEnemies.push_back(enemies[normalZombiesIndex]);
 			normalZombiesIndex++;
 		}
 	}

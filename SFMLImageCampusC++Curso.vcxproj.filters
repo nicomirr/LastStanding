@@ -117,6 +117,9 @@
     <ClInclude Include="src\Entities\Enviroment\Radio.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="src\Entities\Time\HoursInterface.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -204,6 +207,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\Entities\Enviroment\Radio.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Time\HoursInterface.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

@@ -256,7 +256,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::BedCollider) || (entities[j]->GetTag() == Tag::DoorCollider) ||
+					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::BedCollider) || (entities[j]->GetTag() == Tag::DoorColliderInside) ||
 						(entities[j]->GetTag() == Tag::RadioCollider)))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
@@ -265,14 +265,24 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorCollider))
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderInside))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
-								//sceneManager->SetIsTransitioning(true);
 								sceneManager->SetIsTransitioningToOutside(true);
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::BedCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								Bed::GetHoursInterface()->SetIsActive(true);
 							}
 						}
 					}
@@ -298,7 +308,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorCollider))
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
@@ -306,7 +316,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorCollider))
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{

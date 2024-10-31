@@ -5,6 +5,7 @@
 #include "../Entities/Enemy/Enemy.h"
 #include "../Entities/Player/Player.h"
 #include "../SceneManager/SceneManager.h"
+#include "../Entities/Enviroment/Bed.h"
 
 class CollisionHandler
 {

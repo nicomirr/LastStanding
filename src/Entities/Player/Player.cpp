@@ -54,8 +54,7 @@ Player::Player(float speed, Weapon* weapon, float windowWidth, float windowHeigh
 	std::string eButtonFilePath = "res\\textures\\player\\EButton.png";
 	sf::Vector2i eButtonSpriteSheetSize = { 14, 14 };
 
-	eButton = new Entity(eButtonFilePath, eButtonSpriteSheetSize);
-	
+	eButton = new Entity(eButtonFilePath, eButtonSpriteSheetSize);	
 	
 
 	eButton->Graphic().scale(sf::Vector2f(1.6f, 1.6f));

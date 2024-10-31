@@ -173,6 +173,8 @@ void Program::Draw()
 		DrawDayTime();
 	}
 
+	DrawBedHoursInterface();
+
 
 	//DrawHours();
 
@@ -566,7 +568,7 @@ void Program::CreateDoorColliderOutside()
 	doorColliderOutside->Graphic().setOrigin(41, 25);
 	doorColliderOutside->Graphic().scale(sf::Vector2f(1.2f, 1.0f));
 
-	doorColliderOutside->SetTag(Tag::DoorCollider);
+	doorColliderOutside->SetTag(Tag::DoorColliderOutside);
 
 	sf::FloatRect doorColliderBounds = doorColliderOutside->Graphic().getGlobalBounds();
 
@@ -751,7 +753,7 @@ void Program::CreateDoorColliderInside()
 	doorColliderInside->Graphic().setOrigin(41, 25);
 	doorColliderInside->Graphic().scale(sf::Vector2f(2.2f, 1.0f));
 
-	doorColliderInside->SetTag(Tag::DoorCollider);
+	doorColliderInside->SetTag(Tag::DoorColliderInside);
 
 	sf::FloatRect doorColliderBounds = doorColliderInside->Graphic().getGlobalBounds();
 		
@@ -852,6 +854,16 @@ void Program::DrawPlayer()
 void Program::DrawEButton()
 {
 	window->draw(player->GetEButton()->Graphic());
+}
+
+
+void Program::DrawBedHoursInterface()
+{
+	if (Bed::GetHoursInterface()->GetIsActive())
+	{
+		window->draw(Bed::GetHoursInterface()->GetBackground()->Graphic());
+		//falta drawear flechas y demas.
+	}
 }
 
 
@@ -1191,6 +1203,7 @@ void Program::DrawBed()
 void Program::DrawRadio()
 {	
 	window->draw(radio->Graphic());		
+	window->draw(*radio->GetRadioText());
 }
 
 void Program::DrawChairs()

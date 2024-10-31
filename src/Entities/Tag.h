@@ -17,7 +17,8 @@ enum class Tag
 	Chair,
 	Table,
 	Wardrobe,
-	DoorCollider,
+	DoorColliderOutside,
+	DoorColliderInside,
 	BedCollider,
 	RadioCollider
 };

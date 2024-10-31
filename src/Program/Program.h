@@ -122,6 +122,8 @@ private:
 	void DrawPlayer();
 	void DrawEButton();	
 
+	void DrawBedHoursInterface();
+
 	void DrawNightTime();
 	void DrawOutsideFloor();
 	void DrawFences();
