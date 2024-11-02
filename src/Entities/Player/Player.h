@@ -7,6 +7,7 @@
 #include "../Moveable.h"
 #include "../../Utilities/VectorUtility.h"
 #include "../Weapon/Weapon.h"
+#include "../Time/HoursInterface.h"
 
 
 class Player :  public AnimatedEntity, public Moveable

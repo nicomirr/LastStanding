@@ -49,6 +49,12 @@ void Program::Initialize()
 
 	CreateCar();
 
+	CreateToolbox();
+
+	CreatePlanks();
+
+	CreateBricks();
+
 	CreateInteriorFloor();
 
 	CreateInteriorWall();
@@ -153,7 +159,7 @@ void Program::Update()
 		node->second->Update(CollisionHandler::GetEntities(), node->second);				
 	}*/
 		
-	CollisionHandler::SolveCollisions(deltaTime, sceneManager);	
+	CollisionHandler::SolveCollisions(deltaTime, sceneManager, window);	
 
 }
 
@@ -557,6 +563,73 @@ void Program::CreateCar()
 	CollisionHandler::AddCollision(car);
 }
 
+void Program::CreateToolbox()
+{
+	std::string toolboxFilePath = "res\\textures\\enviroment\\Toolbox.png";
+	sf::Vector2i toolboxSpriteSheetSize = { 24, 22 };
+
+	toolbox = new Entity(toolboxFilePath, toolboxSpriteSheetSize);
+
+	toolbox->Graphic().setPosition(400, 500);
+	toolbox->Graphic().setOrigin(12, 11);
+	toolbox->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+
+
+	toolbox->SetTag(Tag::Toolbox);
+
+	sf::FloatRect toolboxBounds = toolbox->Graphic().getGlobalBounds();
+
+	toolboxBounds.height *= 0.15;
+
+	toolbox->SetBounds(toolboxBounds);
+
+	CollisionHandler::AddCollision(toolbox);
+}
+
+void Program::CreatePlanks()
+{
+	std::string planksFilePath = "res\\textures\\enviroment\\Planks.png";
+	sf::Vector2i planksSpriteSheetSize = { 42, 89 };
+
+	planks = new Entity(planksFilePath, planksSpriteSheetSize);
+
+	planks->Graphic().setPosition(880, 370);
+	planks->Graphic().setOrigin(21, 44);
+	planks->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+
+
+	planks->SetTag(Tag::Planks);
+
+	sf::FloatRect planksBounds = planks->Graphic().getGlobalBounds();
+
+	planks->SetBounds(planksBounds);
+
+	CollisionHandler::AddCollision(planks);
+}
+
+void Program::CreateBricks()
+{
+	std::string bricksFilePath = "res\\textures\\enviroment\\Bricks.png";
+	sf::Vector2i bricksSpriteSheetSize = { 40, 21 };
+
+	bricks = new Entity(bricksFilePath, bricksSpriteSheetSize);
+
+	bricks->Graphic().setPosition(650, 440);
+	bricks->Graphic().setOrigin(20, 10);
+	bricks->Graphic().scale(sf::Vector2f(1.6f, 1.6f));
+
+
+	bricks->SetTag(Tag::Bricks);
+
+	sf::FloatRect brickBounds = bricks->Graphic().getGlobalBounds();
+
+	brickBounds.height *= 0.15;
+
+	bricks->SetBounds(brickBounds);
+
+	CollisionHandler::AddCollision(bricks);
+}
+
 void Program::CreateDoorColliderOutside()
 {
 	std::string doorColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
@@ -793,7 +866,7 @@ void Program::CreateRadioCollider()
 	radioCollider->Graphic().setOrigin(41, 25);
 	radioCollider->Graphic().scale(sf::Vector2f(0.2f, 1.0f));
 
-	radioCollider->SetTag(Tag::BedCollider);
+	radioCollider->SetTag(Tag::RadioCollider);
 
 	sf::FloatRect radioColliderBounds = radioCollider->Graphic().getGlobalBounds();
 
@@ -801,7 +874,6 @@ void Program::CreateRadioCollider()
 
 	CollisionHandler::AddCollision(radioCollider);
 }
-
 
 
 void Program::NightTimeUpdate(float deltaTime)
@@ -831,6 +903,8 @@ void Program::DayTimeUpdate(float deltaTime)
 	hud->Update(player->GetCurrentWeapon().GetCurrentAmmo(), deltaTime);
 	timeClock->Update(deltaTime);
 
+	UpdateHourInterfaces();
+
 	if (sceneManager->GetIsOutsidePlayerHouse())
 	{
 		house->Update(deltaTime);
@@ -843,6 +917,11 @@ void Program::DayTimeUpdate(float deltaTime)
 		}
 	}
 
+}
+
+void Program::UpdateHourInterfaces()
+{
+	bed->GetHoursInterface()->Update();
 }
 
 
@@ -862,7 +941,17 @@ void Program::DrawBedHoursInterface()
 	if (Bed::GetHoursInterface()->GetIsActive())
 	{
 		window->draw(Bed::GetHoursInterface()->GetBackground()->Graphic());
-		//falta drawear flechas y demas.
+		window->draw(Bed::GetHoursInterface()->GetButtonRight()->Graphic());
+		window->draw(Bed::GetHoursInterface()->GetButtonLeft()->Graphic());
+		window->draw(Bed::GetHoursInterface()->GetButtonClose()->Graphic());
+		window->draw(Bed::GetHoursInterface()->GetButtonOk()->Graphic());
+
+		window->draw(*Bed::GetHoursInterface()->GetInterfaceText());
+
+		window->draw(*Bed::GetHoursInterface()->GetHoursLeftText());
+		window->draw(*Bed::GetHoursInterface()->GetHoursToSpendText());
+
+
 	}
 }
 
@@ -1012,6 +1101,21 @@ void Program::DrawCar()
 	window->draw(car->Graphic());
 }
 
+void Program::DrawToolbox()
+{
+	window->draw(toolbox->Graphic());
+}
+
+void Program::DrawPlanks()
+{
+	window->draw(planks->Graphic());
+}
+
+void Program::DrawBricks()
+{
+	window->draw(bricks->Graphic());
+}
+
 void Program::DrawSky()
 {
 	window->draw(skyNight->Graphic());
@@ -1135,6 +1239,12 @@ void Program::DrawOutsideHouse()
 
 	DrawCar();
 
+	DrawToolbox();
+
+	DrawPlanks();
+
+	DrawBricks();
+
 	//dibujar player y weapon
 	if (player->Graphic().getPosition().y > 280)
 	{
@@ -1177,6 +1287,7 @@ void Program::DrawPlayerInHouse()
 
 	DrawRadioCollider();*/
 }
+
 
 void Program::DrawInteriorFloor()
 {

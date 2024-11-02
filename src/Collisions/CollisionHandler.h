@@ -11,10 +11,11 @@ class CollisionHandler
 {
 private: 
 	static std::vector<Entity*> entities;
+	static float addSubstractHoursTimer;
 
 public:
 	static void AddCollision(Entity* entity);
-	static void SolveCollisions(float deltaTime, SceneManager* sceneManager);
+	static void SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window);
 	static std::vector<Entity*> GetEntities() { return entities; };
 };
 

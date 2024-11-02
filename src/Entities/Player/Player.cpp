@@ -87,38 +87,45 @@ void Player::Update(float deltaTime)
 
 	if (isAlive)
 	{
-		if (SceneManager::GetIsTransitionToDay())
+		if (!HoursInterface::GetIsOpen())
 		{
-			sprite.setPosition({ 461, 346 });	
-			currentPos = { 461, 346 };
-			SceneManager::SetIsTransitionToDay(false);
-						
-		}
-		else if (SceneManager::GetIsTransitionToInside())
-		{			
-			sprite.setPosition({ 660, 511 });
-			currentPos = { 660, 511 };
-			SceneManager::SetIsTransitionToInside(false);
-		}
-		else if (SceneManager::GetIsTransitionToOutside())
-		{
-			sprite.setPosition({ 717, 413 });
-			currentPos = { 717, 413 };
-			SceneManager::SetIsTransitionToOutside(false);
+			if (SceneManager::GetIsTransitionToDay())
+			{
+				sprite.setPosition({ 461, 346 });
+				currentPos = { 461, 346 };
+				SceneManager::SetIsTransitionToDay(false);
+
+			}
+			else if (SceneManager::GetIsTransitionToInside())
+			{
+				sprite.setPosition({ 660, 511 });
+				currentPos = { 660, 511 };
+				SceneManager::SetIsTransitionToInside(false);
+			}
+			else if (SceneManager::GetIsTransitionToOutside())
+			{
+				sprite.setPosition({ 717, 413 });
+				currentPos = { 717, 413 };
+				SceneManager::SetIsTransitionToOutside(false);
+			}
+
+			if (!SceneManager::GetIsTransitioning())
+			{
+				ReloadWeapon(deltaTime);
+
+				weapons[currentWeapon]->Update(deltaTime);
+
+				direction = VectorUtility::Normalize(direction);
+				currentPos += direction * speed * deltaTime;
+			}
 		}
 
-		if (!SceneManager::GetIsTransitioning())
-		{
-			ReloadWeapon(deltaTime);
-
-			weapons[currentWeapon]->Update(deltaTime);
-
-			direction = VectorUtility::Normalize(direction);
-			currentPos += direction * speed * deltaTime;
-		}		
+		
 	}	
 
-	WeaponPosition();
+	if(!HoursInterface::GetIsOpen())
+		WeaponPosition();
+
 	sprite.setPosition(currentPos);
 
 }

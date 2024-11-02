@@ -5,6 +5,15 @@ HoursInterface* Bed::hoursInterface;
 Bed::Bed(std::string imageFilePath, sf::Vector2i spriteSheetSize) : Entity(imageFilePath, spriteSheetSize)
 {
 	hoursInterface = new HoursInterface();
+
+	hoursInterface->SetInterfaceText("How much time should \n		  I sleep?");
+	hoursInterface->GetInterfaceText()->setPosition(495, 390);
+
+	CollisionHandler::AddCollision(hoursInterface->GetButtonClose());
+	CollisionHandler::AddCollision(hoursInterface->GetButtonRight());
+	CollisionHandler::AddCollision(hoursInterface->GetButtonLeft());
+	CollisionHandler::AddCollision(hoursInterface->GetButtonOk());
+
 }
 
 sf::FloatRect Bed::GetBounds()

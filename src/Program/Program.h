@@ -72,10 +72,16 @@ private:
 	Entity* chairRight;
 	Entity* table;
 	Entity* wardrobe;
+
 	Entity* doorColliderOutside;
 	Entity* doorColliderInside;
 	Entity* bedCollider;
 	Entity* radioCollider;
+
+	Entity* toolbox;
+	Entity* bricks;
+	Entity* planks;
+
 
 	bool isProgramRunning;
 	float deltaTime;
@@ -104,7 +110,11 @@ private:
 	void CreateFences();
 	void CreateHouse();
 	void CreateCar();
+	void CreateToolbox();
+	void CreatePlanks();
+	void CreateBricks();
 	void CreateDoorColliderOutside();
+
 	void CreateInteriorFloor();
 	void CreateInteriorWall();
 	void CreateInteriorLimits();
@@ -115,9 +125,18 @@ private:
 	void CreateDoorColliderInside();
 	void CreateBedCollider();
 	void CreateRadioCollider();
+	void CreateCarCollider();
+	void CreateToolboxCollider();
+	void CreatePlanksCollider();
+	void CreateBricksCollider();
+	
+
 
 	void NightTimeUpdate(float deltaTime);
+	
 	void DayTimeUpdate(float deltaTime);
+	void UpdateHourInterfaces();
+
 	
 	void DrawPlayer();
 	void DrawEButton();	
@@ -131,6 +150,9 @@ private:
 	void DrawWeapon();
 	void DrawHouse();
 	void DrawCar();
+	void DrawToolbox();
+	void DrawPlanks();
+	void DrawBricks();
 	void DrawSky();
 	void DrawEnemiesHealthBars();
 	void DrawHouseHealthBar();
@@ -153,6 +175,10 @@ private:
 	void DrawBedCollider();
 	void DrawRadioCollider();		
 	void DrawDoorColliderOutside();
+	void DrawCarCollider();
+	void DrawToolboxCollider();
+	void DrawPlanksCollider();
+	void DrawBricksCollider();
 
 	void DrawTimeClock();
 	void DrawHUD();

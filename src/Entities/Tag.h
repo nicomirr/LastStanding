@@ -20,5 +20,13 @@ enum class Tag
 	DoorColliderOutside,
 	DoorColliderInside,
 	BedCollider,
-	RadioCollider
+	RadioCollider,
+	CloseHoursInterfaceButton, 
+	AddHoursButton,
+	SubstractHoursButton,
+	OkHoursButton,
+	Toolbox,
+	Planks,
+	Bricks
+
 };

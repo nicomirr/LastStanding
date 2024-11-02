@@ -2,14 +2,17 @@
 
 
 std::vector<Entity*> CollisionHandler::entities;
+float CollisionHandler::addSubstractHoursTimer;
 
 void CollisionHandler::AddCollision(Entity* entity)
 {
 	entities.push_back(entity);
 }
 
-void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager)
+void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window)
 {
+	addSubstractHoursTimer += deltaTime;
+
 	if (sceneManager->GetIsNightTimeScene())
 	{
 		sf::Vector2f relativePosition;
@@ -238,6 +241,116 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 	{
 		sf::Vector2f relativePosition;
 
+
+		for (int i = 0; i < entities.size(); i++)
+		{
+			if (addSubstractHoursTimer >= 200)
+				addSubstractHoursTimer = 0;
+
+			float waitTime = 0.2f;
+
+			for (int j = 0; j < entities.size(); j++)
+			{
+				if (entities[i]->GetTag() == Tag::CloseHoursInterfaceButton)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							HoursInterface::SetIsOpen(false);
+						}
+					}						
+					
+				}
+				else if (entities[j]->GetTag() == Tag::CloseHoursInterfaceButton)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							HoursInterface::SetIsOpen(false);
+						}
+					}
+				}
+								
+				if (entities[i]->GetTag() == Tag::AddHoursButton)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (addSubstractHoursTimer >= waitTime)
+							{
+								HoursInterface::AddHoursToSpend();
+								addSubstractHoursTimer = 0;
+							}
+
+						}
+					}
+
+				}
+				else if (entities[j]->GetTag() == Tag::AddHoursButton)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (addSubstractHoursTimer >= waitTime)
+							{
+								HoursInterface::AddHoursToSpend();
+								addSubstractHoursTimer = 0;
+							}
+						}
+					}
+				}
+
+				if (entities[i]->GetTag() == Tag::SubstractHoursButton)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (addSubstractHoursTimer >= waitTime)
+							{
+								HoursInterface::SubstractHoursToSpend();
+								addSubstractHoursTimer = 0;
+							}
+						}
+					}
+
+				}
+				else if (entities[j]->GetTag() == Tag::SubstractHoursButton)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (addSubstractHoursTimer >= waitTime)
+							{
+								HoursInterface::SubstractHoursToSpend();
+								addSubstractHoursTimer = 0;
+							}
+						}
+					}
+				}
+
+				
+			}
+
+		}
+
 		if (sceneManager->GetIsInsidePlayerHouse())
 		{
 			for (int i = 0; i < entities.size(); i++)
@@ -283,6 +396,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
 								Bed::GetHoursInterface()->SetIsActive(true);
+								HoursInterface::SetIsOpen(true);
 							}
 						}
 					}
@@ -300,7 +414,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 					relativePosition = entities[i]->Graphic().getPosition() - entities[j]->Graphic().getPosition();
 
 					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::Fence ||
-						entities[j]->GetTag() == Tag::Car || entities[j]->GetTag() == Tag::House))
+						entities[j]->GetTag() == Tag::Car || entities[j]->GetTag() == Tag::House || entities[j]->GetTag() == Tag::Toolbox ||
+						entities[j]->GetTag() == Tag::Planks || entities[j]->GetTag() == Tag::Bricks))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
@@ -327,12 +442,11 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							}
 						}
 					}
-
+									
 				}
 
 			}
 		}
-
 		
 	}
 
