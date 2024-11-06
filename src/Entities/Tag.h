@@ -5,7 +5,9 @@ enum class Tag
 	Player,
 	Fence, 
 	Enemy,
-	Weapon,
+	Gun, 
+	Shotgun,
+	Uzi,
 	Bullet,
 	Car,
 	House,
@@ -21,12 +23,28 @@ enum class Tag
 	DoorColliderInside,
 	BedCollider,
 	RadioCollider,
+	CarCollider, 
+	ToolboxCollider,
+	PlanksCollider,
+	BricksCollider,
 	CloseHoursInterfaceButton, 
 	AddHoursButton,
 	SubstractHoursButton,
-	OkHoursButton,
+	OkHoursButtonPlanks,
+	OkHoursButtonToolbox,
+	OkHoursButtonBricks,
+	OkHoursButtonScavenge,
+	OkHoursButtonSleep,
+	CloseScavengeResults,
+	CloseEndDay,
 	Toolbox,
 	Planks,
 	Bricks
-
 };
+
+/*
+void CreateCarCollider();
+	void CreateToolboxCollider();
+	void CreatePlanksCollider();
+	void CreateBricksCollider();
+*/

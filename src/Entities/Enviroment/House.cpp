@@ -44,10 +44,24 @@ House::House(sf::Vector2f pos, sf::Vector2i animationFrameSize, std::string imag
 	healthBar->Graphic().scale({ 1.4f,1.4f });
 
 	sprite.setPosition(pos);
+
+	font = new sf::Font();
+	std::string fontPath = "res\\fonts\\Roboto.ttf";
+
+	font->loadFromFile(fontPath);
+
+	sf::Color* color = new sf::Color(88, 83, 74, 255);
+
+	percentageText = new sf::Text("", *font, 18);
+
+	percentageText->setPosition(480, 410);
+	percentageText->setFillColor(*color);
 }
 
 void House::Update(float deltaTime)
-{
+{	
+	percentageText->setString("Health: " + std::to_string(healthPercentage) + "%				10% /h");
+
 	HouseAppearance();
 
 	float yOffset = 0;
@@ -75,6 +89,16 @@ void House::ReceiveDamage(float damage)
 		currentHealth = 0;
 }
 
+void House::RepairHouse()
+{
+	currentHealth += (maxHealth * 0.1f);
+	currentHealth = std::clamp(currentHealth, 0.0f, maxHealth);
+}
+
+void House::GetHealthPercentage() 
+{
+	healthPercentage = (currentHealth * 100) / maxHealth;	
+}
 
 void House::HouseAppearance()
 {
@@ -86,6 +110,10 @@ void House::HouseAppearance()
 	else if (currentHealth <= maxHealth * 0.5f)
 	{
 		SetCurrentAnimation("houseHalfHealth");
+	}
+	else
+	{
+		SetCurrentAnimation("houseFullHealth");
 	}
 }
 

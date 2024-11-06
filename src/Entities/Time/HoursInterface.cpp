@@ -2,9 +2,13 @@
 
 bool HoursInterface::isOpen;
 int HoursInterface::hoursToSpend;
+bool HoursInterface::scrapNotEnoughShowText;
+sf::Text* HoursInterface::notEnoughScrapText;
 
 HoursInterface::HoursInterface()
 {
+	isActive = false;
+
 	hoursToSpend = 1;
 
 	std::string backgroundImageFilePath = "res\\textures\\time\\HoursInterface.png";
@@ -53,9 +57,7 @@ HoursInterface::HoursInterface()
 	buttonOk->Graphic().setOrigin(8, 7);
 	buttonOk->Graphic().setPosition(730, 510);
 	buttonOk->Graphic().setScale({ 2, 2 });
-
-	buttonOk->SetTag(Tag::OkHoursButton);
-		
+				
 
 	font = new sf::Font();
 	std::string fontPath = "res\\fonts\\Pixel.otf";
@@ -75,10 +77,47 @@ HoursInterface::HoursInterface()
 	hoursToSpendText->setFillColor(*color);
 	hoursToSpendText->setPosition(587, 500);
 	
+	resourcesText = new sf::Text("", *font, 12);
+	resourcesText->setFillColor(*color);
+	resourcesText->setPosition(480, 442);
+
+	scrapCostText = new sf::Text("50 scrap \\ h", *font, 12);
+	scrapCostText->setFillColor(*color);
+	scrapCostText->setPosition(610, 442);
+
+	hoursSleptText = new sf::Text("", *font, 10);
+	hoursSleptText->setFillColor(*color);
+	hoursSleptText->setPosition(495, 420);
+
+	notEnoughScrapText = new sf::Text("Not enough scrap", *font, 12);
+	notEnoughScrapText->setFillColor(sf::Color(255, 255, 255, 255));
+	notEnoughScrapText->setPosition(515, 555);
 }
 
-void HoursInterface::Update()
+void HoursInterface::Update(int resources, float deltaTime)
 {
+	if (scrapNotEnoughShowText)
+	{
+		scrapNotEnoughTimer += deltaTime;
+
+		if (scrapNotEnoughTimer >= 1.4)
+		{
+			scrapNotEnoughShowText = false;
+			scrapNotEnoughTimer = 0;
+		}
+	}
+	else
+		scrapNotEnoughTimer = 0;
+
+	if (!isActive)
+	{
+		buttonOk->Graphic().setPosition(1300, 510);
+	}
+	else
+	{
+		buttonOk->Graphic().setPosition(730, 510);
+	}
+
 	if (!isOpen)
 	{
 		isActive = false;
@@ -101,6 +140,30 @@ void HoursInterface::Update()
 
 	hoursLeftText->setString("Hours left: " + hoursLeftString);
 	hoursToSpendText->setString(hoursToSpendString);
+
+
+
+	std::ostringstream resourcesLeftStream;
+
+	std::string resourcesLeftString;
+
+
+	resourcesLeftStream << std::setw(2) << std::setfill('0') << resources;
+	resourcesLeftString = resourcesLeftStream.str();
+
+	resourcesText->setString("Scrap: " + resourcesLeftString);
+
+
+	std::ostringstream hoursSleptStream;
+
+	std::string hoursSleptString;
+
+
+	hoursSleptStream << std::setw(2) << std::setfill('0') << Player::GetHoursSlept();
+	hoursSleptString = hoursSleptStream.str();
+
+	hoursSleptText->setString("    Hours slept: " + hoursSleptString + "\\06 \n  Sleeping affects aim");
+
 }
 
 void HoursInterface::SubstractHoursToSpend()

@@ -5,6 +5,8 @@ bool SceneManager::isTransitionToDay = false;
 bool SceneManager::isTransitionToNight = false;
 bool SceneManager::isTransitionToInside = false;
 bool SceneManager::isTransitionToOutside = false;
+bool SceneManager::transitionToNight = false;
+
 
 SceneManager::SceneManager()
 {
@@ -20,16 +22,21 @@ SceneManager::SceneManager()
 	sceneTransitionEndTime = 1;
 	sceneTransitionEndTimeToStart = 5;
 
+	canUseDoors = true;
+
 	SetIsNightTimeSceneOn();
 	//SetIsDayTimeSceneOn();		//Testeo
 }
 
-void SceneManager::Update()
+void SceneManager::Update(DayTasksManager* dayTasksManager, float deltaTime)
 {
 	SceneTransitionStart();
 	SceneTransitionToInside();
 	SceneTransitionToOutside();
-	
+	TasksTransition(dayTasksManager);
+
+	if (transitionToNight)
+		SceneTransitionEndNightDayCicle(deltaTime);
 	
 }
 
@@ -107,7 +114,10 @@ void SceneManager::SceneTransitionStart()
 	
 }
 
-void SceneManager::SceneTransitionEnd(float deltaTime)
+//SUMAR DIA
+//CAMBIAR LUZ A OSCURIDAD
+//REINICIAR RELOJ HACIA LUNA
+void SceneManager::SceneTransitionEndNightDayCicle(float deltaTime)
 {
 	sceneTransitionEndTimer += deltaTime;
 
@@ -150,12 +160,16 @@ void SceneManager::SceneTransitionEnd(float deltaTime)
 			SetIsOutsidePlayerHouse();
 			sceneTransitionProgress = 0;
 			isTransitionToNight = true;
-
+			transitionToNight = false;
+			TimeClock::SetEndDayTextShown(false);
+			TimeClock::SetEndDayTextOpened(false);
+			TimeClock::AddDay();
+			TimeClock::ResetClockAndLight();
 		}
 
 		sceneTransitionStartFinished = false;
 		sceneTransitionEndTimer = 0;
-
+				
 		isTransitioning = true;
 		
 	}
@@ -221,6 +235,8 @@ void SceneManager::SceneTransitionToOutside()
 void SceneManager::SceneTransitionToInside()
 {
 	if (!isTransitioningToInside) return;
+
+	canUseDoors = false;
 		
 	if (sceneTransitionProgressOutsideInsideStart < 1.0f)
 	{
@@ -271,5 +287,103 @@ void SceneManager::SceneTransitionToInside()
 		sceneTransitionProgressOutsideInsideEnd = 0;
 		isTransitioningToInside = false;
 		isTransitionDone = false;
+		canUseDoors = true;
 	}
 }
+
+
+//CONTINUAR ACA
+
+void SceneManager::TasksTransition(DayTasksManager* dayTaskManager)
+{
+	//en collisionhandler activar istransitioning
+	//un return para que no vuelva a ejecutarse?	
+	if (!isTransitioningTask) return;
+
+	if (sceneTransitionTasksProgressStart < 1.0f)
+	{
+		int alpha = MathsPlus::Lerp(0, 255, sceneTransitionTasksProgressStart);
+
+		sceneTransitionTasksProgressStart += 0.01f;
+
+		if (alpha >= 0)
+		{
+			sf::Color blackScreenColor(blackScreenTransition->Graphic().getColor().r, blackScreenTransition->Graphic().getColor().g,
+				blackScreenTransition->Graphic().getColor().b, alpha);
+
+			blackScreenTransition->Graphic().setColor(blackScreenColor);
+		}
+
+	}
+
+	if (sceneTransitionTasksProgressStart < 1.0f) return;
+		
+	if (isFenceTaskTransition)
+	{
+		dayTaskManager->RepairFences(HoursInterface::GetHoursToSpend());
+		TimeClock::SetHours(TimeClock::GetHours() - (HoursInterface::GetHoursToSpend()));
+
+		isFenceTaskTransition = false;
+	}
+	else if (isToolboxTaskTransition)
+	{
+		dayTaskManager->RepairCar(HoursInterface::GetHoursToSpend());
+		TimeClock::SetHours(TimeClock::GetHours() - (HoursInterface::GetHoursToSpend()));
+
+		isToolboxTaskTransition = false;
+	}
+	else if (isHouseTaskTransition)
+	{
+		dayTaskManager->RepairHouse(HoursInterface::GetHoursToSpend());
+		TimeClock::SetHours(TimeClock::GetHours() - (HoursInterface::GetHoursToSpend()));
+
+		isHouseTaskTransition = false;
+	}
+	else if (isScavengeTaskTransition)
+	{
+		dayTaskManager->Scavenge(HoursInterface::GetHoursToSpend());
+		TimeClock::SetHours(TimeClock::GetHours() - (HoursInterface::GetHoursToSpend()));
+
+		dayTaskManager->SetScavengeResultsOpen(true);
+		isScavengeTaskTransition = false;
+	}
+	else if (isSleepTaskTransition)
+	{
+		dayTaskManager->Sleep(HoursInterface::GetHoursToSpend());
+		TimeClock::SetHours(TimeClock::GetHours() - (HoursInterface::GetHoursToSpend()));
+
+		isSleepTaskTransition = false;
+	}
+
+	isTransitioning = false;
+
+	HoursInterface::ResetHoursToSpend();
+
+	if (sceneTransitionTasksProgressEnd < 1.0f)
+	{
+		int alpha = MathsPlus::Lerp(255, 0, sceneTransitionTasksProgressEnd);
+
+		sceneTransitionTasksProgressEnd += 0.01f;
+
+
+		if (alpha <= 255)
+		{
+			sf::Color blackScreenColor(blackScreenTransition->Graphic().getColor().r, blackScreenTransition->Graphic().getColor().g,
+				blackScreenTransition->Graphic().getColor().b, alpha);
+
+			blackScreenTransition->Graphic().setColor(blackScreenColor);
+		}
+
+	}
+	else
+	{
+		sceneTransitionTasksProgressStart = 0;
+		sceneTransitionTasksProgressEnd = 0;
+		isTransitioningTask = false;
+		isTransitionDone = false;
+	}
+}
+
+
+//PONER TEXTO EN RADIO
+//PONER TEXTO "NOT ENOUGH SCRAP"

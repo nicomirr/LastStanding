@@ -12,8 +12,9 @@ Bed::Bed(std::string imageFilePath, sf::Vector2i spriteSheetSize) : Entity(image
 	CollisionHandler::AddCollision(hoursInterface->GetButtonClose());
 	CollisionHandler::AddCollision(hoursInterface->GetButtonRight());
 	CollisionHandler::AddCollision(hoursInterface->GetButtonLeft());
+	
+	hoursInterface->GetButtonOk()->SetTag(Tag::OkHoursButtonSleep);
 	CollisionHandler::AddCollision(hoursInterface->GetButtonOk());
-
 }
 
 sf::FloatRect Bed::GetBounds()

@@ -1,13 +1,20 @@
 #pragma once
 #include "../AnimatedEntity.h"
 #include "../HealthBar/HealthBar.h"
+#include <iomanip>
+#include <sstream>
 
 class Car :
     public AnimatedEntity
 {
 private:
+    int healthPercentage;
+    
+    sf::Font* font;
+    sf::Text* percentageText;
+
     float maxHealth;
-    float currentHealth;
+    static float currentHealth;
     HealthBar* healthBar;
     static bool isDestroyed;
     float collissionRadius;
@@ -25,6 +32,16 @@ public:
     static bool GetIsDestroyed() { return isDestroyed; }
     void SetIsDestroyed(bool isDestroyed) { this->isDestroyed = isDestroyed; }
     float GetCollissionRadius() { return collissionRadius; }
+
+    static float GetHealth() { return currentHealth; }
+    float GetMaxHealth() { return maxHealth; }
+
+    void RepairCar();
+
     void ReceiveDamage(float damage);
+
+    void GetHealthPercentage();
+
+    sf::Text* GetPercentageText() { return percentageText; }
 };
 

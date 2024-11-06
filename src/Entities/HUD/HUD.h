@@ -1,21 +1,32 @@
 #pragma once
 #include "../AnimatedEntity.h"
 #include "AmmoHolder.h"
+#include "../Weapon/Weapon.h"
+#include "../Player/Player.h"
 
 
 
-class HUD : public Entity
+class HUD : public AnimatedEntity
 {
 private:
 	Entity HUDBar;
-	AmmoHolder* ammoHolder;
+
+	AmmoHolder* gunAmmoHolder;
+	AmmoHolder* shotgunAmmoHolder;
+
 	sf::Font* font;
 	sf::Text* ammoText;
 
+	void HUDAppearance();
+
 public:
-	HUD(std::string imageFilePath, sf::Vector2i spriteSheetSize);
-	void Update(int currentAmmo, float deltaTime);
-	AmmoHolder* GetAmmoHolder() { return ammoHolder; }
+	HUD(sf::Vector2i animationFrameSize, std::string imageFilePath, sf::Vector2i spriteSheetSize);
+	void Update(int resources, int currentAmmo, float deltaTime, Weapon weapon);
+
+	AmmoHolder* GetGunAmmoHolder() { return gunAmmoHolder; }
+	AmmoHolder* GetShotgunAmmoHolder() { return shotgunAmmoHolder; }
+
+
 	sf::Text* GetAmmoText() { return ammoText; }
 };
 

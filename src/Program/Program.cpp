@@ -19,9 +19,9 @@ void Program::Initialize()
 	srand(time(NULL));
 
 	CreateWindow();
-	
+
 	CreateSceneManager();
-	
+
 	SetCursorAppearance();
 
 	CreateWeapons();
@@ -29,7 +29,7 @@ void Program::Initialize()
 	CreatePlayer();
 
 	CreateHUD();
-	
+
 	CreateNightSky();
 
 	CreateClock();
@@ -38,9 +38,9 @@ void Program::Initialize()
 	pathfinder = new PathFinder(nodesGrid);
 	//ARREGLAR DEPENDENCIA DE NODOS ANTES DE ENCAPSULAR
 	enemySpawner = new EnemySpawner(nodesGrid, pathfinder, sceneManager);
-			
+
 	CreatePlayerBaseCollider();
-		
+
 	CreateOutsideFloor();
 
 	CreateFences();
@@ -77,6 +77,23 @@ void Program::Initialize()
 
 	CreateDoorColliderOutside();
 
+	CreateCarCollider();
+	
+	CreateToolboxCollider();
+
+	CreatePlanksCollider();
+
+	CreateBricksCollider();
+
+	CreateCarHoursInterface();
+
+	CreateToolboxHoursInterface();
+
+	CreatePlanksHoursInterface();
+
+	CreateBricksHoursInterface();
+
+	CreateDaysTasksManager();
 
 	for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
 	{
@@ -121,7 +138,6 @@ void Program::ProgramLoop()
 }
 
 
-
 void Program::Input()
 {
 	sf::Event event;
@@ -143,7 +159,12 @@ void Program::Update()
 	mousePosition = sf::Mouse::getPosition(*window);
 	deltaTime = clock.restart().asSeconds();
 
-	sceneManager->Update();
+	sceneManager->Update(dayTasksManager, deltaTime);
+
+	Fence::GetHealthPercentage(fences);
+	car->GetHealthPercentage();
+	house->GetHealthPercentage();
+
 
 	if (sceneManager->GetIsNightTimeScene())
 	{
@@ -159,7 +180,8 @@ void Program::Update()
 		node->second->Update(CollisionHandler::GetEntities(), node->second);				
 	}*/
 		
-	CollisionHandler::SolveCollisions(deltaTime, sceneManager, window);	
+	CollisionHandler::SolveCollisions(deltaTime, sceneManager, window, carHoursInterface, toolboxHoursInterface, planksHoursInterface, bricksHoursInterface,
+		bed->GetHoursInterface(), dayTasksManager);	
 
 }
 
@@ -179,8 +201,7 @@ void Program::Draw()
 		DrawDayTime();
 	}
 
-	DrawBedHoursInterface();
-
+	DrawHoursInterfaces();
 
 	//DrawHours();
 
@@ -190,6 +211,10 @@ void Program::Draw()
 	//{
 	//	window->draw(node->second->Graphic());
 	//}
+	
+
+	
+	window->draw(timeClock->GetButtonClose()->Graphic());
 	
 
 	window->display();
@@ -224,9 +249,19 @@ void Program::SetCursorAppearance()
 
 void Program::CreateWeapons()
 {
+	std::string bulletFilePath = "res\\textures\\weapons\\Bullet.png";
+	sf::Vector2i bulletSpriteSheetSize = { 3, 3 };
+	float bulletMaxPosX = windowWidth;
+	float bulletMaxPosY = windowHeight;
+
+
 	float gunFireRate = 0.2f;
 	float gunReloadTime = 1.0f;
 	float gunCapacity = 7;
+
+	float gunOriginX = 4;
+	float gunOriginY = 4;
+
 	sf::Vector2i gunAnimationFrameSize = { 8, 8 };
 	std::string gunFilePath = "res\\textures\\weapons\\Gun.png";
 	sf::Vector2i gunSpriteSheetSize = { 8, 32 };
@@ -234,28 +269,77 @@ void Program::CreateWeapons()
 	float gunBulletMinDamage = 3;
 	float gunMaxBulletDamage = 6;
 	float bulletSpeed = 2000.0f;
-	std::string bulletFilePath = "res\\textures\\weapons\\Bullet.png";
-	sf::Vector2i bulletSpriteSheetSize = { 3, 3 };
-	float bulletMaxPosX = windowWidth;
-	float bulletMaxPosY = windowHeight;
+	
 
-	gun = new Weapon(gunFireRate, gunReloadTime, gunCapacity, gunAnimationFrameSize, gunFilePath, gunSpriteSheetSize,
+	gun = new Weapon(gunFireRate, gunReloadTime, gunCapacity, gunOriginX, gunOriginY, gunAnimationFrameSize, gunFilePath, gunSpriteSheetSize,
 		gunBulletMinDamage, gunMaxBulletDamage, bulletSpeed, bulletFilePath, bulletSpriteSheetSize, bulletMaxPosX,
 		bulletMaxPosY);
 
-	gun->SetTag(Tag::Weapon);
+	gun->SetTag(Tag::Gun);
 	CollisionHandler::AddCollision(gun);
+
+
+
+	float shotgunFireRate = 0.6f;
+	float shotgunReloadTime = 1.8f;
+	float shotgunCapacity = 4;
+
+	float shotgunOriginX = 0;
+	float shotgunOriginY = 2.5f;
+
+	sf::Vector2i shotgunAnimationFrameSize = { 16, 5 };
+	std::string shotgunFilePath = "res\\textures\\weapons\\Shotgun.png";
+	sf::Vector2i shotgunSpriteSheetSize = { 16, 10 };
+
+	float shotgunBulletMinDamage = 12;
+	float shotgunMaxBulletDamage = 20;
+	float shotgunBulletSpeed = 2000.0f;
+
+
+	shotgun = new Weapon(shotgunFireRate, shotgunReloadTime, shotgunCapacity, shotgunOriginX, shotgunOriginY, shotgunAnimationFrameSize, shotgunFilePath, 
+		shotgunSpriteSheetSize,	shotgunBulletMinDamage, shotgunMaxBulletDamage, shotgunBulletSpeed, bulletFilePath, bulletSpriteSheetSize, bulletMaxPosX,
+		bulletMaxPosY);
+
+	shotgun->SetTag(Tag::Shotgun);
+	CollisionHandler::AddCollision(shotgun);
+
+
+	float uziFireRate = 0.1f;
+	float uziReloadTime = 1.0f;
+	float uziCapacity = 20;
+
+	float uziOriginX = 5;
+	float uziOriginY = 3;
+
+	sf::Vector2i uziAnimationFrameSize = { 10, 6 };
+	std::string uziFilePath = "res\\textures\\weapons\\Uzi.png";
+	sf::Vector2i uziSpriteSheetSize = { 10, 12 };
+
+	float uziBulletMinDamage = 1;
+	float uziMaxBulletDamage = 3;
+	float uziBulletSpeed = 2000.0f;
+
+
+	uzi = new Weapon(uziFireRate, uziReloadTime, uziCapacity, uziOriginX, uziOriginY, uziAnimationFrameSize, uziFilePath,
+		uziSpriteSheetSize, uziBulletMinDamage, uziMaxBulletDamage, uziBulletSpeed, bulletFilePath, bulletSpriteSheetSize, bulletMaxPosX,
+		bulletMaxPosY);
+
+	uzi->SetTag(Tag::Uzi);
+	CollisionHandler::AddCollision(uzi);
+
+
+
+
 }
 
 void Program::CreatePlayer()
 {
-
 	float playerSpeed = 100;
 	sf::Vector2i playerAnimationFrameSize = { 15, 15 };
 	std::string playerFilePath = "res\\textures\\player\\Player.png";
 	sf::Vector2i playerSpriteSheetSize = { 44, 90 };
 
-	player = new Player(playerSpeed, gun, windowWidth, windowHeight, playerAnimationFrameSize, playerFilePath,
+	player = new Player(playerSpeed, gun, shotgun, uzi, windowWidth, windowHeight, playerAnimationFrameSize, playerFilePath,
 		playerSpriteSheetSize);
 
 	player->SetTag(Tag::Player);
@@ -264,10 +348,11 @@ void Program::CreatePlayer()
 
 void Program::CreateHUD()
 {
-	std::string hudFilePath = "res\\textures\\HUD\\HUDbarWithGun.png";
-	sf::Vector2i hudSpriteSheetSize = { 1200, 191 };
+	sf::Vector2i hudAnimationFrameSize = { 1200, 92 };
+	std::string hudFilePath = "res\\textures\\HUD\\HUDbar.png";
+	sf::Vector2i hudSpriteSheetSize = { 1200, 273 };
 
-	hud = new HUD(hudFilePath, hudSpriteSheetSize);
+	hud = new HUD(hudAnimationFrameSize, hudFilePath, hudSpriteSheetSize);
 }
 
 void Program::CreateNightSky()
@@ -283,6 +368,8 @@ void Program::CreateClock()
 	sf::Vector2i clockSpriteSheetSize = { 142, 124 };
 
 	timeClock = new TimeClock(skyNight, clockFilePath, clockSpriteSheetSize);
+
+	CollisionHandler::AddCollision(timeClock->GetButtonClose());
 }
 
 void Program::CreatePlayerBaseCollider()
@@ -536,6 +623,8 @@ void Program::CreateFences()
 		fences[i]->SetTag(Tag::Fence);
 		CollisionHandler::AddCollision(fences[i]);
 	}
+
+	std::cout << std::to_string(fences.size());
 }
 
 void Program::CreateHouse()
@@ -572,7 +661,7 @@ void Program::CreateToolbox()
 
 	toolbox->Graphic().setPosition(400, 500);
 	toolbox->Graphic().setOrigin(12, 11);
-	toolbox->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+	toolbox->Graphic().scale(sf::Vector2f(1.3f, 1.3f));
 
 
 	toolbox->SetTag(Tag::Toolbox);
@@ -589,7 +678,7 @@ void Program::CreateToolbox()
 void Program::CreatePlanks()
 {
 	std::string planksFilePath = "res\\textures\\enviroment\\Planks.png";
-	sf::Vector2i planksSpriteSheetSize = { 42, 89 };
+	sf::Vector2i planksSpriteSheetSize = { 45, 93 };
 
 	planks = new Entity(planksFilePath, planksSpriteSheetSize);
 
@@ -616,7 +705,7 @@ void Program::CreateBricks()
 
 	bricks->Graphic().setPosition(650, 440);
 	bricks->Graphic().setOrigin(20, 10);
-	bricks->Graphic().scale(sf::Vector2f(1.6f, 1.6f));
+	bricks->Graphic().scale(sf::Vector2f(1.4f, 1.4f));
 
 
 	bricks->SetTag(Tag::Bricks);
@@ -732,6 +821,8 @@ void Program::CreateBed()
 
 	bed->SetTag(Tag::Bed);
 	CollisionHandler::AddCollision(bed);
+
+	bed->GetHoursInterface()->GetInterfaceText()->setPosition(495, 360);
 }
 
 void Program::CreateRadio()
@@ -875,12 +966,145 @@ void Program::CreateRadioCollider()
 	CollisionHandler::AddCollision(radioCollider);
 }
 
+void Program::CreateCarCollider()
+{
+	std::string carColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i carColliderSpriteSheetSize = { 32, 32 };
+
+	carCollider = new Entity(carColliderFilePath, carColliderSpriteSheetSize);
+
+	carCollider->Graphic().setPosition(503, 485);
+	carCollider->Graphic().setOrigin(41, 25);
+	carCollider->Graphic().scale(sf::Vector2f(0.5f, 1.0f));
+
+	carCollider->SetTag(Tag::CarCollider);
+
+	sf::FloatRect carColliderBounds = carCollider->Graphic().getGlobalBounds();
+
+	carCollider->SetBounds(carColliderBounds);
+
+	CollisionHandler::AddCollision(carCollider);
+}
+
+void Program::CreateToolboxCollider()
+{
+	std::string toolboxColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i toolboxColliderSpriteSheetSize = { 32, 32 };
+
+	toolboxCollider = new Entity(toolboxColliderFilePath, toolboxColliderSpriteSheetSize);
+
+	toolboxCollider->Graphic().setPosition(395, 500);
+	toolboxCollider->Graphic().setOrigin(16, 16);
+	toolboxCollider->Graphic().scale(sf::Vector2f(1.1f, 1.0f));
+
+	toolboxCollider->SetTag(Tag::ToolboxCollider);
+
+	sf::FloatRect toolboxColliderBounds = toolboxCollider->Graphic().getGlobalBounds();
+
+	toolboxCollider->SetBounds(toolboxColliderBounds);
+
+	CollisionHandler::AddCollision(toolboxCollider);
+}
+
+void Program::CreatePlanksCollider()
+{
+	std::string planksColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i planksColliderSpriteSheetSize = { 32, 32 };
+
+	planksCollider = new Entity(planksColliderFilePath, planksColliderSpriteSheetSize);
+
+	planksCollider->Graphic().setPosition(880, 370);
+	planksCollider->Graphic().setOrigin(16, 16);
+	planksCollider->Graphic().scale(sf::Vector2f(1.7f, 3.4f));
+
+	planksCollider->SetTag(Tag::PlanksCollider);
+
+	sf::FloatRect planksColliderBounds = planksCollider->Graphic().getGlobalBounds();
+
+	planksCollider->SetBounds(planksColliderBounds);
+
+	CollisionHandler::AddCollision(planksCollider);
+
+}
+
+void Program::CreateBricksCollider()
+{
+	std::string bricksColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i bricksColliderSpriteSheetSize = { 32, 32 };
+
+	bricksCollider = new Entity(bricksColliderFilePath, bricksColliderSpriteSheetSize);
+
+	bricksCollider->Graphic().setPosition(650, 440);
+	bricksCollider->Graphic().setOrigin(16, 16);
+	bricksCollider->Graphic().scale(sf::Vector2f(1.9f, 1.0f));
+
+	bricksCollider->SetTag(Tag::BricksCollider);
+
+	sf::FloatRect bricksColliderBounds = bricksCollider->Graphic().getGlobalBounds();
+
+	bricksCollider->SetBounds(bricksColliderBounds);
+
+	CollisionHandler::AddCollision(bricksCollider);
+}
+
+void Program::CreateCarHoursInterface()
+{
+	carHoursInterface = new HoursInterface();
+
+	carHoursInterface->SetInterfaceText("How much time should \n		I scavenge?");
+	carHoursInterface->GetInterfaceText()->setPosition(495, 390);
+
+	carHoursInterface->GetButtonOk()->SetTag(Tag::OkHoursButtonScavenge);
+	CollisionHandler::AddCollision(carHoursInterface->GetButtonOk());
+}
+
+void Program::CreateToolboxHoursInterface()
+{
+	toolboxHoursInterface = new HoursInterface();
+
+	toolboxHoursInterface->SetInterfaceText("How much time should \n	   I repair car?");
+	toolboxHoursInterface->GetInterfaceText()->setPosition(495, 360);
+
+	toolboxHoursInterface->GetButtonOk()->SetTag(Tag::OkHoursButtonToolbox);
+	CollisionHandler::AddCollision(toolboxHoursInterface->GetButtonOk());
+}
+
+void Program::CreatePlanksHoursInterface()
+{
+	planksHoursInterface = new HoursInterface();
+
+	planksHoursInterface->SetInterfaceText("How much time should \n	 I repair fences?");
+	planksHoursInterface->GetInterfaceText()->setPosition(495, 360);
+
+	planksHoursInterface->GetButtonOk()->SetTag(Tag::OkHoursButtonPlanks);
+	CollisionHandler::AddCollision(planksHoursInterface->GetButtonOk());
+
+}
+
+void Program::CreateBricksHoursInterface()
+{
+	bricksHoursInterface = new HoursInterface();
+
+	bricksHoursInterface->SetInterfaceText("How much time should \n	 I repair house?");
+	bricksHoursInterface->GetInterfaceText()->setPosition(495, 360);
+
+	bricksHoursInterface->GetButtonOk()->SetTag(Tag::OkHoursButtonBricks);
+	CollisionHandler::AddCollision(bricksHoursInterface->GetButtonOk());
+}
+
+void Program::CreateDaysTasksManager()
+{
+	dayTasksManager = new DayTasksManager(fences, car, house);
+
+	CollisionHandler::AddCollision(dayTasksManager->GetButtonClose());
+}
+
 
 void Program::NightTimeUpdate(float deltaTime)
 {
 	player->Update(deltaTime);
 
-	hud->Update(player->GetCurrentWeapon().GetCurrentAmmo(), deltaTime);
+	hud->Update(player->GetResources(), player->GetCurrentWeapon().GetCurrentAmmo(), deltaTime, player->GetCurrentWeapon());
 	timeClock->Update(deltaTime);
 
 	house->Update(deltaTime);
@@ -900,10 +1124,14 @@ void Program::DayTimeUpdate(float deltaTime)
 {	
 	player->Update(deltaTime);
 
-	hud->Update(player->GetCurrentWeapon().GetCurrentAmmo(), deltaTime);
+	hud->Update(player->GetResources(), player->GetCurrentWeapon().GetCurrentAmmo(), deltaTime, player->GetCurrentWeapon());
 	timeClock->Update(deltaTime);
 
-	UpdateHourInterfaces();
+	radio->Update(player->Graphic().getPosition(), deltaTime, sceneManager);
+
+	UpdateHourInterfaces(deltaTime);
+
+	dayTasksManager->Update();
 
 	if (sceneManager->GetIsOutsidePlayerHouse())
 	{
@@ -919,9 +1147,13 @@ void Program::DayTimeUpdate(float deltaTime)
 
 }
 
-void Program::UpdateHourInterfaces()
+void Program::UpdateHourInterfaces(float deltaTime)
 {
-	bed->GetHoursInterface()->Update();
+	bed->GetHoursInterface()->Update(player->GetResources(), deltaTime);
+	carHoursInterface->Update(player->GetResources(), deltaTime);
+	toolboxHoursInterface->Update(player->GetResources(), deltaTime);
+	planksHoursInterface->Update(player->GetResources(), deltaTime);
+	bricksHoursInterface->Update(player->GetResources(), deltaTime);
 }
 
 
@@ -936,6 +1168,22 @@ void Program::DrawEButton()
 }
 
 
+void Program::DrawHoursInterfaces()
+{
+
+	DrawBedHoursInterface();
+
+	DrawCarHoursInterface();
+
+	DrawToolboxHoursInterface();
+
+	DrawPlanksHoursInterface();
+
+	DrawBricksHoursInterface();
+
+}
+
+
 void Program::DrawBedHoursInterface()
 {
 	if (Bed::GetHoursInterface()->GetIsActive())
@@ -947,13 +1195,130 @@ void Program::DrawBedHoursInterface()
 		window->draw(Bed::GetHoursInterface()->GetButtonOk()->Graphic());
 
 		window->draw(*Bed::GetHoursInterface()->GetInterfaceText());
-
+		window->draw(*Bed::GetHoursInterface()->GetHoursSleptText());
 		window->draw(*Bed::GetHoursInterface()->GetHoursLeftText());
 		window->draw(*Bed::GetHoursInterface()->GetHoursToSpendText());
-
-
 	}
 }
+
+void Program::DrawCarHoursInterface()
+{
+	if (carHoursInterface->GetIsActive())
+	{
+		window->draw(carHoursInterface->GetBackground()->Graphic());
+		window->draw(carHoursInterface->GetButtonClose()->Graphic());
+		window->draw(carHoursInterface->GetButtonLeft()->Graphic());
+		window->draw(carHoursInterface->GetButtonRight()->Graphic());
+		window->draw(carHoursInterface->GetButtonOk()->Graphic());
+
+		window->draw(*carHoursInterface->GetInterfaceText());
+		window->draw(*carHoursInterface->GetHoursLeftText());
+		window->draw(*carHoursInterface->GetHoursToSpendText());
+	}	
+}
+
+void Program::DrawToolboxHoursInterface()
+{
+	if (toolboxHoursInterface->GetIsActive())
+	{
+		window->draw(toolboxHoursInterface->GetBackground()->Graphic());
+		window->draw(toolboxHoursInterface->GetButtonClose()->Graphic());
+		window->draw(toolboxHoursInterface->GetButtonLeft()->Graphic());
+		window->draw(toolboxHoursInterface->GetButtonRight()->Graphic());
+		window->draw(toolboxHoursInterface->GetButtonOk()->Graphic());
+
+		window->draw(*toolboxHoursInterface->GetInterfaceText());
+		window->draw(*bricksHoursInterface->GetResourcesText());
+		window->draw(*bricksHoursInterface->GetScrapCostText());
+		window->draw(*toolboxHoursInterface->GetHoursLeftText());
+		window->draw(*toolboxHoursInterface->GetHoursToSpendText());
+
+		DrawNotEnoughScrapText();
+		DrawCarHealthPercentageText();
+	}
+}
+
+void Program::DrawPlanksHoursInterface()
+{
+	if (planksHoursInterface->GetIsActive())
+	{
+		window->draw(planksHoursInterface->GetBackground()->Graphic());
+		window->draw(planksHoursInterface->GetButtonClose()->Graphic());
+		window->draw(planksHoursInterface->GetButtonLeft()->Graphic());
+		window->draw(planksHoursInterface->GetButtonRight()->Graphic());
+		window->draw(planksHoursInterface->GetButtonOk()->Graphic());
+
+		window->draw(*planksHoursInterface->GetInterfaceText());
+		window->draw(*bricksHoursInterface->GetResourcesText());
+		window->draw(*bricksHoursInterface->GetScrapCostText());
+		window->draw(*planksHoursInterface->GetHoursLeftText());
+		window->draw(*planksHoursInterface->GetHoursToSpendText());
+
+		DrawNotEnoughScrapText();
+		DrawFencesHealthPercentageText();
+	}
+}
+
+void Program::DrawBricksHoursInterface()
+{
+	if (bricksHoursInterface->GetIsActive())
+	{
+		window->draw(bricksHoursInterface->GetBackground()->Graphic());
+		window->draw(bricksHoursInterface->GetButtonClose()->Graphic());
+		window->draw(bricksHoursInterface->GetButtonLeft()->Graphic());
+		window->draw(bricksHoursInterface->GetButtonRight()->Graphic());
+		window->draw(bricksHoursInterface->GetButtonOk()->Graphic());
+
+		window->draw(*bricksHoursInterface->GetInterfaceText());
+		window->draw(*bricksHoursInterface->GetResourcesText());
+		window->draw(*bricksHoursInterface->GetScrapCostText());
+		window->draw(*bricksHoursInterface->GetHoursLeftText());
+		window->draw(*bricksHoursInterface->GetHoursToSpendText());
+
+		DrawNotEnoughScrapText();
+		DrawHouseHealthPercentageText();
+	}
+}
+
+void Program::DrawScavengeResults()
+{
+	if (dayTasksManager->GetScavengeResultsOpen())
+	{
+		window->draw(dayTasksManager->GetBackground()->Graphic());
+		window->draw(dayTasksManager->GetButtonClose()->Graphic());
+		window->draw(*dayTasksManager->GetResourcesFoundText());
+		window->draw(*dayTasksManager->GetResourcesText());
+	}
+}
+
+void Program::DrawNotEnoughScrapText()
+{
+	if (HoursInterface::GetScrapNotEnoughShowText())
+		window->draw(*HoursInterface::GetNotEnoughScrapText());
+}
+
+void Program::DrawRadioCheckText()
+{
+	if (radio->GetShowCheckText())
+		window->draw(*radio->GetCheckRadioText());
+}
+
+void Program::DrawRadioDialogueText()
+{
+	if (radio->GetShowRadioDialogueText())
+	{
+		window->draw(*radio->GetRadioDialogueText());
+	}
+}
+
+void Program::DrawListeningRadioText()
+{
+	if (radio->GetShowRadioText())
+	{
+		window->draw(*radio->GetRadioText());
+	}
+}
+
 
 
 void Program::DrawNightTime()
@@ -1077,7 +1442,7 @@ void Program::DrawFences()
 
 void Program::DrawBullets()
 {
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 35; i++)
 	{
 		if (player->GetCurrentWeapon().GetBullets()[i]->GetIsActive())
 		{
@@ -1142,6 +1507,24 @@ void Program::DrawCarHealthBar()
 	window->draw(car->GetHealthBar()->Graphic());
 }
 
+
+void Program::DrawFencesHealthPercentageText()
+{
+	window->draw(*Fence::GetPercentageText());
+}
+
+void Program::DrawCarHealthPercentageText()
+{
+	window->draw(*car->GetPercentageText());
+}
+
+void Program::DrawHouseHealthPercentageText()
+{
+	window->draw(*house->GetPercentageText());
+}
+
+
+
 void Program::DrawTimeClock()
 {
 	window->draw(timeClock->Graphic());
@@ -1159,7 +1542,10 @@ void Program::DrawAmmoText()
 
 void Program::DrawHUDBullets()
 {
-	window->draw(hud->GetAmmoHolder()->Graphic());
+	if(player->GetCurrentWeapon().GetTag() == Tag::Gun)
+		window->draw(hud->GetGunAmmoHolder()->Graphic());
+	else if (player->GetCurrentWeapon().GetTag() == Tag::Shotgun)
+		window->draw(hud->GetShotgunAmmoHolder()->Graphic());
 }
 
 void Program::DrawDate()
@@ -1167,9 +1553,26 @@ void Program::DrawDate()
 	window->draw(*timeClock->GetDateText());
 }
 
+
+
 void Program::DrawTransitionScreen()
 {
 	window->draw(sceneManager->GetBlackScreenTransition()->Graphic());
+}
+
+
+void Program::DrawEndDayText()
+{
+	if (TimeClock::GetEndDayTextOpened())
+	{
+		sceneManager->SetIsTransitioning(true);
+
+		window->draw(timeClock->GetBackground()->Graphic());
+		window->draw(timeClock->GetButtonClose()->Graphic());
+		window->draw(*timeClock->GetEndDayText());
+
+		radio->SetWasUsed(false);
+	}
 }
 
 
@@ -1184,9 +1587,10 @@ void Program::DrawDayTime()
 	{
 		DrawOutsideHouse();		
 	}
-
+		
 	DrawTimeClock();
 
+	
 	DrawHUD();
 
 	DrawDate();
@@ -1195,7 +1599,18 @@ void Program::DrawDayTime()
 
 	DrawEButton();
 
+	DrawRadioCheckText();
+
+	DrawListeningRadioText();
+
+	DrawRadioDialogueText();
+
+	DrawScavengeResults();
+
+	DrawEndDayText();
+	
 	DrawTransitionScreen();
+
 
 
 	//ACTIVAR PARA TESTEO
@@ -1260,6 +1675,15 @@ void Program::DrawOutsideHouse()
 
 	DrawCarHealthBar();
 
+	DrawCarHoursInterface();
+
+	/*DrawCarCollider();
+
+	DrawToolboxCollider();
+
+	DrawPlanksCollider();
+
+	DrawBricksCollider();*/
 	
 }
 
@@ -1314,7 +1738,6 @@ void Program::DrawBed()
 void Program::DrawRadio()
 {	
 	window->draw(radio->Graphic());		
-	window->draw(*radio->GetRadioText());
 }
 
 void Program::DrawChairs()
@@ -1348,7 +1771,28 @@ void Program::DrawDoorColliderOutside()
 	window->draw(doorColliderOutside->Graphic());
 }
 
+void Program::DrawCarCollider()
+{
+	window->draw(carCollider->Graphic());
+}
+
+void Program::DrawToolboxCollider()
+{
+	window->draw(toolboxCollider->Graphic());
+}
+
+void Program::DrawPlanksCollider()
+{
+	window->draw(planksCollider->Graphic());
+}
+
+void Program::DrawBricksCollider()
+{
+	window->draw(bricksCollider->Graphic());
+}
+
 void Program::DrawHours()
 {	
 	window->draw(*timeClock->GetTimeText());
 }
+

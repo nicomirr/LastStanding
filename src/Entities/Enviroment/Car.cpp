@@ -1,6 +1,7 @@
 #include "Car.h"
 
 bool Car::isDestroyed;
+float Car::currentHealth;
 
 Car::Car() {}
 
@@ -46,10 +47,24 @@ Car::Car(sf::Vector2f pos, sf::Vector2i animationFrameSize, std::string imageFil
 	healthBar->Graphic().scale({ 1.4f,1.4f });
 
 	sprite.setPosition(pos);
+
+	font = new sf::Font();
+	std::string fontPath = "res\\fonts\\Roboto.ttf";
+
+	font->loadFromFile(fontPath);
+
+	sf::Color* color = new sf::Color(88, 83, 74, 255);
+
+	percentageText = new sf::Text("", *font, 18);
+
+	percentageText->setPosition(480, 410);
+	percentageText->setFillColor(*color);
 }
 
 void Car::Update(float deltaTime)
 {
+	percentageText->setString("Health: " + std::to_string(healthPercentage) + "%				10% /h");
+
 	float yOffset = 20;
 	float xOffset = -5;
 
@@ -69,12 +84,23 @@ sf::FloatRect Car::GetBounds()
 	return bounds;
 }
 
+void Car::RepairCar()
+{
+	currentHealth += (maxHealth * 0.1f);
+	currentHealth = std::clamp(currentHealth, 0.0f, maxHealth);
+}
+
 void Car::ReceiveDamage(float damage)
 {
 	currentHealth -= damage;
 
 	if (currentHealth < 0)
 		currentHealth = 0;
+}
+
+void Car::GetHealthPercentage()
+{
+	healthPercentage = (currentHealth * 100) / maxHealth;
 }
 
 void Car::CarAppearance()
@@ -87,6 +113,10 @@ void Car::CarAppearance()
 	else if (currentHealth <= maxHealth * 0.5f)
 	{
 		SetCurrentAnimation("carHalfHealth");
+	}
+	else
+	{
+		SetCurrentAnimation("carFullHealth");
 	}
 }
 
@@ -119,3 +149,4 @@ void Car::HealthBarAppearance()
 	
 }
 
+//ESTADO DE AUTO DEBE AFECTAR BUSQUEDA

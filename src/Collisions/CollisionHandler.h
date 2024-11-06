@@ -6,16 +6,21 @@
 #include "../Entities/Player/Player.h"
 #include "../SceneManager/SceneManager.h"
 #include "../Entities/Enviroment/Bed.h"
+#include "../DayTasksManager/DayTasksManager.h"
+#include "../Entities/Enviroment/Radio.h"
 
 class CollisionHandler
 {
 private: 
 	static std::vector<Entity*> entities;
 	static float addSubstractHoursTimer;
+	static float okButtonTimer;
 
 public:
 	static void AddCollision(Entity* entity);
-	static void SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window);
+	static void SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window, HoursInterface* carHoursInterface,
+		HoursInterface* toolboxHoursInterface, HoursInterface* planksHoursInterface, HoursInterface* bricksHoursInterface,
+		HoursInterface* bedHoursInterface, DayTasksManager* dayTasksManager);
 	static std::vector<Entity*> GetEntities() { return entities; };
 };
 

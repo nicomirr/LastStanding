@@ -131,6 +131,8 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	//OLEADA 2
 
+	//ALGO PASA QUE TIENEN MUCHA VIDA
+
 	std::vector<Enemy*> waveTwoEnemies;
 	
 	normalZombiesIndex = 0;
@@ -154,7 +156,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveTwoMaxSpawnEnemies = 2;
 	float waveTwoMinSpawnTime = 4.5;
 	float waveTwoMaxSpawnTime = 6;
-	float waveTwoDuration = 120;
+	float waveTwoDuration = 30;
 
 	//OLEADA 3
 
@@ -191,7 +193,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveThreeMaxSpawnEnemies = 2;
 	float waveThreeMinSpawnTime = 5.5;
 	float waveThreeMaxSpawnTime = 7;
-	float waveThreeDuration = 120;
+	float waveThreeDuration = 30;
 
 	//OLEADA 4
 
@@ -224,7 +226,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveFourMaxSpawnEnemies = 2;
 	float waveFourMinSpawnTime = 5;
 	float waveFourMaxSpawnTime = 6.5;
-	float waveFourDuration = 120;
+	float waveFourDuration = 30;
 
 	//OLEADA 5
 
@@ -258,7 +260,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveFiveMaxSpawnEnemies = 3;
 	float waveFiveMinSpawnTime = 5;
 	float waveFiveMaxSpawnTime = 7;
-	float waveFiveDuration = 120;
+	float waveFiveDuration = 30;
 
 	
 
@@ -285,7 +287,7 @@ void EnemySpawner::Update(float deltaTime, sf::Vector2f playerPos)
 
 	if (!TimeClock::GetIsNight() && !TimeClock::GetIsDay())
 	{
-		sceneManager->SceneTransitionEnd(deltaTime);
+		sceneManager->SceneTransitionEndNightDayCicle(deltaTime);
 		return;
 	}
 			
@@ -312,6 +314,7 @@ void EnemySpawner::Update(float deltaTime, sf::Vector2f playerPos)
 			{
 				TimeClock::SetIsNight(false);
 				TimeClock::SetHours(12);
+				Player::ResetHoursSlept();
 
 				if (currentWaveIndex < waves.size() - 1)
 				{

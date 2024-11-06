@@ -3,15 +3,19 @@
 
 std::vector<Entity*> CollisionHandler::entities;
 float CollisionHandler::addSubstractHoursTimer;
+float CollisionHandler::okButtonTimer;
 
 void CollisionHandler::AddCollision(Entity* entity)
 {
 	entities.push_back(entity);
 }
 
-void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window)
+void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window, HoursInterface* carHoursInterface,
+	HoursInterface* toolboxHoursInterface, HoursInterface* planksHoursInterface, HoursInterface* bricksHoursInterface,
+	HoursInterface* bedHoursInterface, DayTasksManager* dayTasksManager)
 {
 	addSubstractHoursTimer += deltaTime;
+	okButtonTimer += deltaTime;
 
 	if (sceneManager->GetIsNightTimeScene())
 	{
@@ -247,6 +251,9 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 			if (addSubstractHoursTimer >= 200)
 				addSubstractHoursTimer = 0;
 
+			if (okButtonTimer >= 200)
+				okButtonTimer = 0;
+
 			float waitTime = 0.2f;
 
 			for (int j = 0; j < entities.size(); j++)
@@ -329,21 +336,186 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 					}
 
 				}
-				else if (entities[j]->GetTag() == Tag::SubstractHoursButton)
+				
+				if (entities[i]->GetTag() == Tag::OkHoursButtonPlanks)
 				{
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 					{
 						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 
-						if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 						{
-							if (addSubstractHoursTimer >= waitTime)
+							if (okButtonTimer >= waitTime)
+							{	
+								int repairCost = 50 * HoursInterface::GetHoursToSpend();
+
+								if (Player::GetResources() - repairCost >= 0)
+								{
+									sceneManager->SetIsTransitioning(true);
+									sceneManager->SetIsFenceTaskTransition(true);
+									sceneManager->SetIsTransitioningTask(true);
+
+									Player::SpendResources(50 * HoursInterface::GetHoursToSpend());
+
+									planksHoursInterface->SetIsActive(false);
+									HoursInterface::SetIsOpen(false);
+								}	
+								else
+								{
+									HoursInterface::SetScrapNotEnoughShowText(true);
+								}
+
+								okButtonTimer = 0;
+							}													
+
+						}
+					}
+				}		
+				else if (entities[i]->GetTag() == Tag::OkHoursButtonToolbox)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (okButtonTimer >= waitTime)
+							{	
+								int repairCost = 50 * HoursInterface::GetHoursToSpend();
+
+								if (Player::GetResources() - repairCost >= 0)
+								{
+									sceneManager->SetIsTransitioning(true);
+									sceneManager->SetIsToolboxTaskTransition(true);
+									sceneManager->SetIsTransitioningTask(true);
+
+									Player::SpendResources(repairCost);
+
+									toolboxHoursInterface->SetIsActive(false);
+									HoursInterface::SetIsOpen(false);
+								}	
+								else
+								{
+									HoursInterface::SetScrapNotEnoughShowText(true);
+								}
+
+								okButtonTimer = 0;
+							}
+
+						}
+					}
+				}
+				else if (entities[i]->GetTag() == Tag::OkHoursButtonBricks)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (okButtonTimer >= waitTime)
+							{      
+								int repairCost = 50 * HoursInterface::GetHoursToSpend();
+
+								if (Player::GetResources() - repairCost >= 0)
+								{
+									sceneManager->SetIsTransitioning(true);
+									sceneManager->SetIsHouseTaskTransition(true);
+									sceneManager->SetIsTransitioningTask(true);
+
+									Player::SpendResources(50 * HoursInterface::GetHoursToSpend());
+
+									bricksHoursInterface->SetIsActive(false);
+									HoursInterface::SetIsOpen(false);
+								}								
+
+								okButtonTimer = 0;
+							}
+							else
 							{
-								HoursInterface::SubstractHoursToSpend();
-								addSubstractHoursTimer = 0;
+								HoursInterface::SetScrapNotEnoughShowText(true);
 							}
 						}
 					}
+				}
+				else if (entities[i]->GetTag() == Tag::OkHoursButtonScavenge)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (okButtonTimer >= waitTime)
+							{																
+								sceneManager->SetIsTransitioning(true);
+								sceneManager->SetIsScavengeTaskTransition(true);
+								sceneManager->SetIsTransitioningTask(true);
+																
+								carHoursInterface->SetIsActive(false);
+								HoursInterface::SetIsOpen(false);
+								
+								okButtonTimer = 0;
+																
+							}
+
+						}
+					}
+				}
+				else if (entities[i]->GetTag() == Tag::OkHoursButtonSleep)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (okButtonTimer >= waitTime)
+							{
+								sceneManager->SetIsTransitioning(true);
+								sceneManager->SetIsSleepTaskTransition(true);
+								sceneManager->SetIsTransitioningTask(true);
+
+								bedHoursInterface->SetIsActive(false);
+								HoursInterface::SetIsOpen(false);
+
+								okButtonTimer = 0;
+							}
+
+						}
+					}
+				}
+
+
+				if (entities[i]->GetTag() == Tag::CloseScavengeResults)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							dayTasksManager->SetScavengeResultsOpen(false);
+						}
+					}
+
+				}
+
+
+				if (entities[i]->GetTag() == Tag::CloseEndDay)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							TimeClock::SetEndDayTextOpened(false);
+							sceneManager->SetTransitionToNight(true);
+							entities[i]->Graphic().setPosition(2000, 2000);
+						}
+					}
+
 				}
 
 				
@@ -369,12 +541,13 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::BedCollider) || (entities[j]->GetTag() == Tag::DoorColliderInside) ||
-						(entities[j]->GetTag() == Tag::RadioCollider)))
+					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::BedCollider) || 
+						(entities[j]->GetTag() == Tag::DoorColliderInside) || (entities[j]->GetTag() == Tag::RadioCollider)))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
-							static_cast<Player*>(entities[i])->EButtonOn();
+							if(!Radio::GetIsListeningRadio())
+								static_cast<Player*>(entities[i])->EButtonOn();
 						}
 					}
 
@@ -384,7 +557,21 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
-								sceneManager->SetIsTransitioningToOutside(true);
+								if (TimeClock::GetHours() > 0)
+								{
+									if (Radio::GetWasUsed())
+									{
+										sceneManager->SetIsTransitioning(true);
+
+										if (sceneManager->GetCanUseDoors())
+											sceneManager->SetIsTransitioningToOutside(true);
+									}
+									else
+									{
+										Radio::SetShowCheckText(true);
+									}
+								}						
+
 							}
 						}
 					}
@@ -395,8 +582,48 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
-								Bed::GetHoursInterface()->SetIsActive(true);
-								HoursInterface::SetIsOpen(true);
+								if (TimeClock::GetHours() > 0)
+								{
+									if (Radio::GetWasUsed())
+									{
+										Bed::GetHoursInterface()->SetIsActive(true);
+										HoursInterface::SetIsOpen(true);
+									}
+									else
+									{
+										Radio::SetShowCheckText(true);
+									}
+								}													
+								
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::RadioCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								if (!sceneManager->GetIsTransitioning())
+								{
+									if (TimeClock::GetHours() > 0)
+									{
+										if (!Radio::GetWasUsed())
+										{
+											sceneManager->SetIsTransitioning(true);
+											Radio::SetIsListeningRadio(true);
+											Radio::SetShowRadioText(true);
+										}
+										else
+										{
+											Radio::SetIsListeningRadio(true);
+										}
+									}
+									
+								}
+
+								
 							}
 						}
 					}
@@ -423,7 +650,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside))
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside || entities[j]->GetTag() == Tag::CarCollider ||
+						entities[j]->GetTag() == Tag::ToolboxCollider || entities[j]->GetTag() == Tag::PlanksCollider || entities[j]->GetTag() == Tag::BricksCollider))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
@@ -437,8 +665,76 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
-								sceneManager->SetIsTransitioning(true);
-								sceneManager->SetIsTransitioningToInside(true);
+								if (TimeClock::GetHours() > 0)
+								{
+									sceneManager->SetIsTransitioning(true);
+
+									if (sceneManager->GetCanUseDoors())
+										sceneManager->SetIsTransitioningToInside(true);
+								}
+																
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::CarCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								if (TimeClock::GetHours() > 0)
+								{
+									carHoursInterface->SetIsActive(true);
+									HoursInterface::SetIsOpen(true);
+								}								
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::ToolboxCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								if (TimeClock::GetHours() > 0)
+								{
+									toolboxHoursInterface->SetIsActive(true);
+									HoursInterface::SetIsOpen(true);
+								}
+								
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::PlanksCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								if (TimeClock::GetHours() > 0)
+								{
+									planksHoursInterface->SetIsActive(true);
+									HoursInterface::SetIsOpen(true);
+								}								
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::BricksCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								if (TimeClock::GetHours() > 0)
+								{
+									bricksHoursInterface->SetIsActive(true);
+									HoursInterface::SetIsOpen(true);
+								}
+							
 							}
 						}
 					}

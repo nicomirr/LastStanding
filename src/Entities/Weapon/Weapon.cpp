@@ -3,7 +3,7 @@
 
 Weapon::Weapon(){}
 
-Weapon::Weapon(float fireRate, float reloadTime, int capacity, sf::Vector2i animationFrameSize,
+Weapon::Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos, sf::Vector2i animationFrameSize, 
 	std::string weaponImageFilePath, sf::Vector2i weaponSpriteSheetSize, float bulletMinDamage, float bulletMaxDamage, float bulletSpeed, 
 	std::string bulletImageFilePath, sf::Vector2i bulletSpriteSheetSize, float bulletMaxPosX, float bulletMaxPosY)
 	: AnimatedEntity(animationFrameSize, weaponImageFilePath, weaponSpriteSheetSize)
@@ -13,7 +13,7 @@ Weapon::Weapon(float fireRate, float reloadTime, int capacity, sf::Vector2i anim
 	currentAmmo = this->capacity;
 	this->reloadTime = reloadTime;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 35; i++)
 	{
 		bullets.push_back(new Bullet(bulletMinDamage, bulletMaxDamage, bulletSpeed, bulletImageFilePath,
 			bulletSpriteSheetSize, bulletMaxPosX, bulletMaxPosY));
@@ -23,8 +23,8 @@ Weapon::Weapon(float fireRate, float reloadTime, int capacity, sf::Vector2i anim
 	}
 
 	sf::Vector2f graphicOrigin;
-	graphicOrigin.x = animationFrameSize.x / 2;
-	graphicOrigin.y = animationFrameSize.y / 2;
+	graphicOrigin.x = originXPos;
+	graphicOrigin.y = originYPos;
 
 	sprite.setOrigin(graphicOrigin);
 
@@ -41,7 +41,7 @@ Weapon::Weapon(float fireRate, float reloadTime, int capacity, sf::Vector2i anim
 		
 }
 
-void Weapon::Update(float deltaTime)
+void Weapon::Update(float deltaTime, int hoursSlept)
 {
 	AnimatedEntity::Update(deltaTime);
 
@@ -49,14 +49,14 @@ void Weapon::Update(float deltaTime)
 	FireTimer(deltaTime);
 	Reload(deltaTime);
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 35; i++)
 	{
-		bullets[i]->Update(deltaTime);
+		bullets[i]->Update(deltaTime, hoursSlept);
 	}
 }
 
 void Weapon::Shoot(sf::Vector2i bulletDirection)
-{	
+{		
 	if (fireTimer < fireRate) return;
 	if (currentAmmo <= 0) return;
 	if (isReloading) return;
@@ -66,7 +66,7 @@ void Weapon::Shoot(sf::Vector2i bulletDirection)
 
 	currentAmmo--;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 35; i++)
 	{
 		if (!bullets[i]->GetIsActive())
 		{
@@ -80,6 +80,33 @@ void Weapon::Shoot(sf::Vector2i bulletDirection)
 	}
 
 }
+
+void Weapon::ShootUzi(sf::Vector2i bulletDirection)
+{	
+	if (fireTimer < fireRate) return;
+	if (currentAmmo <= 0) return;
+	if (isReloading) return;
+
+	sf::Vector2f bulletTrajectory = sf::Vector2f(bulletDirection) - sprite.getPosition();
+	bulletTrajectory = VectorUtility::Normalize(bulletTrajectory);
+
+	currentAmmo--;
+
+	for (int i = 0; i < 35; i++)
+	{
+		if (!bullets[i]->GetIsActive())
+		{
+			bullets[i]->Graphic().setPosition(sprite.getPosition());
+			bullets[i]->SetBulletTrayectory(bulletTrajectory);
+			bullets[i]->SetIsActive(true);
+
+			fireTimer -= fireRate;
+			return;
+		}
+	}
+}
+
+
 
 void Weapon::Reload(float deltaTime)
 {

@@ -22,19 +22,18 @@ private:
 
 public:
 	Weapon();
-	Weapon(float fireRate, float reloadTime, int capacity, sf::Vector2i animationFrameSize,
+	Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos, sf::Vector2i animationFrameSize,
 		std::string weaponImageFilePath, sf::Vector2i weaponSpriteSheetSize,float bulletMinDamage, 
 		float bulletMaxDamage, float bulletSpeed, std::string bulletImageFilePath, 
 		sf::Vector2i bulletSpriteSheetSize,	float bulletMaxPosX, float bulletMaxPosY);
-	void Update(float deltaTime);
+	void Update(float deltaTime, int hoursSlept);
 	std::vector<Bullet*> GetBullets() { return bullets; }
 	sf::FloatRect GetBounds() override;
 	void Shoot(sf::Vector2i bulletDirection);
+	void ShootUzi(sf::Vector2i bulletDirection);
 	bool GetIsReloading() { return isReloading; }
 	void SetIsReloading(bool value) { isReloading = value; }
 	int GetCurrentAmmo() { return currentAmmo; }
-
-
 
 };
 

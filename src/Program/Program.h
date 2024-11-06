@@ -19,6 +19,7 @@
 #include "../Entities/Enviroment/Bed.h"
 #include "../Entities/Enviroment/Radio.h"
 #include "../SceneManager/SceneManager.h"
+#include "../DayTasksManager/DayTasksManager.h"
 
 
 
@@ -54,6 +55,9 @@ private:
 	BaseAreaCollider* baseAreaCollider;
 
 	Weapon* gun;
+	Weapon* shotgun;
+	Weapon* uzi;
+
 	Player* player;
 	EnemySpawner* enemySpawner;
 	
@@ -77,17 +81,28 @@ private:
 	Entity* doorColliderInside;
 	Entity* bedCollider;
 	Entity* radioCollider;
+	Entity* carCollider;
+	Entity* toolboxCollider;
+	Entity* planksCollider;
+	Entity* bricksCollider;
 
 	Entity* toolbox;
-	Entity* bricks;
 	Entity* planks;
+	Entity* bricks;
 
+	HoursInterface* carHoursInterface;
+	HoursInterface* toolboxHoursInterface;
+	HoursInterface* planksHoursInterface;
+	HoursInterface* bricksHoursInterface;
 
 	bool isProgramRunning;
 	float deltaTime;
 	sf::Clock clock;
 
 	sf::RenderWindow* window;
+
+	DayTasksManager* dayTasksManager;
+
 
 	void Initialize();
 	void DeInitialize();
@@ -130,18 +145,37 @@ private:
 	void CreatePlanksCollider();
 	void CreateBricksCollider();
 	
+	void CreateCarHoursInterface();
+	void CreateToolboxHoursInterface();
+	void CreatePlanksHoursInterface();
+	void CreateBricksHoursInterface();
 
+	void CreateDaysTasksManager();
 
-	void NightTimeUpdate(float deltaTime);
-	
+	void NightTimeUpdate(float deltaTime);	
 	void DayTimeUpdate(float deltaTime);
-	void UpdateHourInterfaces();
+
+	void UpdateHourInterfaces(float deltaTime);
 
 	
 	void DrawPlayer();
 	void DrawEButton();	
 
+	void DrawHoursInterfaces();
+
 	void DrawBedHoursInterface();
+	void DrawCarHoursInterface();
+	void DrawToolboxHoursInterface();
+	void DrawPlanksHoursInterface();
+	void DrawBricksHoursInterface();
+
+	void DrawScavengeResults();	
+
+	void DrawNotEnoughScrapText();
+
+	void DrawRadioCheckText();
+	void DrawRadioDialogueText();
+	void DrawListeningRadioText();
 
 	void DrawNightTime();
 	void DrawOutsideFloor();
@@ -158,6 +192,12 @@ private:
 	void DrawHouseHealthBar();
 	void DrawCarHealthBar();
 	
+	void DrawFencesHealthPercentageText();
+	void DrawCarHealthPercentageText();
+	void DrawHouseHealthPercentageText();
+
+
+
 	void DrawDayTime();
 	 
 	void DrawInsideHouse();
@@ -188,6 +228,9 @@ private:
 	void DrawDate();
 	
 	void DrawTransitionScreen();
+
+	void DrawEndDayText();
+		
 	
 };
 

@@ -1,0 +1,52 @@
+#pragma once
+#include "../Entities/Enviroment/Car.h"
+#include "../Entities/Enviroment/House.h"
+#include "../Entities/Enviroment/Fence.h"
+#include "../Entities/TimeClock/TimeClock.h"
+#include "../Entities/Player/Player.h"
+#include <algorithm>
+
+class DayTasksManager
+{
+private:
+
+	int weaponFindChance;
+	static bool scavengeResultsOpen;
+
+	int resourcesFound;
+
+	std::vector<Fence*> fences;
+	Car* car;
+	House* house;
+
+	Entity* background;
+	Entity* buttonClose;
+
+	sf::Font* font;
+	
+	sf::Text* resourcesFoundText;
+	sf::Text* resourcesText;
+		
+public: 
+	DayTasksManager(std::vector<Fence*> fences, Car* car, House* house);
+
+	void Update();
+
+	static bool GetScavengeResultsOpen() { return scavengeResultsOpen; }
+	static void SetScavengeResultsOpen(bool value) { scavengeResultsOpen = value; }
+
+	Entity* GetBackground() { return background; }
+	Entity* GetButtonClose() { return buttonClose; }
+
+	sf::Text* GetResourcesFoundText() { return resourcesFoundText; }
+	sf::Text* GetResourcesText() { return resourcesText; }
+
+	void RepairFences(int hours);
+	void RepairCar(int hours);
+	void RepairHouse(int hours);
+	void Scavenge(int hours);
+	void Sleep(int hours);
+
+	
+};
+

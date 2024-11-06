@@ -1,20 +1,31 @@
 #include "Player.h"
 #include "../../Program/Program.h"
 
+int Player::resources;
+int Player::hoursSlept;
+bool Player::hasShotgun;
+bool Player::hasUzi;
 
-Player::Player(float speed, Weapon* weapon, float windowWidth, float windowHeight, sf::Vector2i animationFrameSize, 
+Player::Player(float speed, Weapon* gun, Weapon* shotgun, Weapon* uzi, float windowWidth, float windowHeight, sf::Vector2i animationFrameSize,
 	std::string imageFilePath,	sf::Vector2i spriteSheetSize)
 	: AnimatedEntity(animationFrameSize, imageFilePath, spriteSheetSize)
 {	
+	resources = 150;
+
+	hoursSlept = 6;
+
 	isAlive = true;
 
 	this->speed = speed;
 
-	weapons.push_back(weapon);
+	weapons.push_back(gun);
+	weapons.push_back(shotgun);
+	weapons.push_back(uzi);
 	
 	canShoot = true;
 
 	hasShotgun = false;
+	hasUzi = false;
 
 	currentWeapon = 0;
 
@@ -58,27 +69,36 @@ Player::Player(float speed, Weapon* weapon, float windowWidth, float windowHeigh
 	
 
 	eButton->Graphic().scale(sf::Vector2f(1.6f, 1.6f));
-
-	
 	
 }
 
 void Player::Input(sf::Event event)
 {	
 	if (!isAlive) return;
+	if (HoursInterface::GetIsOpen()) return;
+	if (SceneManager::GetIsTransitioning()) return;
+	if (DayTasksManager::GetScavengeResultsOpen()) return;
 
 	Movement();
 	LookDirection();
-	FireWeapon(event);
+
+	if (GetCurrentWeapon().GetTag() != Tag::Uzi)
+		FireWeapon(event);
+	
+
 	SwitchWeapons();
 }
 
 void Player::Update(float deltaTime)
 {			
-	//std::cout << sprite.getPosition().x << std::endl;
-	//std::cout << sprite.getPosition().y << std::endl;
-
-	AnimatedEntity::Update(deltaTime);
+	/*std::cout << sprite.getPosition().x << std::endl;
+	std::cout << sprite.getPosition().y << std::endl;*/
+		
+	if (!SceneManager::GetIsTransitioning())
+	{
+		if(!HoursInterface::GetIsOpen())
+			AnimatedEntity::Update(deltaTime);
+	}
 
 	EButtonOff();
 
@@ -86,45 +106,63 @@ void Player::Update(float deltaTime)
 	eButton->Graphic().setPosition(sprite.getPosition() + eButtonOffset);
 
 	if (isAlive)
-	{
+	{		
 		if (!HoursInterface::GetIsOpen())
 		{
-			if (SceneManager::GetIsTransitionToDay())
+			if (!SceneManager::GetIsTransitioning() && !DayTasksManager::GetScavengeResultsOpen())
 			{
-				sprite.setPosition({ 461, 346 });
-				currentPos = { 461, 346 };
-				SceneManager::SetIsTransitionToDay(false);
-
-			}
-			else if (SceneManager::GetIsTransitionToInside())
-			{
-				sprite.setPosition({ 660, 511 });
-				currentPos = { 660, 511 };
-				SceneManager::SetIsTransitionToInside(false);
-			}
-			else if (SceneManager::GetIsTransitionToOutside())
-			{
-				sprite.setPosition({ 717, 413 });
-				currentPos = { 717, 413 };
-				SceneManager::SetIsTransitionToOutside(false);
+				if (GetCurrentWeapon().GetTag() == Tag::Uzi)
+					FireUzi();
 			}
 
-			if (!SceneManager::GetIsTransitioning())
+			if (!DayTasksManager::GetScavengeResultsOpen())
 			{
-				ReloadWeapon(deltaTime);
+				if (SceneManager::GetIsTransitionToDay())
+				{
+					sprite.setPosition({ 461, 346 });
+					currentPos = { 461, 346 };
+					SceneManager::SetIsTransitionToDay(false);
 
-				weapons[currentWeapon]->Update(deltaTime);
+				}
+				else if (SceneManager::GetIsTransitionToInside())
+				{
+					sprite.setPosition({ 660, 511 });
+					currentPos = { 660, 511 };
+					SceneManager::SetIsTransitionToInside(false);
+				}
+				else if (SceneManager::GetIsTransitionToOutside())
+				{
+					sprite.setPosition({ 717, 413 });
+					currentPos = { 717, 413 };
+					SceneManager::SetIsTransitionToOutside(false);
+				}
+				else if (SceneManager::GetIsTransitionToNight())
+				{	
+					sprite.setPosition({ 717, 413 });
+					currentPos = { 717, 413 };
+					SceneManager::SetIsTransitionToNight(false);
+				}
 
-				direction = VectorUtility::Normalize(direction);
-				currentPos += direction * speed * deltaTime;
-			}
+				if (!SceneManager::GetIsTransitioning())
+				{
+					ReloadWeapon(deltaTime);
+
+					weapons[currentWeapon]->Update(deltaTime, hoursSlept);
+
+					direction = VectorUtility::Normalize(direction);
+					currentPos += direction * speed * deltaTime;
+				}
+			}			
 		}
 
 		
 	}	
 
-	if(!HoursInterface::GetIsOpen())
+	if (!HoursInterface::GetIsOpen())
+	{
+		if (!DayTasksManager::GetScavengeResultsOpen())
 		WeaponPosition();
+	}
 
 	sprite.setPosition(currentPos);
 
@@ -197,16 +235,46 @@ void Player::LookDirection()
 
 void Player::WeaponPosition()
 {	
-	if (GetCurrentAnimation() == "idleRight" || GetCurrentAnimation() == "walkRight")
+	if (GetCurrentWeapon().GetTag() == Tag::Gun)
 	{
-		weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({43, 22}));
-		weapons[currentWeapon]->SetCurrentAnimation("weaponRight");
+		if (GetCurrentAnimation() == "idleRight" || GetCurrentAnimation() == "walkRight")
+		{			
+			weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({ 43, 22 }));
+			weapons[currentWeapon]->SetCurrentAnimation("weaponRight");
+		}
+		else if (GetCurrentAnimation() == "idleLeft" || GetCurrentAnimation() == "walkLeft")
+		{
+			weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({ 0, 22 }));
+			weapons[currentWeapon]->SetCurrentAnimation("weaponLeft");
+		}		
 	}
-	else if (GetCurrentAnimation() == "idleLeft" || GetCurrentAnimation() == "walkLeft")
+	else if (GetCurrentWeapon().GetTag() == Tag::Shotgun)
 	{
-		weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({ 0, 22 }));
-		weapons[currentWeapon]->SetCurrentAnimation("weaponLeft");
+		if (GetCurrentAnimation() == "idleRight" || GetCurrentAnimation() == "walkRight")
+		{								
+			weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({33, 24 }));
+			weapons[currentWeapon]->SetCurrentAnimation("weaponRight");
+		}
+		else if (GetCurrentAnimation() == "idleLeft" || GetCurrentAnimation() == "walkLeft")
+		{
+			weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({ 10, 24 }));
+			weapons[currentWeapon]->SetCurrentAnimation("weaponLeft");
+		}
 	}
+	if (GetCurrentWeapon().GetTag() == Tag::Uzi)
+	{
+		if (GetCurrentAnimation() == "idleRight" || GetCurrentAnimation() == "walkRight")
+		{
+			weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({ 43, 22 }));
+			weapons[currentWeapon]->SetCurrentAnimation("weaponRight");
+		}
+		else if (GetCurrentAnimation() == "idleLeft" || GetCurrentAnimation() == "walkLeft")
+		{
+			weapons[currentWeapon]->Graphic().setPosition(currentPos + sf::Vector2f({ 0, 22 }));
+			weapons[currentWeapon]->SetCurrentAnimation("weaponLeft");
+		}
+	}
+	
 
 }
 
@@ -214,15 +282,31 @@ void Player::FireWeapon(sf::Event event)
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		if (!canShoot) return;
-
 		sf::Vector2i bulletDirection = Program::GetMousePosition();
+		
+		
+				
+		if (!canShoot) return;		
+
 		weapons[currentWeapon]->Shoot(bulletDirection);
 		canShoot = false;
 	}
 	else if (event.type == sf::Event::MouseButtonReleased)	
 		if (event.mouseButton.button == sf::Mouse::Left)
 			canShoot = true;			
+}
+
+void Player::FireUzi()
+{
+	std::cout << "ENTRA";
+
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		sf::Vector2i bulletDirection = Program::GetMousePosition();
+		weapons[currentWeapon]->ShootUzi(bulletDirection);
+	}
+		
 }
 
 void Player::ReloadWeapon(float deltaTime)
@@ -244,6 +328,11 @@ void Player::SwitchWeapons()
 		if (!hasShotgun) return;
 		currentWeapon = 1;
 	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+	{
+		if (!hasUzi) return;
+		currentWeapon = 2;
+	}
 	
 }
 
@@ -262,6 +351,13 @@ void Player::EButtonOff()
 {
 	sf::Color color(eButton->Graphic().getColor().r, eButton->Graphic().getColor().g, eButton->Graphic().getColor().b, 0);
 	eButton->Graphic().setColor(color);
+}
+
+void Player::AddHoursSlept(int hours)
+{
+	hoursSlept += hours;
+	hoursSlept = std::clamp(hoursSlept, 0, 6);
+
 }
 
 void Player::RigidObjectCollision(float deltaTime)

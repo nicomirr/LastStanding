@@ -1,5 +1,8 @@
 #include "Fence.h"
 
+int Fence::healthPercentage;
+sf::Text* Fence::percentageText;
+
 Fence::Fence(float health, std::string fenceType, sf::Vector2f fencePos, sf::Vector2i animationFrameSize,
 	std::string imageFilePath, sf::Vector2i spriteSheetSize)
 	: AnimatedEntity(animationFrameSize, imageFilePath, spriteSheetSize)
@@ -96,10 +99,23 @@ Fence::Fence(float health, std::string fenceType, sf::Vector2f fencePos, sf::Vec
 
 	SetCurrentAnimation(fenceType);
 	sprite.setPosition(fencePos);	
+
+	font = new sf::Font();
+	std::string fontPath = "res\\fonts\\Roboto.ttf";
+
+	font->loadFromFile(fontPath);
+	sf::Color* color = new sf::Color(88, 83, 74, 255);
+
+	percentageText = new sf::Text("", *font, 18);
+
+	percentageText->setPosition(480, 410);
+	percentageText->setFillColor(*color);
 }
 
 void Fence::Update(float deltaTime)
 {
+	percentageText->setString("Health: " + std::to_string(healthPercentage) + "%				 X% /h");
+
 	FenceAppearance();
 }
 
@@ -152,6 +168,10 @@ void Fence::FenceAppearance()
 		{
 			SetCurrentAnimation("topLeftCornerDamaged");
 		}
+		else
+		{
+			SetCurrentAnimation("topLeftCorner");
+		}
 		
 	}
 	else if (fenceType == "topSide")
@@ -168,6 +188,10 @@ void Fence::FenceAppearance()
 		{
 			SetCurrentAnimation("topSideDamaged");
 		}
+		else
+		{
+			SetCurrentAnimation("topSide");
+		}
 	}
 	else if (fenceType == "topRightCorner")
 	{
@@ -183,6 +207,11 @@ void Fence::FenceAppearance()
 		{
 			SetCurrentAnimation("topRightCornerDamaged");
 		}
+		else
+		{
+			SetCurrentAnimation("topRightCorner");
+		}
+
 	}
 	else if (fenceType == "leftSide")
 	{
@@ -197,6 +226,10 @@ void Fence::FenceAppearance()
 		else if (currentHealth < maxHealth * 0.5f)
 		{
 			SetCurrentAnimation("leftSideDamaged");
+		}
+		else
+		{
+			SetCurrentAnimation("leftSide");
 		}
 	}
 	else if (fenceType == "rightSide")
@@ -213,6 +246,10 @@ void Fence::FenceAppearance()
 		{
 			SetCurrentAnimation("rightSideDamaged");
 		}
+		else
+		{
+			SetCurrentAnimation("rightSide");
+		}
 	}
 	else if (fenceType == "bottomLeftCorner")
 	{
@@ -227,6 +264,10 @@ void Fence::FenceAppearance()
 		else if (currentHealth < maxHealth * 0.5f)
 		{
 			SetCurrentAnimation("bottomLeftCornerDamaged");
+		}
+		else
+		{
+			SetCurrentAnimation("bottomLeftCorner");
 		}
 	}
 	else if (fenceType == "bottomSide")
@@ -243,6 +284,10 @@ void Fence::FenceAppearance()
 		{
 			SetCurrentAnimation("bottomSideDamaged");
 		}
+		else
+		{
+			SetCurrentAnimation("bottomSide");
+		}
 	}
 	else if (fenceType == "bottomRightCorner")
 	{
@@ -257,6 +302,10 @@ void Fence::FenceAppearance()
 		else if (currentHealth < maxHealth * 0.5f)
 		{
 			SetCurrentAnimation("bottomRightCornerDamaged");
+		}
+		else
+		{
+			SetCurrentAnimation("bottomRightCorner");
 		}
 	}
 	else if (fenceType == "door")
@@ -273,6 +322,10 @@ void Fence::FenceAppearance()
 		{
 			SetCurrentAnimation("doorDamaged");
 		}
+		else
+		{
+			SetCurrentAnimation("door");
+		}
 	}
 
 
@@ -286,6 +339,23 @@ void Fence::ReceiveDamage(float damage)
 		isFenceBroken = true;
 
 }
+
+void Fence::GetHealthPercentage(std::vector<Fence*> fences)
+{
+	int fencesMaxHealth = 0;
+	int fencesCurrentHealth = 0;
+
+	for (int i = 0; i < fences.size(); i++)
+	{
+		fencesMaxHealth += fences[i]->GetMaxHealth();
+		fencesCurrentHealth += fences[i]->GetHealth();
+	}
+
+	healthPercentage = (fencesCurrentHealth * 100) / fencesMaxHealth;	
+
+}
+
+
 
 
 

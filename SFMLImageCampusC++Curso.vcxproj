@@ -24,6 +24,7 @@
     <ClInclude Include="src\BreadthFirstSearch\PathFinder.h" />
     <ClInclude Include="src\Collisions\BaseAreaCollider.h" />
     <ClInclude Include="src\Collisions\CollisionHandler.h" />
+    <ClInclude Include="src\DayTasksManager\DayTasksManager.h" />
     <ClInclude Include="src\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\Entities\AnimationData.h" />
     <ClInclude Include="src\Entities\Enemy\Enemy.h" />
@@ -60,6 +61,7 @@
     <ClCompile Include="src\BreadthFirstSearch\Node.cpp" />
     <ClCompile Include="src\BreadthFirstSearch\PathFinder.cpp" />
     <ClCompile Include="src\Collisions\CollisionHandler.cpp" />
+    <ClCompile Include="src\DayTasksManager\DayTasksManager.cpp" />
     <ClCompile Include="src\Entities\AnimatedEntity.cpp" />
     <ClCompile Include="src\Entities\Enemy\Enemy.cpp" />
     <ClCompile Include="src\Entities\Enemy\EnemySpawner.cpp" />

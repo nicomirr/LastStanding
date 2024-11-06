@@ -2,10 +2,17 @@
 
 #include "../AnimatedEntity.h"
 #include "../HealthBar/HealthBar.h"
+#include <iomanip>
+#include <sstream>
 
 class House :  public AnimatedEntity
 {
 private:
+    int healthPercentage;
+
+    sf::Font* font;
+    sf::Text* percentageText;
+
     float maxHealth;
     float currentHealth;
     bool isDestroyed;
@@ -20,6 +27,12 @@ public:
     void Update(float deltaTme);
     sf::FloatRect GetBounds() override;
     HealthBar* GetHealthBar() { return healthBar; }
+    float GetHealth() { return currentHealth; }
+    float GetMaxHealth() { return maxHealth; }
+    void GetHealthPercentage();
     void ReceiveDamage(float damage);
+    void RepairHouse();
+
+    sf::Text* GetPercentageText() { return percentageText; }
 };
 
