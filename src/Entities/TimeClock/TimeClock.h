@@ -39,7 +39,7 @@ public:
 	TimeClock();
 	TimeClock(Entity* skyNight, std::string imageFilePath, sf::Vector2i spriteSheetSize);
 	void Update(float deltaTime);
-	int GetCurrentDay() { return day; }
+	static int GetCurrentDay() { return day; }
 	static void AddDay() { day++; }
 
 	sf::Text* GetDateText() { return dateText; }

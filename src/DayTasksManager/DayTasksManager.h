@@ -15,6 +15,9 @@ private:
 
 	int resourcesFound;
 
+	static bool showShotgunHasBeenFoundText;
+	static bool showUziHasBeenFoundText;
+
 	std::vector<Fence*> fences;
 	Car* car;
 	House* house;
@@ -26,6 +29,9 @@ private:
 	
 	sf::Text* resourcesFoundText;
 	sf::Text* resourcesText;
+
+	sf::Text* shotgunFoundText;
+	sf::Text* uziFoundText;
 		
 public: 
 	DayTasksManager(std::vector<Fence*> fences, Car* car, House* house);
@@ -40,6 +46,15 @@ public:
 
 	sf::Text* GetResourcesFoundText() { return resourcesFoundText; }
 	sf::Text* GetResourcesText() { return resourcesText; }
+
+	static bool GetShowShotgunHasBeenFoundText() { return showShotgunHasBeenFoundText; }
+	static bool GetShowUziHasBeenFoundText() { return showUziHasBeenFoundText; }
+
+	static void SetShowShotgunHasBeenFoundText(bool value) { showShotgunHasBeenFoundText = value; }
+	static void SetShowUziHasBeenFoundText(bool value) { showUziHasBeenFoundText = value; }
+
+	sf::Text* GetShotgunFoundText() { return shotgunFoundText; }
+	sf::Text* GetUziFoundText() { return uziFoundText; }
 
 	void RepairFences(int hours);
 	void RepairCar(int hours);

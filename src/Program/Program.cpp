@@ -224,7 +224,7 @@ void Program::Draw()
 
 void Program::CreateWindow()
 {
-	windowWidth = 1200;
+	windowWidth = 1200;				//1280 X 720
 	windowHeight = 880;
 
 	window = new sf::RenderWindow(sf::VideoMode(windowWidth, windowHeight), "Last Stand", sf::Style::Close);
@@ -1288,6 +1288,9 @@ void Program::DrawScavengeResults()
 		window->draw(dayTasksManager->GetButtonClose()->Graphic());
 		window->draw(*dayTasksManager->GetResourcesFoundText());
 		window->draw(*dayTasksManager->GetResourcesText());
+		
+		DrawShotgunHasBeenFoundText();
+		DrawUziHasBeenFoundText();
 	}
 }
 
@@ -1316,6 +1319,38 @@ void Program::DrawListeningRadioText()
 	if (radio->GetShowRadioText())
 	{
 		window->draw(*radio->GetRadioText());
+	}
+}
+
+void Program::DrawRadioMessageText()
+{
+	if (radio->GetShowRadioMessageText())
+	{
+		window->draw(*radio->GetRadioMessageText());
+	}
+}
+
+void Program::DrawRadioMessageDialogueText()
+{
+	if (radio->GetShowRadioMessageDialogueText())
+	{
+		window->draw(*radio->GetRadioMessageDialogueText());
+	}
+}
+
+void Program::DrawShotgunHasBeenFoundText()
+{
+	if (dayTasksManager->GetShowShotgunHasBeenFoundText())
+	{		
+		window->draw(*dayTasksManager->GetShotgunFoundText());
+	}
+}
+
+void Program::DrawUziHasBeenFoundText()
+{
+	if (dayTasksManager->GetShowUziHasBeenFoundText())
+	{
+		window->draw(*dayTasksManager->GetUziFoundText());
 	}
 }
 
@@ -1442,7 +1477,7 @@ void Program::DrawFences()
 
 void Program::DrawBullets()
 {
-	for (int i = 0; i < 35; i++)
+	for (int i = 0; i < Weapon::totalBullets; i++)
 	{
 		if (player->GetCurrentWeapon().GetBullets()[i]->GetIsActive())
 		{
@@ -1546,6 +1581,9 @@ void Program::DrawHUDBullets()
 		window->draw(hud->GetGunAmmoHolder()->Graphic());
 	else if (player->GetCurrentWeapon().GetTag() == Tag::Shotgun)
 		window->draw(hud->GetShotgunAmmoHolder()->Graphic());
+	else if (player->GetCurrentWeapon().GetTag() == Tag::Uzi)
+		window->draw(hud->GetUziAmmoHolder()->Graphic());
+
 }
 
 void Program::DrawDate()
@@ -1604,6 +1642,10 @@ void Program::DrawDayTime()
 	DrawListeningRadioText();
 
 	DrawRadioDialogueText();
+
+	DrawRadioMessageText();
+
+	DrawRadioMessageDialogueText();
 
 	DrawScavengeResults();
 

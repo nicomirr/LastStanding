@@ -1,6 +1,8 @@
 #include "DayTasksManager.h"
 
 bool DayTasksManager::scavengeResultsOpen;
+bool DayTasksManager::showShotgunHasBeenFoundText;
+bool DayTasksManager::showUziHasBeenFoundText;
 
 DayTasksManager::DayTasksManager(std::vector<Fence*> fences, Car* car, House* house)
 {
@@ -30,15 +32,23 @@ DayTasksManager::DayTasksManager(std::vector<Fence*> fences, Car* car, House* ho
 	std::string fontPath = "res\\fonts\\Pixel.otf";
 	font->loadFromFile(fontPath);
 
-	sf::Color* color = new sf::Color(88, 83, 74, 255);
+	sf::Color color = sf::Color(88, 83, 74, 255);
 
 	resourcesFoundText = new sf::Text("TEST", *font, 12);
-	resourcesFoundText->setPosition(530, 420);
-	resourcesFoundText->setFillColor(*color);
+	resourcesFoundText->setPosition(530, 410);
+	resourcesFoundText->setFillColor(color);
 		
 	resourcesText = new sf::Text("", *font, 12);
-	resourcesText->setPosition(555, 455);
-	resourcesText->setFillColor(*color);
+	resourcesText->setPosition(555, 445);
+	resourcesText->setFillColor(color);
+
+	shotgunFoundText = new sf::Text("Shotgun found", *font, 12);
+	shotgunFoundText->setPosition(535, 480);
+	shotgunFoundText->setFillColor(color);
+
+	uziFoundText = new sf::Text("Uzi found", *font, 12);
+	uziFoundText->setPosition(557, 480);
+	uziFoundText->setFillColor(color);
 
 	weaponFindChance = 10;
 }
@@ -121,7 +131,7 @@ void DayTasksManager::Scavenge(int hours)
 	int randomNum = RandomNum::RandomRange(0, 100);
 
 	if (hours <= 2)
-		weaponFindChance = 100;
+		weaponFindChance = 10;		//10
 	else if (hours <= 4)
 		weaponFindChance = 15;
 	else if (hours <= 6)
@@ -136,9 +146,16 @@ void DayTasksManager::Scavenge(int hours)
 	if (randomNum <= weaponFindChance)
 	{
 		if (!Player::GetHasShotgun())
+		{
 			Player::SetHasShotgun(true);
-		else 
+			showShotgunHasBeenFoundText = true;
+
+		}
+		else if (!Player::GetHasUzi())
+		{
 			Player::SetHasUzi(true);
+			showUziHasBeenFoundText = true;
+		}
 	}
 }
 

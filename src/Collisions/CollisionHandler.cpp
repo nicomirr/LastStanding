@@ -496,6 +496,9 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 						{
 							dayTasksManager->SetScavengeResultsOpen(false);
+							dayTasksManager->SetShowShotgunHasBeenFoundText(false);
+							dayTasksManager->SetShowUziHasBeenFoundText(false);
+
 						}
 					}
 
@@ -513,6 +516,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							TimeClock::SetEndDayTextOpened(false);
 							sceneManager->SetTransitionToNight(true);
 							entities[i]->Graphic().setPosition(2000, 2000);
+
 						}
 					}
 
@@ -559,17 +563,29 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (TimeClock::GetHours() > 0)
 								{
-									if (Radio::GetWasUsed())
+									if (TimeClock::GetCurrentDay() <= 3)
+									{
+										if (Radio::GetWasUsed())
+										{
+											sceneManager->SetIsTransitioning(true);
+
+											if (sceneManager->GetCanUseDoors())
+												sceneManager->SetIsTransitioningToOutside(true);
+										}
+										else
+										{
+											Radio::SetShowCheckText(true);
+										}
+									}
+									else
 									{
 										sceneManager->SetIsTransitioning(true);
 
 										if (sceneManager->GetCanUseDoors())
 											sceneManager->SetIsTransitioningToOutside(true);
 									}
-									else
-									{
-										Radio::SetShowCheckText(true);
-									}
+
+									
 								}						
 
 							}
@@ -584,15 +600,24 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (TimeClock::GetHours() > 0)
 								{
-									if (Radio::GetWasUsed())
+									if (TimeClock::GetCurrentDay() <= 3)
+									{
+										if (Radio::GetWasUsed())
+										{
+											Bed::GetHoursInterface()->SetIsActive(true);
+											HoursInterface::SetIsOpen(true);
+										}
+										else
+										{
+											Radio::SetShowCheckText(true);
+										}
+									}
+									else
 									{
 										Bed::GetHoursInterface()->SetIsActive(true);
 										HoursInterface::SetIsOpen(true);
 									}
-									else
-									{
-										Radio::SetShowCheckText(true);
-									}
+									
 								}													
 								
 							}
@@ -607,20 +632,43 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (!sceneManager->GetIsTransitioning())
 								{
-									if (TimeClock::GetHours() > 0)
+									if (TimeClock::GetCurrentDay() <= 2)
 									{
-										if (!Radio::GetWasUsed())
+										if (TimeClock::GetHours() > 0)
 										{
-											sceneManager->SetIsTransitioning(true);
-											Radio::SetIsListeningRadio(true);
-											Radio::SetShowRadioText(true);
+											if (!Radio::GetWasUsed())
+											{
+												sceneManager->SetIsTransitioning(true);
+												Radio::SetIsListeningRadio(true);
+												Radio::SetShowRadioText(true);
+											}
+											else
+											{
+												Radio::SetIsListeningRadio(true);
+											}
 										}
-										else
+										
+									}			
+									else if (TimeClock::GetCurrentDay() <= 3)
+									{
+										if (TimeClock::GetHours() > 0)
 										{
-											Radio::SetIsListeningRadio(true);
+											if (!Radio::GetWasUsed())
+											{
+												sceneManager->SetIsTransitioning(true);
+												Radio::SetIsListeningRadio(true);
+												Radio::SetShowRadioMessageText(true);
+											}
+											else
+											{
+												Radio::SetIsListeningRadio(true);
+											}
 										}
 									}
-									
+									else
+									{
+										Radio::SetIsListeningRadio(true);
+									}
 								}
 
 								

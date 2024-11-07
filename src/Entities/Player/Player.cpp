@@ -90,7 +90,7 @@ void Player::Input(sf::Event event)
 }
 
 void Player::Update(float deltaTime)
-{			
+{		
 	/*std::cout << sprite.getPosition().x << std::endl;
 	std::cout << sprite.getPosition().y << std::endl;*/
 		
@@ -298,9 +298,6 @@ void Player::FireWeapon(sf::Event event)
 
 void Player::FireUzi()
 {
-	std::cout << "ENTRA";
-
-
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		sf::Vector2i bulletDirection = Program::GetMousePosition();

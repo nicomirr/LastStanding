@@ -1,6 +1,8 @@
 #include "Weapon.h"
 #include "../../Program/Program.h"
 
+const int Weapon::totalBullets = 35;
+
 Weapon::Weapon(){}
 
 Weapon::Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos, sf::Vector2i animationFrameSize, 
@@ -13,7 +15,7 @@ Weapon::Weapon(float fireRate, float reloadTime, int capacity, float originXPos,
 	currentAmmo = this->capacity;
 	this->reloadTime = reloadTime;
 
-	for (int i = 0; i < 35; i++)
+	for (int i = 0; i < totalBullets; i++)	//35
 	{
 		bullets.push_back(new Bullet(bulletMinDamage, bulletMaxDamage, bulletSpeed, bulletImageFilePath,
 			bulletSpriteSheetSize, bulletMaxPosX, bulletMaxPosY));
@@ -49,7 +51,7 @@ void Weapon::Update(float deltaTime, int hoursSlept)
 	FireTimer(deltaTime);
 	Reload(deltaTime);
 
-	for (int i = 0; i < 35; i++)
+	for (int i = 0; i < totalBullets; i++)
 	{
 		bullets[i]->Update(deltaTime, hoursSlept);
 	}
@@ -66,7 +68,7 @@ void Weapon::Shoot(sf::Vector2i bulletDirection)
 
 	currentAmmo--;
 
-	for (int i = 0; i < 35; i++)
+	for (int i = 0; i < totalBullets; i++)
 	{
 		if (!bullets[i]->GetIsActive())
 		{
@@ -92,7 +94,7 @@ void Weapon::ShootUzi(sf::Vector2i bulletDirection)
 
 	currentAmmo--;
 
-	for (int i = 0; i < 35; i++)
+	for (int i = 0; i < totalBullets; i++)
 	{
 		if (!bullets[i]->GetIsActive())
 		{

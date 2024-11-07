@@ -28,17 +28,28 @@ HUD::HUD(sf::Vector2i animationFrameSize, std::string imageFilePath, sf::Vector2
 
 	sprite.setPosition(0, 805);
 
+	sf::Vector2i uziAmmoHolderAnimationFrameSize = { 58, 17 };
+	std::string uziAmmoHolderImageFilePath = "res\\textures\\HUD\\UziAmmoHolder.png";
+	sf::Vector2i uziAmmoHolderSpriteSheetSize = { 58, 357 };
+
+	uziAmmoHolder = new AmmoHolder(uziAmmoHolderAnimationFrameSize, uziAmmoHolderImageFilePath, uziAmmoHolderSpriteSheetSize);
+
+	sprite.setPosition(0, 805);
+
+
 	font = new sf::Font();
 	std::string fontPath = "res\\fonts\\Pixel.otf";
 
 	font->loadFromFile(fontPath);
 
-	sf::Color* color = new sf::Color(88, 83, 74, 255);
+	sf::Color color = sf::Color(88, 83, 74, 255);
 
 	std::string text = "Ammo";
 	ammoText = new sf::Text(text, *font, 12);
 	ammoText->setPosition(49, 852);
-	ammoText->setFillColor(*color);
+	ammoText->setFillColor(color);
+
+
 
 }
 
@@ -48,10 +59,12 @@ void HUD::Update(int resources, int currentAmmo, float deltaTime, Weapon weapon)
 
 	HUDAppearance();
 
-	if(weapon.GetTag() == Tag::Gun)
-		gunAmmoHolder->Update(currentAmmo, deltaTime);
+	if (weapon.GetTag() == Tag::Gun)
+		gunAmmoHolder->Update(weapon, currentAmmo, deltaTime);
 	else if (weapon.GetTag() == Tag::Shotgun)
-		shotgunAmmoHolder->Update(currentAmmo, deltaTime);
+		shotgunAmmoHolder->Update(weapon, currentAmmo, deltaTime);
+	else
+		uziAmmoHolder->Update(weapon, currentAmmo, deltaTime);
 }
 
 void HUD::HUDAppearance()

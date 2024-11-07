@@ -7,6 +7,7 @@
 class Weapon : public AnimatedEntity
 {
 private:
+
 	bool isActive;
 	int capacity;
 	int currentAmmo;
@@ -21,6 +22,7 @@ private:
 	void Reload(float deltaTime);
 
 public:
+	static const int totalBullets;
 	Weapon();
 	Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos, sf::Vector2i animationFrameSize,
 		std::string weaponImageFilePath, sf::Vector2i weaponSpriteSheetSize,float bulletMinDamage, 

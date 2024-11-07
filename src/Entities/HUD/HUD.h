@@ -13,6 +13,7 @@ private:
 
 	AmmoHolder* gunAmmoHolder;
 	AmmoHolder* shotgunAmmoHolder;
+	AmmoHolder* uziAmmoHolder;
 
 	sf::Font* font;
 	sf::Text* ammoText;
@@ -25,6 +26,7 @@ public:
 
 	AmmoHolder* GetGunAmmoHolder() { return gunAmmoHolder; }
 	AmmoHolder* GetShotgunAmmoHolder() { return shotgunAmmoHolder; }
+	AmmoHolder* GetUziAmmoHolder() { return uziAmmoHolder; }
 
 
 	sf::Text* GetAmmoText() { return ammoText; }

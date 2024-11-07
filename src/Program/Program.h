@@ -177,6 +177,12 @@ private:
 	void DrawRadioDialogueText();
 	void DrawListeningRadioText();
 
+	void DrawRadioMessageText();
+	void DrawRadioMessageDialogueText();
+
+	void DrawShotgunHasBeenFoundText();
+	void DrawUziHasBeenFoundText();
+
 	void DrawNightTime();
 	void DrawOutsideFloor();
 	void DrawFences();

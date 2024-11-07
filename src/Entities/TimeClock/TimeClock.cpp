@@ -1,6 +1,6 @@
 #include "TimeClock.h"
 
-int TimeClock::day = 1;
+int TimeClock::day = 3;
 bool TimeClock::isNight = true;		//true 
 bool TimeClock::isDay = false;			//false
 bool TimeClock::startClockRotation = false;
