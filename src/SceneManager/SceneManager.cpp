@@ -6,6 +6,7 @@ bool SceneManager::isTransitionToNight = false;
 bool SceneManager::isTransitionToInside = false;
 bool SceneManager::isTransitionToOutside = false;
 bool SceneManager::transitionToNight = false;
+bool SceneManager::isEnding = false;
 
 
 SceneManager::SceneManager()
@@ -24,16 +25,25 @@ SceneManager::SceneManager()
 
 	canUseDoors = true;
 
-	SetIsNightTimeSceneOn();
+	isOutsidePlayerHouse = true;
+
+	SetTitleSceneOn();
+	//SetIsNightTimeSceneOn();
 	//SetIsDayTimeSceneOn();		//Testeo
 }
 
 void SceneManager::Update(DayTasksManager* dayTasksManager, float deltaTime)
 {
+	GameOverScreen(deltaTime);
+	EndScreen(deltaTime);
+
 	SceneTransitionStart();
 	SceneTransitionToInside();
 	SceneTransitionToOutside();
 	TasksTransition(dayTasksManager);
+
+	TitleToGame();
+
 
 	if (transitionToNight)
 		SceneTransitionEndNightDayCicle(deltaTime);
@@ -118,7 +128,7 @@ void SceneManager::SceneTransitionStart()
 //CAMBIAR LUZ A OSCURIDAD
 //REINICIAR RELOJ HACIA LUNA
 void SceneManager::SceneTransitionEndNightDayCicle(float deltaTime)
-{
+{	
 	sceneTransitionEndTimer += deltaTime;
 
 	if (sceneTransitionEndTimer < sceneTransitionEndTime) return;
@@ -179,6 +189,8 @@ void SceneManager::SceneTransitionToOutside()
 {
 	if (!isTransitioningToOutside) return;
 
+	canUseDoors = false;
+
 	if (sceneTransitionProgressOutsideInsideStart < 1.0f)
 	{
 		int alpha = MathsPlus::Lerp(0, 255, sceneTransitionProgressOutsideInsideStart);
@@ -227,6 +239,7 @@ void SceneManager::SceneTransitionToOutside()
 		sceneTransitionProgressOutsideInsideEnd = 0;
 		isTransitioningToOutside = false;
 		isTransitionDone = false;
+		canUseDoors = true;
 	}
 	
 		
@@ -354,6 +367,7 @@ void SceneManager::TasksTransition(DayTasksManager* dayTaskManager)
 
 		isSleepTaskTransition = false;
 	}
+	
 
 	isTransitioning = false;
 
@@ -384,6 +398,215 @@ void SceneManager::TasksTransition(DayTasksManager* dayTaskManager)
 	}
 }
 
+void SceneManager::GameOverScreen(float deltaTime)
+{
+	if (House::GetHealth() <= 0)
+		Player::SetIsAlive(false);
 
-//PONER TEXTO EN RADIO
-//PONER TEXTO "NOT ENOUGH SCRAP"
+	if (!Player::GetIsAlive())
+	{
+		isGameOver = true;
+
+		gameOverTimer += deltaTime;
+
+		if (sceneTransitionProgressToGameOver < 1.0f && gameOverTimer > 2)
+		{
+			int alpha = MathsPlus::Lerp(0, 255, sceneTransitionProgressToGameOver);
+
+			sceneTransitionProgressToGameOver += 0.01f;
+
+			if (alpha >= 0)
+			{
+				sf::Color blackScreenColor(blackScreenTransition->Graphic().getColor().r, blackScreenTransition->Graphic().getColor().g,
+					blackScreenTransition->Graphic().getColor().b, alpha);
+
+				blackScreenTransition->Graphic().setColor(blackScreenColor);
+			}
+			
+		}
+	}
+
+}
+
+
+void SceneManager::EndScreen(float deltaTime)
+{
+	if (!isEnding) return;
+
+	endingTimer += deltaTime;
+
+	if (endingTimer < 5) return;
+
+	if (sceneTransitionEnding < 1.0f)
+	{
+		int alpha = MathsPlus::Lerp(0, 255, sceneTransitionEnding);
+
+		sceneTransitionEnding += 0.01f;
+
+		if (alpha >= 0)
+		{
+			sf::Color blackScreenColor(blackScreenTransition->Graphic().getColor().r, blackScreenTransition->Graphic().getColor().g,
+				blackScreenTransition->Graphic().getColor().b, alpha);
+
+			blackScreenTransition->Graphic().setColor(blackScreenColor);
+		}
+
+	}
+	else
+		displayEnding = true;
+
+}
+
+void SceneManager::TitleToGame()
+{
+	if (!isTransitionToGame) return;
+
+	if (sceneTransitionProgressTitleToGameStart < 1.0f)
+	{
+		int alpha = MathsPlus::Lerp(0, 255, sceneTransitionProgressTitleToGameStart);
+
+		sceneTransitionProgressTitleToGameStart += 0.01f;
+
+		if (alpha >= 0)
+		{
+			sf::Color blackScreenColor(blackScreenTransition->Graphic().getColor().r, blackScreenTransition->Graphic().getColor().g,
+				blackScreenTransition->Graphic().getColor().b, alpha);
+
+			blackScreenTransition->Graphic().setColor(blackScreenColor);
+		}
+
+	}
+
+
+	if (sceneTransitionProgressTitleToGameStart < 1.0f) return; 
+
+	if(isTransitioning)
+		isTransitionToNight = true;
+
+	isTransitioning = false;
+
+	SetIsNightTimeSceneOn();
+
+
+	if (sceneTransitionProgressTitleToGameEnd < 1.0f)
+	{
+		int alpha = MathsPlus::Lerp(255, 0, sceneTransitionProgressTitleToGameEnd);
+
+		sceneTransitionProgressTitleToGameEnd += 0.01f;
+
+
+		if (alpha <= 255)
+		{
+			sf::Color blackScreenColor(blackScreenTransition->Graphic().getColor().r, blackScreenTransition->Graphic().getColor().g,
+				blackScreenTransition->Graphic().getColor().b, alpha);
+
+			blackScreenTransition->Graphic().setColor(blackScreenColor);
+		}
+
+	}
+	else
+	{
+		sceneTransitionProgressTitleToGameStart = 0;
+		sceneTransitionProgressTitleToGameEnd = 0;
+		isTransitionToGame = false;
+	}
+}
+
+void SceneManager::ResetSceneManager()
+{	
+	endingTimer = 0;
+
+	isTransitioning = false;
+	isTransitionToDay = false;
+	isTransitionToNight = false;
+	isTransitionToInside = false;
+	isTransitionToOutside = false;
+	transitionToNight = false;
+	isEnding = false;
+	isGameOver = false;
+		
+	sceneTransitionProgressToGameOver = 0;
+	gameOverTimer = 0;
+
+	sceneTransitionEnding = 0;
+	endingTimer = 0;
+
+	isTransitionDone = false;
+	isTransitioningToInside = false;
+	isTransitioningToOutside = false;
+
+	isTransitioningTask = false;
+
+	sceneTransitionStartFinished = false;
+
+	sceneTransitionProgress = 0;
+	sceneTransitionEndTime = 0;
+	sceneTransitionEndTimeToStart = 0;
+	sceneTransitionEndTimer = 0;
+
+	sceneTransitionProgressOutsideInsideStart = 0;
+	sceneTransitionProgressOutsideInsideEnd = 0;
+
+	sceneTransitionProgressInsideStart = 0;
+	sceneTransitionProgressInsideEnd = 0;
+
+	sceneTransitionTasksProgressStart = 0;
+	sceneTransitionTasksProgressEnd = 0;
+
+	displayGoodEndingText = false;
+	displayBadEndingText = false;
+
+	displayEnding = false;
+
+	SetIsNightTimeSceneOn();
+}
+
+void SceneManager::MainMenuSceneManager()
+{
+	endingTimer = 0;
+
+	isTransitioning = false;
+	isTransitionToDay = false;
+	isTransitionToNight = false;
+	isTransitionToInside = false;
+	isTransitionToOutside = false;
+	transitionToNight = false;
+	isEnding = false;
+	isGameOver = false;
+
+	sceneTransitionProgressToGameOver = 0;
+	gameOverTimer = 0;
+
+	sceneTransitionEnding = 0;
+	endingTimer = 0;
+
+	isTransitionDone = false;
+	isTransitioningToInside = false;
+	isTransitioningToOutside = false;
+
+	isTransitioningTask = false;
+
+	sceneTransitionStartFinished = false;
+
+	sceneTransitionProgress = 0;
+	sceneTransitionEndTime = 0;
+	sceneTransitionEndTimeToStart = 0;
+	sceneTransitionEndTimer = 0;
+
+	sceneTransitionProgressOutsideInsideStart = 0;
+	sceneTransitionProgressOutsideInsideEnd = 0;
+
+	sceneTransitionProgressInsideStart = 0;
+	sceneTransitionProgressInsideEnd = 0;
+
+	sceneTransitionTasksProgressStart = 0;
+	sceneTransitionTasksProgressEnd = 0;
+
+	displayGoodEndingText = false;
+	displayBadEndingText = false;
+
+	displayEnding = false;
+
+	SetIsOutsidePlayerHouse();
+	SetTitleSceneOn();
+}

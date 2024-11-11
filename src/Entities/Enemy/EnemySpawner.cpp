@@ -5,7 +5,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	this->sceneManager = sceneManager;
 
 	currentWaveIndex = 0;
-	totalWaves = 5;
+	totalWaves = 6;
 	enemyIndex = 0;
 	//1200*880
 	float xSpawnPos = 0;
@@ -262,6 +262,41 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	float waveFiveMaxSpawnTime = 7;
 	float waveFiveDuration = 30;
 
+
+	//OLEADA 6
+
+	std::vector<Enemy*> waveSixEnemies;
+
+	normalZombiesIndex = 0;
+	kidZombiesIndex = 50;
+	fatZombiesIndex = 100;
+
+	for (int i = 0; i < totalEnemies; i++)
+	{
+		if (i > 25)
+		{
+			waveSixEnemies.push_back(enemies[fatZombiesIndex]);
+			fatZombiesIndex++;
+		}
+		else if (i > 10)
+		{
+			waveSixEnemies.push_back(enemies[kidZombiesIndex]);
+			kidZombiesIndex++;
+		}
+		else
+		{
+			waveSixEnemies.push_back(enemies[normalZombiesIndex]);
+			normalZombiesIndex++;
+		}
+	}
+
+
+	int waveSixMinSpawnEnemies = 3;
+	int waveSixMaxSpawnEnemies = 3;
+	float waveSixMinSpawnTime = 5;
+	float waveSixMaxSpawnTime = 7;
+	float waveSixDuration = 30;
+
 	
 
 	waves.push_back( new Wave({ waveOneEnemies, waveOneMinSpawnEnemies, waveOneMaxSpawnEnemies, 0, waveOneMinSpawnTime, 
@@ -279,6 +314,8 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	waves.push_back(new Wave({ waveFiveEnemies, waveFiveMinSpawnEnemies, waveFiveMaxSpawnEnemies, 0, waveFiveMinSpawnTime,
 		waveFiveMaxSpawnTime, false, waveFiveDuration }));
 	
+	waves.push_back(new Wave({ waveSixEnemies, waveSixMinSpawnEnemies, waveSixMaxSpawnEnemies, 0, waveSixMinSpawnTime,
+		waveSixMaxSpawnTime, false, waveSixDuration }));
 
 }
 
@@ -287,8 +324,14 @@ void EnemySpawner::Update(float deltaTime, sf::Vector2f playerPos)
 
 	if (!TimeClock::GetIsNight() && !TimeClock::GetIsDay())
 	{
-		sceneManager->SceneTransitionEndNightDayCicle(deltaTime);
-		return;
+		if (TimeClock::GetCurrentDay() < 6)
+		{
+			sceneManager->SceneTransitionEndNightDayCicle(deltaTime);
+			return;
+		}
+		else
+			SceneManager::SetIsEnding(true);
+		
 	}
 			
 	int activeEnemies = 0;
@@ -352,6 +395,8 @@ void EnemySpawner::Update(float deltaTime, sf::Vector2f playerPos)
 
 }
 
+
+
 void EnemySpawner::SpawnEnemy()
 {
 	int i = 0;
@@ -378,6 +423,19 @@ void EnemySpawner::SpawnEnemy()
 		}		
 	}		
 		
+}
+
+void EnemySpawner::ResetEnemySpawner()
+{
+	waveTimer = 0;
+
+	for (int j = 0; j < waves[currentWaveIndex]->enemies.size(); j++)
+	{
+		waves[currentWaveIndex]->enemies[j]->SetIsActive(false);
+	}
+
+	currentWaveIndex = 0;
+
 }
 
 //EVITAR QUE SPAWNEER EN MISMO LUGART

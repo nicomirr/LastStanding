@@ -6,6 +6,7 @@
 #include "../../BreadthFirstSearch/PathFinder.h"
 #include "../Enviroment/House.h"
 #include "../Enviroment/Car.h"
+#include "../Player/Player.h"
 
 class Enemy : public AnimatedEntity
 {

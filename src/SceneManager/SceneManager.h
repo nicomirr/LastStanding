@@ -4,6 +4,7 @@
 #include "../Entities/TimeClock/TimeClock.h"
 #include "../DayTasksManager/DayTasksManager.h"
 #include "../Entities/Time/HoursInterface.h"
+#include "../Entities/Player/Player.h"
 
 class SceneManager
 {
@@ -14,6 +15,8 @@ private:
 	bool isScavengeTaskTransition;
 	bool isSleepTaskTransition;
 
+	static bool isEnding;
+
 	static bool transitionToNight;
 
 	static bool isTransitioning;
@@ -23,28 +26,51 @@ private:
 	static bool isTransitionToInside;
 	static bool isTransitionToOutside;
 
+	bool isGameOver;
+
 	bool isTransitionDone;
 
 	bool isTransitioningToInside;
 	bool isTransitioningToOutside;
+
+	bool isTransitionToGame;
+	bool isTransitionToTitle;
 
 	bool isTransitioningTask;
 
 	bool canUseDoors;
 
 	bool sceneTransitionStartFinished;
+
 	bool isTitleScene;
 	bool isGameOverScene;
 	bool isDayTimeScene;
 	bool isNightTimeScene;
+
+	bool displayGoodEndingText;
+	bool displayBadEndingText;
+
 	bool isInsidePlayerHouse;
 	bool isOutsidePlayerHouse;
+
 	Entity* blackScreenTransition;
 
 	float sceneTransitionProgress;
 	float sceneTransitionEndTime;
 	float sceneTransitionEndTimeToStart;
 	float sceneTransitionEndTimer;
+
+	float sceneTransitionProgressTitleToGameStart;
+	float sceneTransitionProgressTitleToGameEnd;
+
+	float sceneTransitionProgressGameToTitleStart;
+	float sceneTransitionProgressGameToTitleEnd;
+
+	float sceneTransitionProgressToGameOver;
+	float gameOverTimer;
+
+	float sceneTransitionEnding;
+	float endingTimer;
 
 	float sceneTransitionProgressOutsideInsideStart;
 	float sceneTransitionProgressOutsideInsideEnd;		
@@ -54,6 +80,8 @@ private:
 
 	float sceneTransitionTasksProgressStart;
 	float sceneTransitionTasksProgressEnd;
+
+	bool displayEnding;
 
 public:
 	SceneManager();
@@ -74,7 +102,11 @@ public:
 	bool GetIsInsidePlayerHouse() { return isInsidePlayerHouse; }
 	bool GetIsOutsidePlayerHouse() { return isOutsidePlayerHouse; }
 
+	bool GetIsGameOver() { return isGameOver; }
+
 	bool GetCanUseDoors() { return canUseDoors; }
+
+	bool GetDisplayEnding() { return displayEnding; }
 
 	Entity* GetBlackScreenTransition() { return blackScreenTransition; }
 
@@ -93,10 +125,14 @@ public:
 
 	static void SetTransitionToNight(bool value) { transitionToNight = value; }
 
+	static void SetIsEnding(bool value) { isEnding = value; }
+
 	void SetIsTransitioningToInside(bool value) { isTransitioningToInside = value; }
 	void SetIsTransitioningToOutside(bool value) { isTransitioningToOutside = value; }
 
 	void SetIsTransitioningTask(bool value) { isTransitioningTask = value; }
+
+	void SetIsTransitionToGame(bool value) { isTransitionToGame = value; }
 
 	void SetTitleSceneOn();
 	void SetIsGameOverSceneOn();
@@ -113,5 +149,15 @@ public:
 	void SceneTransitionToInside();
 
 	void TasksTransition(DayTasksManager* dayTaskManager);
+
+	void GameOverScreen(float deltaTime);
+
+	void EndScreen(float deltaTime);
+
+	void TitleToGame();
+
+	void ResetSceneManager();
+
+	void MainMenuSceneManager();
 };
 

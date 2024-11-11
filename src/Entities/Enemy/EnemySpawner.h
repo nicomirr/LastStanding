@@ -16,6 +16,7 @@ private:
 	int enemyIndex;
 	float spawnTime;
 	float spawnTimer;
+
 	int spawnPositionIndex;
 	std::vector<sf::Vector2f> spawnPositions;
 	std::vector<Enemy*> enemies;
@@ -26,7 +27,7 @@ public:
 	EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, SceneManager* sceneManager);
 	void Update(float deltaTime, sf::Vector2f playerPos);
 	std::vector<Enemy*> GetEnemies() { return enemies; }
-
+	void ResetEnemySpawner();
 	
 };
 

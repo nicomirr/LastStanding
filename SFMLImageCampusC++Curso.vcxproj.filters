@@ -123,6 +123,12 @@
     <ClInclude Include="src\DayTasksManager\DayTasksManager.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="src\Entities\Enviroment\SOSSign.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entities\HUD\PopUpWindow.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -216,6 +222,12 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\DayTasksManager\DayTasksManager.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Enviroment\SOSSign.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\HUD\PopUpWindow.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

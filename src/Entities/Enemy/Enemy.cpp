@@ -115,6 +115,8 @@ void Enemy::Update(float deltaTime, sf::Vector2f playerPos)
 
 void Enemy::EnemyMovement(float deltaTime)
 {	
+	if (!Player::GetIsAlive()) return;
+
 	direction = objective - sprite.getPosition();
 
 	float distanceToObjective = GetDistanceToObjective();

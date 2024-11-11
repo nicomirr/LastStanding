@@ -14,7 +14,7 @@ private:
     sf::Text* percentageText;
 
     float maxHealth;
-    float currentHealth;
+    static float currentHealth;
     bool isDestroyed;
     HealthBar* healthBar;
     void HouseAppearance();
@@ -27,12 +27,14 @@ public:
     void Update(float deltaTme);
     sf::FloatRect GetBounds() override;
     HealthBar* GetHealthBar() { return healthBar; }
-    float GetHealth() { return currentHealth; }
+    static float GetHealth() { return currentHealth; }
     float GetMaxHealth() { return maxHealth; }
     void GetHealthPercentage();
     void ReceiveDamage(float damage);
     void RepairHouse();
 
     sf::Text* GetPercentageText() { return percentageText; }
+
+    void ResetHouse();
 };
 

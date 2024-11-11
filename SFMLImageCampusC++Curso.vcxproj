@@ -36,10 +36,12 @@
     <ClInclude Include="src\Entities\Enviroment\Fence.h" />
     <ClInclude Include="src\Entities\Enviroment\House.h" />
     <ClInclude Include="src\Entities\Enviroment\Radio.h" />
+    <ClInclude Include="src\Entities\Enviroment\SOSSign.h" />
     <ClInclude Include="src\Entities\Enviroment\Wall.h" />
     <ClInclude Include="src\Entities\HealthBar\HealthBar.h" />
     <ClInclude Include="src\Entities\HUD\AmmoHolder.h" />
     <ClInclude Include="src\Entities\HUD\HUD.h" />
+    <ClInclude Include="src\Entities\HUD\PopUpWindow.h" />
     <ClInclude Include="src\Entities\Moveable.h" />
     <ClInclude Include="src\Entities\Player\Player.h" />
     <ClInclude Include="src\Entities\Tag.h" />
@@ -71,10 +73,12 @@
     <ClCompile Include="src\Entities\Enviroment\Fence.cpp" />
     <ClCompile Include="src\Entities\Enviroment\House.cpp" />
     <ClCompile Include="src\Entities\Enviroment\Radio.cpp" />
+    <ClCompile Include="src\Entities\Enviroment\SOSSign.cpp" />
     <ClCompile Include="src\Entities\Enviroment\Wall.cpp" />
     <ClCompile Include="src\Entities\HealthBar\HealthBar.cpp" />
     <ClCompile Include="src\Entities\HUD\AmmoHolder.cpp" />
     <ClCompile Include="src\Entities\HUD\HUD.cpp" />
+    <ClCompile Include="src\Entities\HUD\PopUpWindow.cpp" />
     <ClCompile Include="src\Entities\Moveable.cpp" />
     <ClCompile Include="src\Entities\Player\Player.cpp" />
     <ClCompile Include="src\Entities\TimeClock\TimeClock.cpp" />

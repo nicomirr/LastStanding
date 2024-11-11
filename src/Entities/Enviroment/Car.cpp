@@ -149,4 +149,10 @@ void Car::HealthBarAppearance()
 	
 }
 
+void Car::ResetCar()
+{
+	currentHealth = maxHealth;
+	isDestroyed = false;
+}
+
 //ESTADO DE AUTO DEBE AFECTAR BUSQUEDA

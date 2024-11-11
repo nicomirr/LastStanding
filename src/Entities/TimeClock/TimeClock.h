@@ -40,6 +40,7 @@ public:
 	TimeClock(Entity* skyNight, std::string imageFilePath, sf::Vector2i spriteSheetSize);
 	void Update(float deltaTime);
 	static int GetCurrentDay() { return day; }
+	static void SetCurrentDay(int value) { day = value; }
 	static void AddDay() { day++; }
 
 	sf::Text* GetDateText() { return dateText; }
@@ -69,6 +70,7 @@ public:
 	
 	static void ResetClockAndLight() { resetClockAndLight = true; }
 
+	void ResetTimeClock();
 };
 
 //ADENTRO DE CARPETA RELEASE DE BIN. PARA ELLO EJECUTAR EN RELEASE

@@ -20,7 +20,8 @@
 #include "../Entities/Enviroment/Radio.h"
 #include "../SceneManager/SceneManager.h"
 #include "../DayTasksManager/DayTasksManager.h"
-
+#include "../Entities/Enviroment/SOSSign.h"
+#include "../Entities/HUD/PopUpWindow.h"
 
 
 class Program
@@ -86,14 +87,38 @@ private:
 	Entity* planksCollider;
 	Entity* bricksCollider;
 
+	Entity* bookCollider;
+	Entity* calendarCollider;
+	Entity* boardCollider;
+
 	Entity* toolbox;
 	Entity* planks;
 	Entity* bricks;
+
+	Entity* book;
+	Entity* calendar;
+	Entity* board;
+
+	PopUpWindow* carWindow;
+	PopUpWindow* bookWindow;
+	PopUpWindow* calendarWindow;
+	PopUpWindow* boardWindow;
+	PopUpWindow* bedWindow;
+	PopUpWindow* radioWindow;
+
+
+	Entity* title;
+
+	Entity* mainMenuButton;
+	Entity* exitButton;
+
 
 	HoursInterface* carHoursInterface;
 	HoursInterface* toolboxHoursInterface;
 	HoursInterface* planksHoursInterface;
 	HoursInterface* bricksHoursInterface;
+	
+	SOSSign* sosSign;
 
 	bool isProgramRunning;
 	float deltaTime;
@@ -103,6 +128,24 @@ private:
 
 	DayTasksManager* dayTasksManager;
 
+	sf::Font* font;
+
+	sf::Text* restartText;
+	sf::Text* mainMenuText;
+	sf::Text* exitText;
+
+	sf::Text* goodEndingText;
+	sf::Text* badEndingText;
+
+	bool isGoodEnding;
+	bool isBadEnding;
+
+	float gameOverTimer;
+	float endingTimer;
+
+	bool eEndingPressed;
+	
+	float toMainMenuTimer;
 
 	void Initialize();
 	void DeInitialize();
@@ -129,6 +172,7 @@ private:
 	void CreatePlanks();
 	void CreateBricks();
 	void CreateDoorColliderOutside();
+	void CreateSOSSign();
 
 	void CreateInteriorFloor();
 	void CreateInteriorWall();
@@ -137,6 +181,20 @@ private:
 	void CreateRadio();
 	void CreateChairs();
 	void CreateTable();
+
+	void CreateBook();
+	void CreateCalendar();
+	void CreateBoard();
+
+	void CreateCarWindow();
+	void CreateBookWindow();
+	void CreateCalendarWindow();
+	void CreateBoardWindow();
+	void CreateBedWindow();
+	void CreateRadioWindow();
+
+	void CreateTitle();
+
 	void CreateDoorColliderInside();
 	void CreateBedCollider();
 	void CreateRadioCollider();
@@ -144,6 +202,10 @@ private:
 	void CreateToolboxCollider();
 	void CreatePlanksCollider();
 	void CreateBricksCollider();
+
+	void CreateBookCollider();
+	void CreateCalendarCollider();
+	void CreateBoardCollider();
 	
 	void CreateCarHoursInterface();
 	void CreateToolboxHoursInterface();
@@ -152,12 +214,18 @@ private:
 
 	void CreateDaysTasksManager();
 
+	void CreateFont();
+	void CreateGameOverOptions();
+
+	void CreateEndingTexts();
+
 	void NightTimeUpdate(float deltaTime);	
 	void DayTimeUpdate(float deltaTime);
 
 	void UpdateHourInterfaces(float deltaTime);
 
-	
+	void UpdateGameOver();
+
 	void DrawPlayer();
 	void DrawEButton();	
 
@@ -168,6 +236,7 @@ private:
 	void DrawToolboxHoursInterface();
 	void DrawPlanksHoursInterface();
 	void DrawBricksHoursInterface();
+	void DrawSOSSignHoursInterface();
 
 	void DrawScavengeResults();	
 
@@ -203,7 +272,6 @@ private:
 	void DrawHouseHealthPercentageText();
 
 
-
 	void DrawDayTime();
 	 
 	void DrawInsideHouse();
@@ -217,6 +285,13 @@ private:
 	void DrawRadio();
 	void DrawChairs();
 	void DrawTable();
+
+	void DrawBook();
+	void DrawCalendar();
+	void DrawBoard();
+
+	void DrawTitle();
+		
 	void DrawDoorColliderInside();
 	void DrawBedCollider();
 	void DrawRadioCollider();		
@@ -225,6 +300,23 @@ private:
 	void DrawToolboxCollider();
 	void DrawPlanksCollider();
 	void DrawBricksCollider();
+
+	void DrawBookCollider();
+	void DrawCalendarCollider();
+	void DrawBoardCollider();
+
+	void DrawCarWindow();
+	void DrawBookWindow();
+	void DrawCalendarWindow();
+	void DrawBoardWindow();
+	void DrawBedWindow();
+	void DrawRadioWindow();
+
+	void DrawSOSSign();
+
+	void DrawGameOverText(float delaTime);
+
+	void DrawEndingText();
 
 	void DrawTimeClock();
 	void DrawHUD();
@@ -237,7 +329,12 @@ private:
 
 	void DrawEndDayText();
 		
-	
+	void Ending(float deltaTime);
+
+	void RestartGame();
+
+	void GoMainMenu();
+
 };
 
 /*

@@ -35,4 +35,5 @@ public:
     static void GetHealthPercentage(std::vector<Fence*> fences);
     static sf::Text* GetPercentageText() { return percentageText; }
 
+    void ResetFence();
 };

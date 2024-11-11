@@ -355,6 +355,12 @@ void Fence::GetHealthPercentage(std::vector<Fence*> fences)
 
 }
 
+void Fence::ResetFence()
+{
+	currentHealth = maxHealth;
+	isFenceBroken = false;
+}
+
 
 
 

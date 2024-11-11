@@ -3,9 +3,9 @@
 enum class Tag
 {
 	Player,
-	Fence, 
+	Fence,
 	Enemy,
-	Gun, 
+	Gun,
 	Shotgun,
 	Uzi,
 	Bullet,
@@ -23,11 +23,14 @@ enum class Tag
 	DoorColliderInside,
 	BedCollider,
 	RadioCollider,
-	CarCollider, 
+	CarCollider,
 	ToolboxCollider,
 	PlanksCollider,
 	BricksCollider,
-	CloseHoursInterfaceButton, 
+	BookCollider,
+	CalendarCollider,
+	BoardCollider,
+	CloseHoursInterfaceButton,
 	AddHoursButton,
 	SubstractHoursButton,
 	OkHoursButtonPlanks,
@@ -35,11 +38,16 @@ enum class Tag
 	OkHoursButtonBricks,
 	OkHoursButtonScavenge,
 	OkHoursButtonSleep,
+	OkHoursButtonSOSSign,
 	CloseScavengeResults,
 	CloseEndDay,
+	ClosePopUpWindow,
+	OkPopUpWindowCar,
+	OkPopUpWindowBed,
 	Toolbox,
 	Planks,
-	Bricks
+	Bricks,
+	SOSSign
 };
 
 /*

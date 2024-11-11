@@ -12,7 +12,9 @@ void CollisionHandler::AddCollision(Entity* entity)
 
 void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window, HoursInterface* carHoursInterface,
 	HoursInterface* toolboxHoursInterface, HoursInterface* planksHoursInterface, HoursInterface* bricksHoursInterface,
-	HoursInterface* bedHoursInterface, DayTasksManager* dayTasksManager)
+	HoursInterface* bedHoursInterface, HoursInterface* sosSignHoursInterface, DayTasksManager* dayTasksManager,
+	PopUpWindow* carWindow, PopUpWindow* bookWindow, PopUpWindow* calendarWindow, PopUpWindow* boardWindow, PopUpWindow* bedWindow,
+	PopUpWindow* radioWindow)
 {
 	addSubstractHoursTimer += deltaTime;
 	okButtonTimer += deltaTime;
@@ -244,7 +246,6 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 	else if (sceneManager->GetIsDayTimeScene())
 	{
 		sf::Vector2f relativePosition;
-
 
 		for (int i = 0; i < entities.size(); i++)
 		{
@@ -485,7 +486,40 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 				}
+				else if (entities[i]->GetTag() == Tag::OkHoursButtonSOSSign)
+				{
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 
+						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+						{
+							if (okButtonTimer >= waitTime)
+							{
+								int repairCost = 50 * HoursInterface::GetHoursToSpend();
+
+								if (Player::GetResources() - repairCost >= 0)
+								{
+									sceneManager->SetIsTransitioning(true);
+									SOSSign::BuildSOSSign();
+									sceneManager->SetIsTransitioningTask(true);
+
+									Player::SpendResources(50 * HoursInterface::GetHoursToSpend());
+
+									sosSignHoursInterface->SetIsActive(false);
+									HoursInterface::SetIsOpen(false);
+								}
+
+								okButtonTimer = 0;
+							}
+							else
+							{
+								HoursInterface::SetScrapNotEnoughShowText(true);
+							}
+						}
+					}
+				}
+				
 
 				if (entities[i]->GetTag() == Tag::CloseScavengeResults)
 				{
@@ -699,11 +733,21 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 					}
 
 					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside || entities[j]->GetTag() == Tag::CarCollider ||
-						entities[j]->GetTag() == Tag::ToolboxCollider || entities[j]->GetTag() == Tag::PlanksCollider || entities[j]->GetTag() == Tag::BricksCollider))
+						entities[j]->GetTag() == Tag::ToolboxCollider || entities[j]->GetTag() == Tag::PlanksCollider || 
+						entities[j]->GetTag() == Tag::BricksCollider))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
 							static_cast<Player*>(entities[i])->EButtonOn();
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player &&  entities[j]->GetTag() == Tag::SOSSign)
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if(!SOSSign::GetSignBuilt())
+								static_cast<Player*>(entities[i])->EButtonOn();
 						}
 					}
 
@@ -786,6 +830,27 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							}
 						}
 					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::SOSSign))
+					{
+						if (!SOSSign::GetSignBuilt())
+						{
+
+							if (entities[i]->onCollission(*entities[i], *entities[j]))
+							{
+								if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+								{
+									if (TimeClock::GetHours() > 0)
+									{
+										sosSignHoursInterface->SetIsActive(true);
+										HoursInterface::SetIsOpen(true);
+									}
+
+								}
+							}
+						}
+
+					}
 									
 				}
 
@@ -793,7 +858,278 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 		}
 		
 	}
+	else if (sceneManager->GetIsTitleScene())
+	{		
+		sf::Vector2f relativePosition;
+				
+		if (sceneManager->GetIsInsidePlayerHouse())
+		{
+			for (int i = 0; i < entities.size(); i++)
+			{
+				for (int j = 0; j < entities.size(); j++)
+				{
+					relativePosition = entities[i]->Graphic().getPosition() - entities[j]->Graphic().getPosition();
 
+					if (entities[i]->GetTag() == Tag::ClosePopUpWindow)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								bedWindow->SetIsActive(false);
+								calendarWindow->SetIsActive(false);
+								boardWindow->SetIsActive(false);
+								bookWindow->SetIsActive(false);
+								radioWindow->SetIsActive(false);
+
+								PopUpWindow::SetPopUpWindowOpen(false);
+							}
+						}
+
+					}
+					else if (entities[j]->GetTag() == Tag::ClosePopUpWindow)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								bedWindow->SetIsActive(false);
+								calendarWindow->SetIsActive(false);
+								boardWindow->SetIsActive(false);
+								bookWindow->SetIsActive(false);
+								radioWindow->SetIsActive(false);
+
+								PopUpWindow::SetPopUpWindowOpen(false);
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::OkPopUpWindowBed)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								PopUpWindow::SetPopUpWindowOpen(false);
+								
+								sceneManager->SetIsTransitioning(true);
+								sceneManager->SetIsTransitionToGame(true);
+							}
+						}
+					}
+										
+					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::Wall) || (entities[j]->GetTag() == Tag::Limit) ||
+						(entities[j]->GetTag() == Tag::Bed) || (entities[j]->GetTag() == Tag::Radio) || (entities[j]->GetTag() == Tag::Chair) ||
+						(entities[j]->GetTag() == Tag::Table)))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							static_cast<Player*>(entities[i])->RigidObjectCollision(deltaTime);
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::BedCollider) || 
+						(entities[j]->GetTag() == Tag::DoorColliderInside) || (entities[j]->GetTag() == Tag::RadioCollider) || 
+						(entities[j]->GetTag() == Tag::BookCollider) ||	(entities[j]->GetTag() == Tag::CalendarCollider) ||
+						(entities[j]->GetTag() == Tag::BoardCollider)))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							static_cast<Player*>(entities[i])->EButtonOn();
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderInside))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								if (sceneManager->GetCanUseDoors())
+								{
+									sceneManager->SetIsTransitioning(true);
+									sceneManager->SetIsTransitioningToOutside(true);															
+								}
+
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::BedCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								bedWindow->SetIsActive(true);
+								PopUpWindow::SetPopUpWindowOpen(true);
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::RadioCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								radioWindow->SetIsActive(true);
+								PopUpWindow::SetPopUpWindowOpen(true);
+							}
+						}
+					}
+
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::BookCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								bookWindow->SetIsActive(true);
+								PopUpWindow::SetPopUpWindowOpen(true);
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::CalendarCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								calendarWindow->SetIsActive(true);
+								PopUpWindow::SetPopUpWindowOpen(true);
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::BoardCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{
+								boardWindow->SetIsActive(true);
+								PopUpWindow::SetPopUpWindowOpen(true);
+							}
+						}
+					}
+
+
+				}
+
+			}
+		}
+		else if (sceneManager->GetIsOutsidePlayerHouse())
+		{
+			for (int i = 0; i < entities.size(); i++)
+			{
+				for (int j = 0; j < entities.size(); j++)
+				{
+					if (entities[i]->GetTag() == Tag::ClosePopUpWindow)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								carWindow->SetIsActive(false);
+								PopUpWindow::SetPopUpWindowOpen(false);
+							}
+						}
+
+					}
+					else if (entities[j]->GetTag() == Tag::ClosePopUpWindow)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								carWindow->SetIsActive(false);	
+								PopUpWindow::SetPopUpWindowOpen(false);
+							}
+						}
+					}
+
+
+					if (entities[i]->GetTag() == Tag::OkPopUpWindowCar)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+							{							
+								exit(0);
+							}
+						}
+					}
+
+					relativePosition = entities[i]->Graphic().getPosition() - entities[j]->Graphic().getPosition();
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::Fence ||
+						entities[j]->GetTag() == Tag::Car || entities[j]->GetTag() == Tag::House))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							static_cast<Player*>(entities[i])->RigidObjectCollision(deltaTime);
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside || entities[j]->GetTag() == Tag::CarCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							static_cast<Player*>(entities[i])->EButtonOn();
+						}
+					}
+										
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{		
+								if (sceneManager->GetCanUseDoors())
+								{
+									sceneManager->SetIsTransitioning(true);
+									sceneManager->SetIsTransitioningToInside(true);
+
+								}
+																								
+							}
+						}
+					}
+
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::CarCollider))
+					{
+						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						{
+							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+							{								
+								carWindow->SetIsActive(true);
+								PopUpWindow::SetPopUpWindowOpen(true);
+							}
+						}
+					}
+									
+				}
+
+			}
+		}
+		
+				
+	}
 	
 }
 

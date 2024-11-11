@@ -1,5 +1,7 @@
 #include "House.h"
 
+float House::currentHealth;
+
 House::House(){}
 
 House::House(sf::Vector2f pos, sf::Vector2i animationFrameSize, std::string imageFilePath, sf::Vector2i spriteSheetSize) :
@@ -95,6 +97,7 @@ void House::RepairHouse()
 	currentHealth = std::clamp(currentHealth, 0.0f, maxHealth);
 }
 
+
 void House::GetHealthPercentage() 
 {
 	healthPercentage = (currentHealth * 100) / maxHealth;	
@@ -148,4 +151,11 @@ void House::HealthBarAppearance()
 		healthBar->SetCurrentAnimation("fullBar");
 	}
 	
+}
+
+void House::ResetHouse()
+{
+	currentHealth = maxHealth;
+	isDestroyed = false;
+
 }

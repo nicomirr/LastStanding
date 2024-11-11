@@ -43,5 +43,7 @@ public:
     void GetHealthPercentage();
 
     sf::Text* GetPercentageText() { return percentageText; }
+
+    void ResetCar();
 };
 

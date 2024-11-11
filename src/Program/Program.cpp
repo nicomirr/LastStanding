@@ -69,6 +69,12 @@ void Program::Initialize()
 
 	CreateTable();
 
+	CreateBook();
+
+	CreateCalendar();
+
+	CreateBoard();
+
 	CreateDoorColliderInside();
 
 	CreateBedCollider();
@@ -77,13 +83,23 @@ void Program::Initialize()
 
 	CreateDoorColliderOutside();
 
+	CreateSOSSign();
+
+	CreateTitle();
+
 	CreateCarCollider();
-	
+
 	CreateToolboxCollider();
 
 	CreatePlanksCollider();
 
 	CreateBricksCollider();
+
+	CreateBookCollider();
+
+	CreateCalendarCollider();
+
+	CreateBoardCollider();
 
 	CreateCarHoursInterface();
 
@@ -95,6 +111,24 @@ void Program::Initialize()
 
 	CreateDaysTasksManager();
 
+	CreateCarWindow();
+
+	CreateBookWindow();
+
+	CreateCalendarWindow();
+
+	CreateBoardWindow();
+
+	CreateBedWindow();
+
+	CreateRadioWindow();
+
+	CreateFont();
+
+	CreateGameOverOptions();
+
+	CreateEndingTexts();
+
 	for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
 	{
 		node->second->SetNodeState(CollisionHandler::GetEntities(), node->second);
@@ -104,7 +138,6 @@ void Program::Initialize()
 	{
 		node->second->Update(CollisionHandler::GetEntities(), node->second);
 	}
-
 
 	//pathfinder->GetNewPath();
 
@@ -174,14 +207,31 @@ void Program::Update()
 	{
 		DayTimeUpdate(deltaTime);
 	}
+	else if (sceneManager->GetIsTitleScene())
+	{
+		for (int i = 0; i < fences.size(); i++)
+		{
+			fences[i]->Update(deltaTime);
+		}
 
+		house->Update(deltaTime);
+
+		car->Update(deltaTime);
+
+		player->Update(deltaTime);
+	}
 	/*for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
 	{
 		node->second->Update(CollisionHandler::GetEntities(), node->second);				
 	}*/
 		
+	Ending(deltaTime);
+
+	if (sceneManager->GetIsGameOver())
+		UpdateGameOver();
+
 	CollisionHandler::SolveCollisions(deltaTime, sceneManager, window, carHoursInterface, toolboxHoursInterface, planksHoursInterface, bricksHoursInterface,
-		bed->GetHoursInterface(), dayTasksManager);	
+		bed->GetHoursInterface(), sosSign->GetHoursInterface(), dayTasksManager, carWindow, bookWindow, calendarWindow, boardWindow, bedWindow, radioWindow);	
 
 }
 
@@ -195,27 +245,81 @@ void Program::Draw()
 	if (sceneManager->GetIsNightTimeScene())
 	{
 		DrawNightTime();
+		DrawHoursInterfaces();
+		window->draw(timeClock->GetButtonClose()->Graphic());
+
 	}
 	else if (sceneManager->GetIsDayTimeScene())
 	{
 		DrawDayTime();
+		DrawHoursInterfaces();
+		window->draw(timeClock->GetButtonClose()->Graphic());
 	}
+	else if (sceneManager->GetIsTitleScene())
+	{
+		if (sceneManager->GetIsOutsidePlayerHouse())
+		{
+			DrawOutsideFloor();
 
-	DrawHoursInterfaces();
+			DrawTitle();
 
-	//DrawHours();
+			//dibujar fences
+			if (player->Graphic().getPosition().y <= 350)
+			{
+				DrawFences();
+			}
+
+			//dibujar player 
+			if (player->Graphic().getPosition().y <= 280)
+			{
+				DrawPlayer();
+			}
+
+			DrawHouse();
+
+			DrawCar();
+
+			//dibujar player 
+			if (player->Graphic().getPosition().y > 280)
+			{
+				DrawPlayer();
+			}
+
+			if (player->Graphic().getPosition().y > 350)
+			{
+				DrawFences();
+			}
+
+		}
+		else if (sceneManager->GetIsInsidePlayerHouse())
+		{
+			DrawInsideHouse();
+		}			
+			
+		DrawEButton();
+				
+		DrawCarWindow();
+
+		DrawBookWindow();
+
+		DrawCalendarWindow();
+
+		DrawBoardWindow();
+
+		DrawBedWindow();
+
+		DrawRadioWindow();
+		
+		DrawTransitionScreen();
+				
+
+	}
+	
+	DrawEndingText();
 
 	//window->draw(baseAreaCollider->Graphic());
 
-	//for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
-	//{
-	//	window->draw(node->second->Graphic());
-	//}
-	
-
-	
-	window->draw(timeClock->GetButtonClose()->Graphic());
-	
+	DrawGameOverText(deltaTime);
 
 	window->display();
 }
@@ -227,7 +331,7 @@ void Program::CreateWindow()
 	windowWidth = 1200;				//1280 X 720
 	windowHeight = 880;
 
-	window = new sf::RenderWindow(sf::VideoMode(windowWidth, windowHeight), "Last Stand", sf::Style::Close);
+	window = new sf::RenderWindow(sf::VideoMode(windowWidth, windowHeight), "Last Standing", sf::Style::Close);
 
 	window->setFramerateLimit(60);
 }
@@ -739,6 +843,37 @@ void Program::CreateDoorColliderOutside()
 	CollisionHandler::AddCollision(doorColliderOutside);
 }
 
+void Program::CreateSOSSign()
+{
+	sf::Vector2f sosSignPos = { 570,345 };
+
+	sf::Vector2i sosSignAnimationFrameSize = { 97, 36 };
+	std::string sosSignFilePath = "res\\textures\\enviroment\\SOSSign.png";
+	sf::Vector2i sosSignSpriteSheetSize = { 97, 72 };
+
+
+	sosSign = new SOSSign(sosSignAnimationFrameSize, sosSignFilePath, sosSignSpriteSheetSize);
+	sosSign->SetTag(Tag::SOSSign);
+
+	sosSign->Graphic().setPosition(sosSignPos);
+
+	sosSign->Graphic().setOrigin(sosSignAnimationFrameSize.x, sosSignAnimationFrameSize.y);
+
+	sosSign->Graphic().setScale({ 2.3, 1.8 });
+
+	sosSign->GetHoursInterface()->GetInterfaceText()->setPosition(495, 370);
+
+	sosSign->GetHoursInterface()->GetResourcesText()->setPosition(485, 450);
+
+	sosSign->GetHoursInterface()->GetScrapCostText()->setPosition(604, 450);
+
+	sosSign->GetHoursInterface()->GetHoursLeftText()->setPosition(537, 477);
+
+	sosSign->GetScrapNeededText()->setPosition(507, 420);
+
+	CollisionHandler::AddCollision(sosSign);
+}
+
 void Program::CreateInteriorFloor()
 {
 	std::string interiorFloorFilePath = "res\\textures\\enviroment\\interior\\WoodenFloor.png";
@@ -906,6 +1041,121 @@ void Program::CreateTable()
 
 }
 
+void Program::CreateBook()
+{
+	std::string bookFilePath = "res\\textures\\enviroment\\interior\\Book.png";
+	sf::Vector2i bookSpriteSheetSize = { 27, 17 };
+
+	book = new Entity(bookFilePath, bookSpriteSheetSize);
+
+	book->Graphic().setPosition(618, 430);
+	book->Graphic().setOrigin(14, 8);
+	book->Graphic().scale(sf::Vector2f(1.2f, 1.2f));
+
+}
+
+void Program::CreateCalendar()
+{
+	std::string calendarFilePath = "res\\textures\\enviroment\\interior\\Calendar.png";
+	sf::Vector2i calendarSpriteSheetSize = { 42, 27 };
+
+	calendar = new Entity(calendarFilePath, calendarSpriteSheetSize);
+
+	calendar->Graphic().setPosition(496, 320);
+	calendar->Graphic().setOrigin(21, 13);
+	calendar->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+
+}
+
+void Program::CreateBoard()
+{
+	std::string boardFilePath = "res\\textures\\enviroment\\interior\\Board.png";
+	sf::Vector2i boardSpriteSheetSize = { 76, 37 };
+
+	board = new Entity(boardFilePath, boardSpriteSheetSize);
+
+	board->Graphic().setPosition(575, 315);
+	board->Graphic().setOrigin(38, 18);
+	board->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+}
+
+void Program::CreateCarWindow()
+{	
+	carWindow = new PopUpWindow();
+	CollisionHandler::AddCollision(carWindow->GetButtonClose());
+
+	carWindow->GetText()->setString("Do you want to exit?");
+	carWindow->GetText()->setPosition(517, 390);
+
+	carWindow->GetOkButton()->SetTag(Tag::OkPopUpWindowCar);
+
+	CollisionHandler::AddCollision(carWindow->GetOkButton());
+	CollisionHandler::AddCollision(carWindow->GetCancelButton());
+}
+
+void Program::CreateBookWindow()
+{
+	bookWindow = new PopUpWindow();
+	CollisionHandler::AddCollision(bookWindow->GetButtonClose());	
+
+	bookWindow->GetText()->setString("TUTORIAL");
+	bookWindow->GetText()->setPosition(555, 360);
+}
+
+void Program::CreateCalendarWindow()
+{
+	calendarWindow = new PopUpWindow();
+	CollisionHandler::AddCollision(calendarWindow->GetButtonClose());
+
+	calendarWindow->GetText()->setString("SCORE");
+	calendarWindow->GetText()->setPosition(568, 360);
+}
+
+void Program::CreateBoardWindow()
+{
+	boardWindow = new PopUpWindow();
+	CollisionHandler::AddCollision(boardWindow->GetButtonClose());
+
+	boardWindow->GetText()->setString("CREDITS");
+	boardWindow->GetText()->setPosition(559, 360);
+}
+
+void Program::CreateBedWindow()
+{
+	bedWindow = new PopUpWindow();
+	CollisionHandler::AddCollision(bedWindow->GetButtonClose());
+
+	bedWindow->GetText()->setString("Do you want to play?");
+	bedWindow->GetText()->setPosition(517, 390);
+
+	bedWindow->GetOkButton()->SetTag(Tag::OkPopUpWindowBed);
+
+	CollisionHandler::AddCollision(bedWindow->GetOkButton());
+	CollisionHandler::AddCollision(bedWindow->GetCancelButton());
+}
+
+void Program::CreateRadioWindow()
+{
+	radioWindow = new PopUpWindow();
+	CollisionHandler::AddCollision(radioWindow->GetButtonClose());
+
+	radioWindow->GetText()->setString("SOUND");
+	radioWindow->GetText()->setPosition(568, 360);
+}
+
+void Program::CreateTitle()
+{
+	std::string titleFilePath = "res\\textures\\title\\Title.png";
+	sf::Vector2i titleSpriteSheetSize = { 503, 47 };
+
+	title = new Entity(titleFilePath, titleSpriteSheetSize);
+
+	title->Graphic().setPosition(620, 100);
+	title->Graphic().setOrigin(253, 23);
+	title->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+}
+
+
 void Program::CreateDoorColliderInside()
 {
 	std::string doorColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
@@ -1047,6 +1297,66 @@ void Program::CreateBricksCollider()
 	CollisionHandler::AddCollision(bricksCollider);
 }
 
+void Program::CreateBookCollider()
+{
+	std::string bookColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i bookColliderSpriteSheetSize = { 32, 32 };
+
+	bookCollider = new Entity(bookColliderFilePath, bookColliderSpriteSheetSize);
+
+	bookCollider->Graphic().setPosition(618, 450);
+	bookCollider->Graphic().setOrigin(16, 16);
+	bookCollider->Graphic().scale(sf::Vector2f(1.9f, 1.0f));
+
+	bookCollider->SetTag(Tag::BookCollider);
+
+	sf::FloatRect bookColliderBounds = bookCollider->Graphic().getGlobalBounds();
+
+	bookCollider->SetBounds(bookColliderBounds);
+
+	CollisionHandler::AddCollision(bookCollider);
+}
+
+void Program::CreateCalendarCollider()
+{
+	std::string calendarColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i calendarColliderSpriteSheetSize = { 32, 32 };
+
+	calendarCollider = new Entity(calendarColliderFilePath, calendarColliderSpriteSheetSize);
+
+	calendarCollider->Graphic().setPosition(496, 340);
+	calendarCollider->Graphic().setOrigin(16, 16);
+	calendarCollider->Graphic().scale(sf::Vector2f(0.2f, 1.0f));
+
+	calendarCollider->SetTag(Tag::CalendarCollider);
+
+	sf::FloatRect calendarColliderBounds = calendarCollider->Graphic().getGlobalBounds();
+
+	calendarCollider->SetBounds(calendarColliderBounds);
+
+	CollisionHandler::AddCollision(calendarCollider);
+}
+
+void Program::CreateBoardCollider()
+{
+	std::string boardColliderFilePath = "res\\textures\\enviroment\\interior\\Collider.png";
+	sf::Vector2i boardColliderSpriteSheetSize = { 32, 32 };
+
+	boardCollider = new Entity(boardColliderFilePath, boardColliderSpriteSheetSize);
+
+	boardCollider->Graphic().setPosition(575, 335);
+	boardCollider->Graphic().setOrigin(16, 16);
+	boardCollider->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
+
+	boardCollider->SetTag(Tag::BoardCollider);
+
+	sf::FloatRect boardColliderBounds = boardCollider->Graphic().getGlobalBounds();
+
+	boardCollider->SetBounds(boardColliderBounds);
+
+	CollisionHandler::AddCollision(boardCollider);
+}
+
 void Program::CreateCarHoursInterface()
 {
 	carHoursInterface = new HoursInterface();
@@ -1099,6 +1409,50 @@ void Program::CreateDaysTasksManager()
 	CollisionHandler::AddCollision(dayTasksManager->GetButtonClose());
 }
 
+void Program::CreateFont()
+{
+	font = new sf::Font();
+	std::string fontPath = "res\\fonts\\Roboto.ttf";
+	font->loadFromFile(fontPath);
+}
+
+void Program::CreateGameOverOptions()
+{
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	restartText = new sf::Text("Restart", *font, 12);
+	restartText->setPosition(610, 603);
+	restartText->setFillColor(color);
+
+	mainMenuText = new sf::Text("Main Menu", *font, 12);
+	mainMenuText->setPosition(600, 660);
+	mainMenuText->setFillColor(color);
+
+	exitText = new sf::Text("Exit", *font, 12);
+	exitText->setPosition(625, 720);
+	exitText->setFillColor(color);
+}
+
+void Program::CreateEndingTexts()
+{
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	goodEndingText = new sf::Text("									YOU WERE RESCUED\n\n  After building an SOS signal," 
+		" you were found by a rescue team.\n While on the chopper you learned form one of the survivors that\n"
+		"    the infection is wider than you thought. Things seems to be\n getting out  of control everywhere. For now you are safe, but who\n"
+		"								knows what comes next.\n\n									    Press 'E' to continue", *font, 35);
+	goodEndingText->setPosition(100, 290);
+	goodEndingText->setFillColor(color);
+
+	badEndingText = new sf::Text("									      YOU SURVIVED\n\n  It's been a while since the infection"
+		" started. You survived this long \n  on your own, but who knows how much more of this you can take. \n   Maybe the rescue team" 
+		"   that you missed for your last chance of\n							      survival. Just time will tell."
+		"\n\n									    Press 'E' to continue", *font, 35);
+	badEndingText->setPosition(67, 290);
+	badEndingText->setFillColor(color);
+
+}
+
 
 void Program::NightTimeUpdate(float deltaTime)
 {
@@ -1133,6 +1487,8 @@ void Program::DayTimeUpdate(float deltaTime)
 
 	dayTasksManager->Update();
 
+	sosSign->Update();
+
 	if (sceneManager->GetIsOutsidePlayerHouse())
 	{
 		house->Update(deltaTime);
@@ -1154,6 +1510,28 @@ void Program::UpdateHourInterfaces(float deltaTime)
 	toolboxHoursInterface->Update(player->GetResources(), deltaTime);
 	planksHoursInterface->Update(player->GetResources(), deltaTime);
 	bricksHoursInterface->Update(player->GetResources(), deltaTime);
+	sosSign->GetHoursInterface()->Update(player->GetResources(), deltaTime);
+}
+
+void Program::UpdateGameOver()
+{
+	sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) 
+	{		
+		if (restartText->getGlobalBounds().contains(mousePos)) 
+		{
+			RestartGame();			
+		}
+		else if (mainMenuText->getGlobalBounds().contains(mousePos))
+		{		
+			GoMainMenu();
+		}
+		else if (exitText->getGlobalBounds().contains(mousePos))
+		{
+			exit(0);
+		}
+	}
 }
 
 
@@ -1180,6 +1558,8 @@ void Program::DrawHoursInterfaces()
 	DrawPlanksHoursInterface();
 
 	DrawBricksHoursInterface();
+
+	DrawSOSSignHoursInterface();
 
 }
 
@@ -1280,6 +1660,33 @@ void Program::DrawBricksHoursInterface()
 	}
 }
 
+void Program::DrawSOSSignHoursInterface()
+{
+	if (SOSSign::GetHoursInterface()->GetIsActive())
+	{
+		window->draw(SOSSign::GetHoursInterface()->GetBackground()->Graphic());
+		window->draw(SOSSign::GetHoursInterface()->GetButtonRight()->Graphic());
+		window->draw(SOSSign::GetHoursInterface()->GetButtonLeft()->Graphic());
+		window->draw(SOSSign::GetHoursInterface()->GetButtonClose()->Graphic());
+		window->draw(SOSSign::GetHoursInterface()->GetButtonOk()->Graphic());
+
+		window->draw(*SOSSign::GetHoursInterface()->GetInterfaceText());
+		window->draw(*SOSSign::GetHoursInterface()->GetHoursLeftText());
+		window->draw(*SOSSign::GetHoursInterface()->GetHoursToSpendText());
+
+		window->draw(*sosSign->GetScrapNeededText());
+
+		window->draw(*sosSign->GetHoursInterface()->GetResourcesText());
+
+		window->draw(*sosSign->GetHoursInterface()->GetScrapCostText());
+
+		DrawNotEnoughScrapText();
+
+	}
+}
+
+
+
 void Program::DrawScavengeResults()
 {
 	if (dayTasksManager->GetScavengeResultsOpen())
@@ -1359,6 +1766,9 @@ void Program::DrawUziHasBeenFoundText()
 void Program::DrawNightTime()
 {
 	DrawOutsideFloor();
+
+	if (timeClock->GetCurrentDay() >= 5)
+		DrawSOSSign();
 
 	//dibujar fences
 	if (player->Graphic().getPosition().y <= 350)
@@ -1613,8 +2023,6 @@ void Program::DrawEndDayText()
 	}
 }
 
-
-
 void Program::DrawDayTime()
 {
 	if (sceneManager->GetIsInsidePlayerHouse())	
@@ -1680,6 +2088,9 @@ void Program::DrawOutsideHouse()
 {
 	DrawOutsideFloor();
 
+	if (timeClock->GetCurrentDay() >= 4)
+		DrawSOSSign();
+
 	//dibujar fences
 	if (player->Graphic().getPosition().y <= 350)
 	{
@@ -1735,6 +2146,10 @@ void Program::DrawPlayerInHouse()
 
 	DrawInteriorWalls();
 
+	DrawCalendar();
+
+	DrawBoard();
+
 	DrawLimits();
 
 	DrawBed();
@@ -1744,6 +2159,9 @@ void Program::DrawPlayerInHouse()
 	DrawChairs();
 
 	DrawTable();
+	
+	if(sceneManager->GetIsTitleScene())
+		DrawBook();
 
 	DrawPlayer();
 
@@ -1752,6 +2170,12 @@ void Program::DrawPlayerInHouse()
 	DrawBedCollider();
 
 	DrawRadioCollider();*/
+
+	/*DrawBookCollider();
+
+	DrawCalendarCollider();
+
+	DrawBoardCollider();*/
 }
 
 
@@ -1791,6 +2215,26 @@ void Program::DrawChairs()
 void Program::DrawTable()
 {
 	window->draw(table->Graphic());
+}
+
+void Program::DrawBook()
+{
+	window->draw(book->Graphic());
+}
+
+void Program::DrawCalendar()
+{
+	window->draw(calendar->Graphic());
+}
+
+void Program::DrawBoard()
+{
+	window->draw(board->Graphic());
+}
+
+void Program::DrawTitle()
+{
+	window->draw(title->Graphic());
 }
 
 void Program::DrawDoorColliderInside()
@@ -1833,8 +2277,241 @@ void Program::DrawBricksCollider()
 	window->draw(bricksCollider->Graphic());
 }
 
+void Program::DrawBookCollider()
+{
+	window->draw(bookCollider->Graphic());
+}
+
+void Program::DrawCalendarCollider()
+{
+	window->draw(calendarCollider->Graphic());
+}
+
+void Program::DrawBoardCollider()
+{
+	window->draw(boardCollider->Graphic());
+}
+
+void Program::DrawCarWindow()
+{
+	if (carWindow->GetIsActive())
+	{
+		window->draw(carWindow->GetBackground()->Graphic());
+		window->draw(carWindow->GetButtonClose()->Graphic());
+
+		window->draw(*carWindow->GetText());
+
+		window->draw(carWindow->GetOkButton()->Graphic());
+		window->draw(carWindow->GetCancelButton()->Graphic());
+	}
+}
+
+void Program::DrawBookWindow()
+{
+	if (bookWindow->GetIsActive())
+	{
+		window->draw(bookWindow->GetBackground()->Graphic());
+		window->draw(bookWindow->GetButtonClose()->Graphic());
+
+		window->draw(*bookWindow->GetText());
+	}
+}
+
+void Program::DrawCalendarWindow()
+{
+	if (calendarWindow->GetIsActive())
+	{
+		window->draw(calendarWindow->GetBackground()->Graphic());
+		window->draw(calendarWindow->GetButtonClose()->Graphic());
+
+		window->draw(*calendarWindow->GetText());
+	}
+}
+
+void Program::DrawBoardWindow()
+{
+	if (boardWindow->GetIsActive())
+	{
+		window->draw(boardWindow->GetBackground()->Graphic());
+		window->draw(boardWindow->GetButtonClose()->Graphic());
+
+		window->draw(*boardWindow->GetText());
+	}
+}
+
+void Program::DrawBedWindow()
+{
+	if (bedWindow->GetIsActive())
+	{
+		window->draw(bedWindow->GetBackground()->Graphic());
+		window->draw(bedWindow->GetButtonClose()->Graphic());
+
+		window->draw(*bedWindow->GetText());
+
+		window->draw(bedWindow->GetOkButton()->Graphic());
+		window->draw(bedWindow->GetCancelButton()->Graphic());
+	}
+}
+
+void Program::DrawRadioWindow()
+{
+	if (radioWindow->GetIsActive())
+	{
+		window->draw(radioWindow->GetBackground()->Graphic());
+		window->draw(radioWindow->GetButtonClose()->Graphic());
+
+		window->draw(*radioWindow->GetText());
+	}
+}
+
+void Program::DrawSOSSign()
+{	
+	window->draw(sosSign->Graphic());
+}
+
+void Program::DrawGameOverText(float delaTime)
+{	
+	if (sceneManager->GetIsGameOver())
+	{		
+		if(gameOverTimer < 5)
+		{ 
+			gameOverTimer += deltaTime;
+			restartText->setPosition(1400, 603);
+			mainMenuText->setPosition(1400, 660);
+			exitText->setPosition(1400, 720);
+		}
+
+		if (gameOverTimer >= 5)
+		{
+			restartText->setPosition(612, 603);
+			mainMenuText->setPosition(600, 660);
+			exitText->setPosition(625, 720);
+
+			window->draw(*restartText);
+			window->draw(*mainMenuText);
+			window->draw(*exitText);
+		}	
+	}
+}
+
+void Program::DrawEndingText()
+{
+	if (!eEndingPressed)
+	{
+		if (isGoodEnding)
+			window->draw(*goodEndingText);
+		else if (isBadEnding)
+			window->draw(*badEndingText);
+	}
+
+}
+
 void Program::DrawHours()
 {	
 	window->draw(*timeClock->GetTimeText());
 }
 
+void Program::Ending(float deltaTime)
+{
+	if (sceneManager->GetDisplayEnding())
+	{
+		endingTimer += deltaTime;
+
+		if (endingTimer >= 2)
+		{
+			if (SOSSign::GetSignBuilt())
+			{
+				isGoodEnding = true;
+			}
+			else
+			{
+				isBadEnding = true;
+			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+			{
+				eEndingPressed = true;
+			}
+		}
+		
+	}	
+
+	if (eEndingPressed)
+	{
+		toMainMenuTimer += deltaTime;
+
+		if (toMainMenuTimer >= 3)
+		{
+			GoMainMenu();
+		}
+	}
+}
+
+void Program::RestartGame()
+{	
+	player->ResetPlayer();
+
+	timeClock->ResetTimeClock();
+	sceneManager->ResetSceneManager();
+
+	enemySpawner->ResetEnemySpawner();
+
+	for (int i = 0; i < fences.size(); i++)
+		fences[i]->ResetFence();
+
+	house->ResetHouse();
+
+	car->ResetCar();
+
+	radio->ResetRadio();
+
+	sosSign->ResetSOSSign();
+
+	gameOverTimer = 0;		
+	endingTimer = 0;
+
+	isGoodEnding = false;
+	isBadEnding = false;
+
+	eEndingPressed = false;
+
+	toMainMenuTimer = 0;
+}
+
+void Program::GoMainMenu()
+{	
+	carWindow->SetIsActive(false);
+	bookWindow->SetIsActive(false);
+	calendarWindow->SetIsActive(false);
+	boardWindow->SetIsActive(false);
+	bedWindow->SetIsActive(false);
+	radioWindow->SetIsActive(false);
+
+	player->ResetPlayer();
+
+	timeClock->ResetTimeClock();
+	sceneManager->MainMenuSceneManager();
+
+	enemySpawner->ResetEnemySpawner();
+
+	for (int i = 0; i < fences.size(); i++)
+		fences[i]->ResetFence();
+
+	house->ResetHouse();
+
+	car->ResetCar();
+
+	radio->ResetRadio();
+
+	sosSign->ResetSOSSign();
+
+	gameOverTimer = 0;
+	endingTimer = 0;
+
+	isGoodEnding = false;
+	isBadEnding = false;
+
+	eEndingPressed = false;
+
+	toMainMenuTimer = 0;
+}

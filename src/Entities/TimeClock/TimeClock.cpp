@@ -1,6 +1,6 @@
 #include "TimeClock.h"
 
-int TimeClock::day = 3;
+int TimeClock::day = 1;
 bool TimeClock::isNight = true;		//true 
 bool TimeClock::isDay = false;			//false
 bool TimeClock::startClockRotation = false;
@@ -86,7 +86,7 @@ void TimeClock::Update(float deltaTime)
 	}
 
 	if (isDay)
-		dateText->setString("DAY " + std::to_string(day));
+		dateText->setString("MAY " + std::to_string(day));
 	else if (isNight)
 	{
 		if (resetClockAndLight)
@@ -101,13 +101,14 @@ void TimeClock::Update(float deltaTime)
 
 		}
 
-		dateText->setString("NIGHT " + std::to_string(day));
+		dateText->setString("MAY " + std::to_string(day));
 
 	}
 
 	timeText->setString("Hours left: " + std::to_string(hours));
 		
 }
+
 
 void TimeClock::ClockRotation(float deltaTime)
 {
@@ -145,6 +146,20 @@ void TimeClock::ClockRotation(float deltaTime)
 		sprite.rotate(15 * deltaTime);
 	else
 		startClockRotation = false;
+}
+
+void TimeClock::ResetTimeClock()
+{
+	day = 1;
+	isNight = true;
+	isDay = false;	
+	startClockRotation = true;
+	endDayTextOpened = false;
+	hours = 0;
+	resetClockAndLight = false;
+	endDayTextShown = false;
+	ResetClockAndLight();
+
 }
 
 

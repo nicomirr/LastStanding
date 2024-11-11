@@ -13,6 +13,8 @@
 class Player :  public AnimatedEntity, public Moveable
 {
 private:
+	static int score;
+
 	Entity* eButton;
 
 	static int resources;
@@ -20,7 +22,7 @@ private:
 	static int hoursSlept;
 
 	int yMapLimit;
-	bool isAlive;
+	static bool isAlive;
 	float speed;
 	std::vector<Weapon*> weapons;
 	bool canShoot;
@@ -61,8 +63,8 @@ public:
 	static void SetHasShotgun(bool value) { hasShotgun = true; }
 	static void SetHasUzi(bool value) { hasUzi = true; }
 
-	bool GetIsAlive() const { return isAlive; }
-	void SetIsAlive(bool value) { isAlive = value; }
+	static bool GetIsAlive() { return isAlive; }
+	static void SetIsAlive(bool value) { isAlive = value; }
 	void RigidObjectCollision(float deltaTime);
 	sf::FloatRect GetBounds() override;
 	Entity* GetEButton() { return eButton; }
@@ -70,7 +72,7 @@ public:
 	void EButtonOff();
 	void Die();
 
-
+	void ResetPlayer();
 	/*
 	0 hours = 10%
 	1 hours = 25%

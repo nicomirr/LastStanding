@@ -5,12 +5,15 @@ int Player::resources;
 int Player::hoursSlept;
 bool Player::hasShotgun;
 bool Player::hasUzi;
+bool Player::isAlive;
+
+int Player::score;
 
 Player::Player(float speed, Weapon* gun, Weapon* shotgun, Weapon* uzi, float windowWidth, float windowHeight, sf::Vector2i animationFrameSize,
 	std::string imageFilePath,	sf::Vector2i spriteSheetSize)
 	: AnimatedEntity(animationFrameSize, imageFilePath, spriteSheetSize)
 {	
-	resources = 150;
+	resources = 1500;
 
 	hoursSlept = 6;
 
@@ -78,6 +81,7 @@ void Player::Input(sf::Event event)
 	if (HoursInterface::GetIsOpen()) return;
 	if (SceneManager::GetIsTransitioning()) return;
 	if (DayTasksManager::GetScavengeResultsOpen()) return;
+	if (PopUpWindow::GetPopUpWindowOpen()) return;
 
 	Movement();
 	LookDirection();
@@ -100,6 +104,11 @@ void Player::Update(float deltaTime)
 			AnimatedEntity::Update(deltaTime);
 	}
 
+	if (SceneManager::GetIsTransitioning())
+	{
+		direction = { 0, 0 };
+	}
+
 	EButtonOff();
 
 	sf::Vector2f eButtonOffset = { 10, -25 };
@@ -107,55 +116,57 @@ void Player::Update(float deltaTime)
 
 	if (isAlive)
 	{		
-		if (!HoursInterface::GetIsOpen())
+		if (!PopUpWindow::GetPopUpWindowOpen())
 		{
-			if (!SceneManager::GetIsTransitioning() && !DayTasksManager::GetScavengeResultsOpen())
+			if (!HoursInterface::GetIsOpen())
 			{
-				if (GetCurrentWeapon().GetTag() == Tag::Uzi)
-					FireUzi();
+				if (!SceneManager::GetIsTransitioning() && !DayTasksManager::GetScavengeResultsOpen())
+				{
+					if (GetCurrentWeapon().GetTag() == Tag::Uzi)
+						FireUzi();
+				}
+
+				if (!DayTasksManager::GetScavengeResultsOpen())
+				{
+					if (SceneManager::GetIsTransitionToDay())
+					{
+						sprite.setPosition({ 461, 346 });
+						currentPos = { 461, 346 };
+						SceneManager::SetIsTransitionToDay(false);
+
+					}
+					else if (SceneManager::GetIsTransitionToInside())
+					{
+						sprite.setPosition({ 660, 511 });
+						currentPos = { 660, 511 };
+						SceneManager::SetIsTransitionToInside(false);
+					}
+					else if (SceneManager::GetIsTransitionToOutside())
+					{
+						sprite.setPosition({ 717, 413 });
+						currentPos = { 717, 413 };
+						SceneManager::SetIsTransitionToOutside(false);
+					}
+					else if (SceneManager::GetIsTransitionToNight())
+					{
+						sprite.setPosition({ 717, 413 });
+						currentPos = { 717, 413 };
+						SceneManager::SetIsTransitionToNight(false);
+					}
+					
+
+					if (!SceneManager::GetIsTransitioning())
+					{
+						ReloadWeapon(deltaTime);
+
+						weapons[currentWeapon]->Update(deltaTime, hoursSlept);
+
+						direction = VectorUtility::Normalize(direction);
+						currentPos += direction * speed * deltaTime;
+					}
+				}
 			}
-
-			if (!DayTasksManager::GetScavengeResultsOpen())
-			{
-				if (SceneManager::GetIsTransitionToDay())
-				{
-					sprite.setPosition({ 461, 346 });
-					currentPos = { 461, 346 };
-					SceneManager::SetIsTransitionToDay(false);
-
-				}
-				else if (SceneManager::GetIsTransitionToInside())
-				{
-					sprite.setPosition({ 660, 511 });
-					currentPos = { 660, 511 };
-					SceneManager::SetIsTransitionToInside(false);
-				}
-				else if (SceneManager::GetIsTransitionToOutside())
-				{
-					sprite.setPosition({ 717, 413 });
-					currentPos = { 717, 413 };
-					SceneManager::SetIsTransitionToOutside(false);
-				}
-				else if (SceneManager::GetIsTransitionToNight())
-				{	
-					sprite.setPosition({ 717, 413 });
-					currentPos = { 717, 413 };
-					SceneManager::SetIsTransitionToNight(false);
-				}
-
-				if (!SceneManager::GetIsTransitioning())
-				{
-					ReloadWeapon(deltaTime);
-
-					weapons[currentWeapon]->Update(deltaTime, hoursSlept);
-
-					direction = VectorUtility::Normalize(direction);
-					currentPos += direction * speed * deltaTime;
-				}
-			}			
-		}
-
-		
+		}	
 	}	
 
 	if (!HoursInterface::GetIsOpen())
@@ -378,6 +389,19 @@ void Player::Die()
 		SetCurrentAnimation("dieRight");	
 
 	isAlive = false;	
+
+}
+
+void Player::ResetPlayer()
+{
+	isAlive = true;
+	hasShotgun = false;
+	hasUzi = false;
+	resources = 150;
+	hoursSlept = 6;
+	currentWeapon = 0;
+
+	currentPos = sf::Vector2f{ 720,1200/ 2 - 100 };
 
 }
 

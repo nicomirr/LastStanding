@@ -28,7 +28,7 @@ Radio::Radio(std::string imageFilePath, sf::Vector2i spriteSheetSize) : Entity(i
 
 	radioMessageText->setPosition(763, 300);
 
-	radioMessageDialogueText = new sf::Text("That's two days from now", *font, 16);
+	radioMessageDialogueText = new sf::Text("That's three days from now", *font, 16);
 
 }
 
@@ -179,6 +179,7 @@ void Radio::ListenRadio(float deltaTime, SceneManager* sceneManager, sf::Vector2
 
 }
 
+
 sf::FloatRect Radio::GetBounds()
 {
 	sf::FloatRect bounds = sprite.getGlobalBounds();
@@ -187,5 +188,13 @@ sf::FloatRect Radio::GetBounds()
 
 	return bounds;
 }
+
+void Radio::ResetRadio()
+{
+	showCheckTextTimer = 0;
+	listenRadioTimer = 0;
+}
+
+
 
  //SACAR LA E AL ESCUCHAR RADIO
