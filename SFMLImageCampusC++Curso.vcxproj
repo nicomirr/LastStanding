@@ -54,6 +54,7 @@
     <ClInclude Include="src\Observer\Subject.h" />
     <ClInclude Include="src\Program\Program.h" />
     <ClInclude Include="src\SceneManager\SceneManager.h" />
+    <ClInclude Include="src\Score\Scoreboard.h" />
     <ClInclude Include="src\Utilities\RandomNum.h" />
     <ClInclude Include="src\Utilities\Vector2fHash.h" />
     <ClInclude Include="src\Utilities\VectorUtility.h" />
@@ -91,6 +92,7 @@
     <ClCompile Include="src\Observer\Subject.cpp" />
     <ClCompile Include="src\Program\Program.cpp" />
     <ClCompile Include="src\SceneManager\SceneManager.cpp" />
+    <ClCompile Include="src\Score\Scoreboard.cpp" />
     <ClCompile Include="src\Utilities\VectorUtility.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

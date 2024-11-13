@@ -129,6 +129,9 @@
     <ClInclude Include="src\Entities\HUD\PopUpWindow.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="src\Score\Scoreboard.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -228,6 +231,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\Entities\HUD\PopUpWindow.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Score\Scoreboard.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

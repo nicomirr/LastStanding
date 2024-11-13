@@ -399,8 +399,9 @@ void Enemy::TakeDamage(float damage)
 {
 	health -= damage;
 
-	if (health <= 0)
+	if (health <= 0)	
 		Die();
+	
 }
 
 void Enemy::Die()
@@ -434,6 +435,7 @@ void Enemy::Die()
 		}
 	}
 
+	Player::AddScore(25);
 	isAlive = false;
 }
 

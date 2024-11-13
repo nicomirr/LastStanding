@@ -7,13 +7,13 @@ bool Player::hasShotgun;
 bool Player::hasUzi;
 bool Player::isAlive;
 
-int Player::score;
+int Player::score = 2000;
 
 Player::Player(float speed, Weapon* gun, Weapon* shotgun, Weapon* uzi, float windowWidth, float windowHeight, sf::Vector2i animationFrameSize,
 	std::string imageFilePath,	sf::Vector2i spriteSheetSize)
 	: AnimatedEntity(animationFrameSize, imageFilePath, spriteSheetSize)
 {	
-	resources = 1500;
+	resources = 150;
 
 	hoursSlept = 6;
 
@@ -94,7 +94,7 @@ void Player::Input(sf::Event event)
 }
 
 void Player::Update(float deltaTime)
-{		
+{			
 	/*std::cout << sprite.getPosition().x << std::endl;
 	std::cout << sprite.getPosition().y << std::endl;*/
 		
@@ -400,6 +400,8 @@ void Player::ResetPlayer()
 	resources = 150;
 	hoursSlept = 6;
 	currentWeapon = 0;
+
+	score = 0;
 
 	currentPos = sf::Vector2f{ 720,1200/ 2 - 100 };
 

@@ -22,6 +22,8 @@ void Program::Initialize()
 
 	CreateSceneManager();
 
+	CreateScoreBoard();
+
 	SetCursorAppearance();
 
 	CreateWeapons();
@@ -129,6 +131,10 @@ void Program::Initialize()
 
 	CreateEndingTexts();
 
+	CreateNewHighscoreNameText();
+
+	CreateCreditsText();
+
 	for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
 	{
 		node->second->SetNodeState(CollisionHandler::GetEntities(), node->second);
@@ -230,13 +236,18 @@ void Program::Update()
 	if (sceneManager->GetIsGameOver())
 		UpdateGameOver();
 
+	InputHighScoreName();
+
 	CollisionHandler::SolveCollisions(deltaTime, sceneManager, window, carHoursInterface, toolboxHoursInterface, planksHoursInterface, bricksHoursInterface,
 		bed->GetHoursInterface(), sosSign->GetHoursInterface(), dayTasksManager, carWindow, bookWindow, calendarWindow, boardWindow, bedWindow, radioWindow);	
+
 
 }
 
 void Program::Draw()
 {
+	newHighscoreNameText->setString(newHighscoreName);
+
 	window->clear();
 	
 	float nodePosX = player->Graphic().getPosition().x + 15;
@@ -310,8 +321,9 @@ void Program::Draw()
 
 		DrawRadioWindow();
 		
-		DrawTransitionScreen();
-				
+		DrawScores();
+
+		DrawTransitionScreen();				
 
 	}
 	
@@ -320,6 +332,14 @@ void Program::Draw()
 	//window->draw(baseAreaCollider->Graphic());
 
 	DrawGameOverText(deltaTime);
+
+	DrawCreditsText();
+
+	//if(endingTimer >= 5)			//DEBE PAUSARSE LO DE E
+		
+		
+	window->draw(*newHighscoreNameText);
+
 
 	window->display();
 }
@@ -339,6 +359,11 @@ void Program::CreateWindow()
 void Program::CreateSceneManager()
 {
 	sceneManager = new SceneManager();
+}
+
+void Program::CreateScoreBoard()
+{
+	scoreboard = new Scoreboard();
 }
 
 void Program::SetCursorAppearance()
@@ -430,9 +455,6 @@ void Program::CreateWeapons()
 
 	uzi->SetTag(Tag::Uzi);
 	CollisionHandler::AddCollision(uzi);
-
-
-
 
 }
 
@@ -1061,7 +1083,7 @@ void Program::CreateCalendar()
 
 	calendar = new Entity(calendarFilePath, calendarSpriteSheetSize);
 
-	calendar->Graphic().setPosition(496, 320);
+	calendar->Graphic().setPosition(654, 320);
 	calendar->Graphic().setOrigin(21, 13);
 	calendar->Graphic().scale(sf::Vector2f(1.0f, 1.0f));
 
@@ -1107,8 +1129,8 @@ void Program::CreateCalendarWindow()
 	calendarWindow = new PopUpWindow();
 	CollisionHandler::AddCollision(calendarWindow->GetButtonClose());
 
-	calendarWindow->GetText()->setString("SCORE");
-	calendarWindow->GetText()->setPosition(568, 360);
+	calendarWindow->GetText()->setString("SCORES");
+	calendarWindow->GetText()->setPosition(566, 360);
 }
 
 void Program::CreateBoardWindow()
@@ -1117,7 +1139,7 @@ void Program::CreateBoardWindow()
 	CollisionHandler::AddCollision(boardWindow->GetButtonClose());
 
 	boardWindow->GetText()->setString("CREDITS");
-	boardWindow->GetText()->setPosition(559, 360);
+	boardWindow->GetText()->setPosition(568, 360);
 }
 
 void Program::CreateBedWindow()
@@ -1324,7 +1346,7 @@ void Program::CreateCalendarCollider()
 
 	calendarCollider = new Entity(calendarColliderFilePath, calendarColliderSpriteSheetSize);
 
-	calendarCollider->Graphic().setPosition(496, 340);
+	calendarCollider->Graphic().setPosition(654, 340);
 	calendarCollider->Graphic().setOrigin(16, 16);
 	calendarCollider->Graphic().scale(sf::Vector2f(0.2f, 1.0f));
 
@@ -1420,17 +1442,24 @@ void Program::CreateGameOverOptions()
 {
 	sf::Color color = sf::Color(88, 83, 74, 255);
 
-	restartText = new sf::Text("Restart", *font, 12);
-	restartText->setPosition(610, 603);
+	restartText = new sf::Text("Restart", *font, 20);
+	restartText->setPosition(585, 603);
 	restartText->setFillColor(color);
 
-	mainMenuText = new sf::Text("Main Menu", *font, 12);
-	mainMenuText->setPosition(600, 660);
+	mainMenuText = new sf::Text("Main Menu", *font, 20);
+	mainMenuText->setPosition(900, 660);
 	mainMenuText->setFillColor(color);
 
-	exitText = new sf::Text("Exit", *font, 12);
-	exitText->setPosition(625, 720);
+	exitText = new sf::Text("Exit", *font, 20);
+	exitText->setPosition(615, 720);
 	exitText->setFillColor(color);
+}
+
+void Program::CreateCreditsText()
+{
+	creditsText = new sf::Text("                       A Game by Nicolas Mironoff\n\n                                               Art\n         Zombie Apocalypse Tileset by Ittai Manero\n                         Modern interiors by limezu", *font, 13);
+	creditsText->setFillColor(sf::Color(88, 83, 74, 255));
+	creditsText->setPosition(452, 400);
 }
 
 void Program::CreateEndingTexts()
@@ -1451,6 +1480,13 @@ void Program::CreateEndingTexts()
 	badEndingText->setPosition(67, 290);
 	badEndingText->setFillColor(color);
 
+}
+
+void Program::CreateNewHighscoreNameText()
+{
+	newHighscoreNameText = new sf::Text("", *font, 18);
+	newHighscoreNameText->setFillColor(sf::Color(125, 125, 125, 255));
+	newHighscoreNameText->setPosition(600, 440);
 }
 
 
@@ -2002,7 +2038,6 @@ void Program::DrawDate()
 }
 
 
-
 void Program::DrawTransitionScreen()
 {
 	window->draw(sceneManager->GetBlackScreenTransition()->Graphic());
@@ -2325,6 +2360,12 @@ void Program::DrawCalendarWindow()
 		window->draw(calendarWindow->GetButtonClose()->Graphic());
 
 		window->draw(*calendarWindow->GetText());
+
+
+		window->draw(*scoreboard->GetNameText());
+		window->draw(*scoreboard->GetScoreText());
+		window->draw(*scoreboard->GetDayText());
+		window->draw(*scoreboard->GetStatusText());
 	}
 }
 
@@ -2369,10 +2410,22 @@ void Program::DrawSOSSign()
 	window->draw(sosSign->Graphic());
 }
 
+void Program::DrawScores()
+{
+	if (calendarWindow->GetIsActive())
+	{
+		window->draw(*scoreboard->GetScoreNamesText());
+		window->draw(*scoreboard->GetScorePointsText());
+		window->draw(*scoreboard->GetScoreDayText());
+		window->draw(*scoreboard->GetScoreStatusText());
+	}
+}
+
 void Program::DrawGameOverText(float delaTime)
 {	
 	if (sceneManager->GetIsGameOver())
 	{		
+
 		if(gameOverTimer < 5)
 		{ 
 			gameOverTimer += deltaTime;
@@ -2383,9 +2436,11 @@ void Program::DrawGameOverText(float delaTime)
 
 		if (gameOverTimer >= 5)
 		{
+			scoreboard->CheckForNewHighScore();
+
 			restartText->setPosition(612, 603);
-			mainMenuText->setPosition(600, 660);
-			exitText->setPosition(625, 720);
+			mainMenuText->setPosition(594, 660);
+			exitText->setPosition(628, 720);
 
 			window->draw(*restartText);
 			window->draw(*mainMenuText);
@@ -2406,9 +2461,83 @@ void Program::DrawEndingText()
 
 }
 
+void Program::DrawCreditsText()
+{
+	if (boardWindow->GetIsActive())
+	{
+		window->draw(*creditsText);
+	}
+}
+
 void Program::DrawHours()
 {	
 	window->draw(*timeClock->GetTimeText());
+}
+
+void Program::InputHighScoreName()
+{
+	if (player->GetIsAlive()) return;
+
+	if (scoreboard->GetInputNewHighscoreName())
+	{		
+		std::map <sf::Keyboard::Key, bool> keyPressed;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && newHighscoreName.size() >= 3)
+		{			
+			scoreboard->SetNewHighscoreName(newHighscoreName);
+			newHighscoreName = "";
+			scoreboard->AddNewHighScore();
+		}
+
+		if (newHighscoreName.size() < 7)
+		{
+			if (newHighscoreName.size() < 1)
+			{
+				for (char letter = 'A'; letter <= 'Z'; ++letter)
+				{
+					sf::Keyboard::Key key = static_cast<sf::Keyboard::Key>(sf::Keyboard::A + (letter - 'A'));
+
+					if (sf::Keyboard::isKeyPressed(key))
+					{
+						if (!keyPressed[key])
+						{
+							newHighscoreName += letter;
+							keyPressed[key] = true;
+							sf::sleep(sf::milliseconds(150));
+						}
+					}
+					else
+						keyPressed[key] = false;
+				}
+			}
+			else
+			{
+				for (char letter = 'a'; letter <= 'z'; ++letter)
+				{
+					sf::Keyboard::Key key = static_cast<sf::Keyboard::Key>(sf::Keyboard::A + (letter - 'a'));
+
+					if (sf::Keyboard::isKeyPressed(key))
+					{
+						if (!keyPressed[key])
+						{
+							newHighscoreName += letter;
+							keyPressed[key] = true;
+							sf::sleep(sf::milliseconds(150));
+						}
+					}
+					else
+						keyPressed[key] = false;
+				}
+			}
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace) && !newHighscoreName.empty())
+		{
+			newHighscoreName.pop_back();
+			sf::sleep(sf::milliseconds(150));
+		}
+		
+	}
 }
 
 void Program::Ending(float deltaTime)
@@ -2476,6 +2605,8 @@ void Program::RestartGame()
 	eEndingPressed = false;
 
 	toMainMenuTimer = 0;
+
+	scoreboard->ResetScoreBoard();
 }
 
 void Program::GoMainMenu()
@@ -2514,4 +2645,6 @@ void Program::GoMainMenu()
 	eEndingPressed = false;
 
 	toMainMenuTimer = 0;
+
+	scoreboard->ResetScoreBoard();
 }

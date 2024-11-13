@@ -1,5 +1,6 @@
 #include "EnemySpawner.h"
 
+
 EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, SceneManager* sceneManager)
 {
 	this->sceneManager = sceneManager;

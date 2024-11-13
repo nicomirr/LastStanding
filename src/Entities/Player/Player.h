@@ -63,6 +63,9 @@ public:
 	static void SetHasShotgun(bool value) { hasShotgun = true; }
 	static void SetHasUzi(bool value) { hasUzi = true; }
 
+	static int GetScore() { return score; }
+	static void AddScore(int value) { score += value; }
+
 	static bool GetIsAlive() { return isAlive; }
 	static void SetIsAlive(bool value) { isAlive = value; }
 	void RigidObjectCollision(float deltaTime);

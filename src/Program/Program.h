@@ -22,6 +22,7 @@
 #include "../DayTasksManager/DayTasksManager.h"
 #include "../Entities/Enviroment/SOSSign.h"
 #include "../Entities/HUD/PopUpWindow.h"
+#include "../Score/Scoreboard.h"
 
 
 class Program
@@ -44,6 +45,8 @@ private:
 	//std::vector<Node*> nodeGrid;
 	GridManager* nodesGrid;
 	PathFinder* pathfinder;
+
+	Scoreboard* scoreboard;
 
 	SceneManager* sceneManager;
 
@@ -130,6 +133,11 @@ private:
 
 	sf::Font* font;
 
+	std::string newHighscoreName;
+	sf::Text* newHighscoreNameText;
+
+	sf::Text* creditsText;
+
 	sf::Text* restartText;
 	sf::Text* mainMenuText;
 	sf::Text* exitText;
@@ -142,7 +150,7 @@ private:
 
 	float gameOverTimer;
 	float endingTimer;
-
+		
 	bool eEndingPressed;
 	
 	float toMainMenuTimer;
@@ -157,6 +165,7 @@ private:
 
 	void CreateWindow();
 	void CreateSceneManager();
+	void CreateScoreBoard();
 	void SetCursorAppearance();
 	void CreateWeapons();
 	void CreatePlayer();
@@ -173,7 +182,7 @@ private:
 	void CreateBricks();
 	void CreateDoorColliderOutside();
 	void CreateSOSSign();
-
+	
 	void CreateInteriorFloor();
 	void CreateInteriorWall();
 	void CreateInteriorLimits();
@@ -217,7 +226,10 @@ private:
 	void CreateFont();
 	void CreateGameOverOptions();
 
+	void CreateCreditsText();
 	void CreateEndingTexts();
+
+	void CreateNewHighscoreNameText();
 
 	void NightTimeUpdate(float deltaTime);	
 	void DayTimeUpdate(float deltaTime);
@@ -314,9 +326,12 @@ private:
 
 	void DrawSOSSign();
 
+	void DrawScores();
+
 	void DrawGameOverText(float delaTime);
 
 	void DrawEndingText();
+	void DrawCreditsText();
 
 	void DrawTimeClock();
 	void DrawHUD();
@@ -325,6 +340,8 @@ private:
 	void DrawHUDBullets();
 	void DrawDate();
 	
+	void InputHighScoreName();
+
 	void DrawTransitionScreen();
 
 	void DrawEndDayText();
