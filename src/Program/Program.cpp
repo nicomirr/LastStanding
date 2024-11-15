@@ -1568,7 +1568,7 @@ void Program::CreateGameOverOptions()
 
 void Program::CreateCreditsText()
 {
-	creditsText = new sf::Text("                       A Game by Nicolas Mironoff\n\n                                               Art\n         Zombie Apocalypse Tileset by Ittai Manero\n                         Modern interiors by limezu\n\n                                             Audio\n                            TileFreesound community", *font, 13);
+	creditsText = new sf::Text("                       A Game by Nicolas Mironoff\n\n                                               Art\n         Zombie Apocalypse Tileset by Ittai Manero\n                         Modern interiors by limezu\n\n                                             Audio\n                             Freesound community", *font, 13);
 	creditsText->setFillColor(sf::Color(88, 83, 74, 255));
 	creditsText->setPosition(452, 400);
 }
@@ -2369,7 +2369,7 @@ void Program::DrawPause()
 		pauseCloseButton->Graphic().setPosition(730, 365);
 		pauseRetryButton->setPosition(570, 393);
 		pauseMainMenuButton->setPosition(547, 430);
-		pauseExitButton->setPosition(587, 468);
+		pauseExitButton->setPosition(584, 468);
 
 		window->draw(pauseBackground->Graphic());
 		window->draw(*pauseMainMenuButton);
