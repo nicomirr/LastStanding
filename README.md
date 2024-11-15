@@ -1,6 +1,5 @@
 <p align="center">
   <a href="https://nicomironoff.itch.io/last-standing">
-<img src="logo.png" alt="Last standing"/>
   </a> 
 </p>
 
