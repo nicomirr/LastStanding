@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="src\Audio\AudioManager.h" />
     <ClInclude Include="src\BreadthFirstSearch\GridManager.h" />
     <ClInclude Include="src\BreadthFirstSearch\Node.h" />
@@ -96,6 +97,12 @@
     <ClCompile Include="src\SceneManager\SceneManager.cpp" />
     <ClCompile Include="src\Score\Scoreboard.cpp" />
     <ClCompile Include="src\Utilities\VectorUtility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SFMLImageCampusC++Curso.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon\Icon.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
