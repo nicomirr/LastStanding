@@ -7,10 +7,21 @@ bool SceneManager::isTransitionToInside = false;
 bool SceneManager::isTransitionToOutside = false;
 bool SceneManager::transitionToNight = false;
 bool SceneManager::isEnding = false;
-
+bool SceneManager::isTitleScene;
+bool SceneManager::isInsidePlayerHouse;
+bool SceneManager::isOutsidePlayerHouse;
+bool SceneManager::displayEnding;
+bool SceneManager::isDayTimeScene;
 
 SceneManager::SceneManager()
 {
+	std::string  helicopterFilePath = "res\\audio\\ending\\Helicopter.mp3";
+	helicopterBuffer.loadFromFile(helicopterFilePath);
+
+	helicopterSound.setBuffer(helicopterBuffer);
+	helicopterSound.setVolume(100);
+	helicopterSound.setLoop(false);
+
 	std::string blackScreenFilePath = "res\\textures\\transitions\\BlackScreen.png";
 	sf::Vector2i blackScreenSpriteSheetSize = { 1200, 880 };
 	blackScreenTransition = new Entity(blackScreenFilePath, blackScreenSpriteSheetSize);
@@ -32,10 +43,12 @@ SceneManager::SceneManager()
 	//SetIsDayTimeSceneOn();		//Testeo
 }
 
-void SceneManager::Update(DayTasksManager* dayTasksManager, float deltaTime)
+void SceneManager::Update(DayTasksManager* dayTasksManager, float deltaTime, bool sosBuilt)
 {
+	UpdateSound();
+
 	GameOverScreen(deltaTime);
-	EndScreen(deltaTime);
+	EndScreen(deltaTime, sosBuilt);
 
 	SceneTransitionStart();
 	SceneTransitionToInside();
@@ -72,6 +85,8 @@ void SceneManager::SetIsDayTimeSceneOn()
 	isGameOverScene = false;
 	isDayTimeScene = true;
 	isNightTimeScene = false;
+
+	SetIsInsidePlayerHouse();
 }
 
 void SceneManager::SetIsNightTimeSceneOn()
@@ -80,6 +95,8 @@ void SceneManager::SetIsNightTimeSceneOn()
 	isGameOverScene = false;
 	isDayTimeScene = false;
 	isNightTimeScene = true;
+
+	SetIsOutsidePlayerHouse();
 }
 
 void SceneManager::SetIsInsidePlayerHouse()
@@ -429,9 +446,15 @@ void SceneManager::GameOverScreen(float deltaTime)
 }
 
 
-void SceneManager::EndScreen(float deltaTime)
+void SceneManager::EndScreen(float deltaTime, bool sosBuilt)
 {
 	if (!isEnding) return;
+
+	if (sosBuilt)
+	{
+		if (helicopterSound.getStatus() == sf::SoundSource::Stopped)
+			helicopterSound.play();
+	}
 
 	endingTimer += deltaTime;
 
@@ -453,7 +476,11 @@ void SceneManager::EndScreen(float deltaTime)
 
 	}
 	else
+	{
+		helicopterSound.stop();
 		displayEnding = true;
+
+	}
 
 }
 
@@ -609,4 +636,9 @@ void SceneManager::MainMenuSceneManager()
 
 	SetIsOutsidePlayerHouse();
 	SetTitleSceneOn();
+}
+
+void SceneManager::UpdateSound()
+{
+	helicopterSound.setVolume(100 * AudioManager::GetAudioRegulator());
 }

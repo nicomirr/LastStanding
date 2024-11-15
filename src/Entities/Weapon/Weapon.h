@@ -7,6 +7,15 @@
 class Weapon : public AnimatedEntity
 {
 private:
+	sf::SoundBuffer shootBuffer;
+	sf::SoundBuffer reloadBuffer;
+	sf::SoundBuffer emptyWeaponBuffer;
+
+	sf::Sound shootSound;
+	sf::Sound reloadSound;
+	sf::Sound emptyWeaponSound;
+
+	bool reloadingSoundPlayed;
 
 	bool isActive;
 	int capacity;
@@ -24,10 +33,11 @@ private:
 public:
 	static const int totalBullets;
 	Weapon();
-	Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos, sf::Vector2i animationFrameSize,
-		std::string weaponImageFilePath, sf::Vector2i weaponSpriteSheetSize,float bulletMinDamage, 
-		float bulletMaxDamage, float bulletSpeed, std::string bulletImageFilePath, 
-		sf::Vector2i bulletSpriteSheetSize,	float bulletMaxPosX, float bulletMaxPosY);
+	Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos,
+		sf::Vector2i animationFrameSize, std::string weaponImageFilePath, sf::Vector2i weaponSpriteSheetSize,
+		float bulletMinDamage, float bulletMaxDamage, float bulletSpeed, std::string bulletImageFilePath, 
+		sf::Vector2i bulletSpriteSheetSize,	float bulletMaxPosX, float bulletMaxPosY, 
+		std::string shootSoundFilePath, std::string reloadFilePath);
 	void Update(float deltaTime, int hoursSlept);
 	std::vector<Bullet*> GetBullets() { return bullets; }
 	sf::FloatRect GetBounds() override;
@@ -36,6 +46,8 @@ public:
 	bool GetIsReloading() { return isReloading; }
 	void SetIsReloading(bool value) { isReloading = value; }
 	int GetCurrentAmmo() { return currentAmmo; }
+
+	void UpdateSound();
 
 };
 

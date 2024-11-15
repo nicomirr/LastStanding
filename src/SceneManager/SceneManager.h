@@ -4,11 +4,15 @@
 #include "../Entities/TimeClock/TimeClock.h"
 #include "../DayTasksManager/DayTasksManager.h"
 #include "../Entities/Time/HoursInterface.h"
-#include "../Entities/Player/Player.h"
+#include "../Entities/Player/Player.h";
+#include "../Audio/AudioManager.h";
 
 class SceneManager
 {
 private:
+	sf::SoundBuffer helicopterBuffer;
+	sf::Sound helicopterSound;
+
 	bool isFenceTaskTransition;
 	bool isToolboxTaskTransition;
 	bool isHouseTaskTransition;
@@ -42,16 +46,16 @@ private:
 
 	bool sceneTransitionStartFinished;
 
-	bool isTitleScene;
+	static bool isTitleScene;
 	bool isGameOverScene;
-	bool isDayTimeScene;
+	static bool isDayTimeScene;
 	bool isNightTimeScene;
 
 	bool displayGoodEndingText;
 	bool displayBadEndingText;
 
-	bool isInsidePlayerHouse;
-	bool isOutsidePlayerHouse;
+	static bool isInsidePlayerHouse;
+	static bool isOutsidePlayerHouse;
 
 	Entity* blackScreenTransition;
 
@@ -81,12 +85,12 @@ private:
 	float sceneTransitionTasksProgressStart;
 	float sceneTransitionTasksProgressEnd;
 
-	bool displayEnding;
+	static bool displayEnding;
 
 public:
 	SceneManager();
 	
-	void Update(DayTasksManager* dayTasksManager, float deltaTime);
+	void Update(DayTasksManager* dayTasksManager, float deltaTime, bool sosBuilt);
 	
 	static bool GetIsTransitioning() { return isTransitioning; }
 
@@ -95,18 +99,18 @@ public:
 	static bool GetIsTransitionToInside() { return isTransitionToInside; }
 	static bool GetIsTransitionToOutside() { return isTransitionToOutside; }
 
-	bool GetIsTitleScene() { return isTitleScene; }
+	static bool GetIsTitleScene() { return isTitleScene; }
 	bool GetIsGameOverScene() { return isGameOverScene; }
-	bool GetIsDayTimeScene() { return isDayTimeScene; }
+	static bool GetIsDayTimeScene() { return isDayTimeScene; }
 	bool GetIsNightTimeScene() { return isNightTimeScene; }
-	bool GetIsInsidePlayerHouse() { return isInsidePlayerHouse; }
-	bool GetIsOutsidePlayerHouse() { return isOutsidePlayerHouse; }
+	static bool GetIsInsidePlayerHouse() { return isInsidePlayerHouse; }
+	static bool GetIsOutsidePlayerHouse() { return isOutsidePlayerHouse; }
 
 	bool GetIsGameOver() { return isGameOver; }
 
 	bool GetCanUseDoors() { return canUseDoors; }
 
-	bool GetDisplayEnding() { return displayEnding; }
+	static bool GetDisplayEnding() { return displayEnding; }
 
 	Entity* GetBlackScreenTransition() { return blackScreenTransition; }
 
@@ -125,6 +129,7 @@ public:
 
 	static void SetTransitionToNight(bool value) { transitionToNight = value; }
 
+	static bool GetIsEnding() { return isEnding; }
 	static void SetIsEnding(bool value) { isEnding = value; }
 
 	void SetIsTransitioningToInside(bool value) { isTransitioningToInside = value; }
@@ -152,12 +157,14 @@ public:
 
 	void GameOverScreen(float deltaTime);
 
-	void EndScreen(float deltaTime);
+	void EndScreen(float deltaTime, bool sosBuilt);
 
 	void TitleToGame();
 
 	void ResetSceneManager();
 
 	void MainMenuSceneManager();
+
+	void UpdateSound();
 };
 

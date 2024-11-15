@@ -7,10 +7,28 @@
 #include "../Enviroment/House.h"
 #include "../Enviroment/Car.h"
 #include "../Player/Player.h"
+#include "../../Audio/AudioManager.h"
 
 class Enemy : public AnimatedEntity
 {
 private:
+
+	/*bool attackZombieAdded;
+	static int attackingZombies;*/
+
+	sf::SoundBuffer zombieHurtBuffer;
+	sf::Sound zombieHurtSound;
+
+	//static sf::SoundBuffer zombieHittingBuffer;
+	/*static sf::SoundBuffer zombieHittingTwoBuffer;
+	static sf::SoundBuffer zombieHittingThreeBuffer;
+	static sf::SoundBuffer zombieHittingFourBuffer;*/
+
+	//static sf::Sound zombieHittingSound;
+	/*static sf::Sound zombieHittingTwoSound;
+	static sf::Sound zombieHittingThreeSound;
+	static sf::Sound zombieHittingFourSound;*/
+
 	GridManager* nodesGrid;
 	PathFinder* pathfinder;	
 	std::vector <Node*> path;
@@ -87,4 +105,8 @@ public:
 	void Attack(Car* car, float deltaTime);
 	void TakeDamage(float damage);
 	void EnemyMovement(float deltaTime);
+
+	void UpdateSound();
+
+	void ResetEnemy();
 };

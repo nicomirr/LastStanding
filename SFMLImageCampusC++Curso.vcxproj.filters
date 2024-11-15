@@ -132,6 +132,9 @@
     <ClInclude Include="src\Score\Scoreboard.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="src\Audio\AudioManager.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -234,6 +237,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\Score\Scoreboard.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\AudioManager.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

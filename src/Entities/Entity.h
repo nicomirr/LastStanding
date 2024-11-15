@@ -2,6 +2,7 @@
 
 #include<SFML/System.hpp>
 #include<SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include<iostream>
 #include "Tag.h"
 #include "../Utilities/RandomNum.h"

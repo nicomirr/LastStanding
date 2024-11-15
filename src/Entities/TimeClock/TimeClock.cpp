@@ -153,7 +153,7 @@ void TimeClock::ResetTimeClock()
 	day = 1;
 	isNight = true;
 	isDay = false;	
-	startClockRotation = true;
+	startClockRotation = false;
 	endDayTextOpened = false;
 	hours = 0;
 	resetClockAndLight = false;

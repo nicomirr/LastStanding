@@ -1,17 +1,61 @@
 #include "Enemy.h"
 
+//sf::SoundBuffer Enemy::zombieHittingBuffer;
+//sf::SoundBuffer Enemy::zombieHittingTwoBuffer;
+//sf::SoundBuffer Enemy::zombieHittingThreeBuffer;
+//sf::SoundBuffer Enemy::zombieHittingFourBuffer;
 
+//sf::Sound Enemy::zombieHittingSound;
+//sf::Sound Enemy::zombieHittingTwoSound;
+//sf::Sound Enemy::zombieHittingThreeSound;
+//sf::Sound Enemy::zombieHittingFourSound;
 
+//int Enemy::attackingZombies;
 
 Enemy::Enemy(GridManager* nodesGrid, PathFinder* pathfinder, sf::Vector2f scale, float minHealth, float maxHealth, float regularSpeed, 
 	float speedNearPlayer,	float damage, float attackDelay, float animationSpeed, float deathAnimationSpeed, sf::Vector2i animationFrameSize,
 	sf::Vector2i deathAnimationFrameSize, std::string imageFilePath, sf::Vector2i spriteSheetSize) 
 	: AnimatedEntity(animationFrameSize, imageFilePath, spriteSheetSize)
 {
+	std::string  zombieHurtFilePath = "res\\audio\\enemies\\ZombieHurt.mp3";
+	zombieHurtBuffer.loadFromFile(zombieHurtFilePath);
+
+	zombieHurtSound.setBuffer(zombieHurtBuffer);
+	zombieHurtSound.setVolume(100);
+	zombieHurtSound.setLoop(false);
+
+
+	/*std::string  zombieHittingFilePath = "res\\audio\\enemies\\ZombieHitting2.mp3";
+	zombieHittingBuffer.loadFromFile(zombieHittingFilePath);
+
+	zombieHittingSound.setBuffer(zombieHittingBuffer);
+	zombieHittingSound.setVolume(100);
+	zombieHittingSound.setLoop(false);*/
+
+	/*std::string  zombieHittingTwoFilePath = "res\\audio\\enemies\\ZombieHitting2.mp3";
+	zombieHittingTwoBuffer.loadFromFile(zombieHittingTwoFilePath);
+
+	zombieHittingTwoSound.setBuffer(zombieHittingTwoBuffer);
+	zombieHittingTwoSound.setVolume(100);
+	zombieHittingTwoSound.setLoop(false);
+
+	std::string  zombieHittingThreeFilePath = "res\\audio\\enemies\\ZombieHitting3.mp3";
+	zombieHittingThreeBuffer.loadFromFile(zombieHittingThreeFilePath);
+
+	zombieHittingThreeSound.setBuffer(zombieHittingThreeBuffer);
+	zombieHittingThreeSound.setVolume(100);
+	zombieHittingThreeSound.setLoop(false);
+
+	std::string  zombieHittingFourFilePath = "res\\audio\\enemies\\ZombieHitting4.mp3";
+	zombieHittingFourBuffer.loadFromFile(zombieHittingFourFilePath);
+
+	zombieHittingFourSound.setBuffer(zombieHittingFourBuffer);
+	zombieHittingFourSound.setVolume(100);
+	zombieHittingFourSound.setLoop(false);*/
 
 	this->nodesGrid = nodesGrid;
-	this->pathfinder = pathfinder;
-			
+	this->pathfinder = pathfinder;		
+
 	isActive = false;
 	isAlive = true;
 
@@ -74,6 +118,8 @@ Enemy::Enemy(GridManager* nodesGrid, PathFinder* pathfinder, sf::Vector2f scale,
 
 void Enemy::Update(float deltaTime, sf::Vector2f playerPos)
 {
+	UpdateSound();
+
 	if (!isActive) return;
 	if (Car::GetIsDestroyed())
 		isAttackingCar = false;
@@ -89,6 +135,7 @@ void Enemy::Update(float deltaTime, sf::Vector2f playerPos)
 		if (fenceObjective->GetIsFenceBroken())
 		{
 			isAttackingFence = false;
+			//attackZombieAdded = false;
 		}
 	}
 
@@ -137,6 +184,11 @@ void Enemy::EnemyMovement(float deltaTime)
 		FollowPath(deltaTime);
 	}*/
 
+}
+
+void Enemy::UpdateSound()
+{
+	zombieHurtSound.setVolume(100 * AudioManager::GetAudioRegulator());
 }
 
 void Enemy::SetStartingNode()
@@ -325,6 +377,14 @@ void Enemy::EnemyDirection()
 
 void Enemy::Attack(Fence* fence, float deltaTime)
 {
+	//if (!attackZombieAdded)
+	//{
+	//	if (attackingZombies < 4)
+	//		attackingZombies++;
+
+	//	attackZombieAdded = true;
+	//}	
+
 	fenceObjective = fence;
 
 	if (!isAttackingCar)
@@ -347,10 +407,41 @@ void Enemy::Attack(Fence* fence, float deltaTime)
 		attackTimer -= attackDelay;
 	}
 
+	/*if (zombieHittingSound.getStatus() == sf::SoundSource::Stopped)
+		zombieHittingSound.play();*/
+
+	/*if (attackingZombies == 1)
+	{
+		
+	}*/
+	//else if (attackingZombies == 2)
+	//{
+	//	if (zombieHittingTwoSound.getStatus() == sf::SoundSource::Stopped)
+	//		zombieHittingTwoSound.play();
+	//}
+	//else if (attackingZombies == 3)
+	//{
+	//	if (zombieHittingThreeSound.getStatus() == sf::SoundSource::Stopped)
+	//		zombieHittingThreeSound.play();
+	//}
+	//else if (attackingZombies == 4)
+	//{
+	//	if (zombieHittingFourSound.getStatus() == sf::SoundSource::Stopped)
+	//		zombieHittingFourSound.play();
+	//}
+		
 }
 
 void Enemy::Attack(House* house, float deltaTime)
 {
+	//if (!attackZombieAdded)
+	//{
+	//	if (attackingZombies < 4)
+	//		attackingZombies++;
+
+	//	attackZombieAdded = true;
+	//}
+
 	if (sprite.getPosition().x > 600)
 	{
 		SetCurrentAnimation("leftAttack");
@@ -367,10 +458,41 @@ void Enemy::Attack(House* house, float deltaTime)
 		house->ReceiveDamage(damage);
 		attackTimer -= attackDelay;
 	}
+
+	//if (zombieHittingSound.getStatus() == sf::SoundSource::Stopped)
+	//	zombieHittingSound.play();
+
+	/*if (attackingZombies == 1)
+	{
+		
+	}*/
+//	else if (attackingZombies == 2)
+//	{
+//		if (zombieHittingTwoSound.getStatus() == sf::SoundSource::Stopped)
+//			zombieHittingTwoSound.play();
+//	}
+//	else if (attackingZombies == 3)
+//	{
+//		if (zombieHittingThreeSound.getStatus() == sf::SoundSource::Stopped)
+//			zombieHittingThreeSound.play();
+//	}
+//	else if (attackingZombies == 4)
+//	{
+//		if (zombieHittingFourSound.getStatus() == sf::SoundSource::Stopped)
+//			zombieHittingFourSound.play();
+//	}
 }
 
 void Enemy::Attack(Car* car, float deltaTime)
 {
+	/*if (!attackZombieAdded)
+	{
+		if (attackingZombies < 4)
+			attackingZombies++;
+
+		attackZombieAdded = true;
+	}*/
+
 	if (sprite.getPosition().x > 430)
 	{
 		SetCurrentAnimation("leftAttack");
@@ -390,14 +512,48 @@ void Enemy::Attack(Car* car, float deltaTime)
 
 	if (car->GetHealthBar()->GetCurrentHealth() <= 0)
 	{
+		/*if (isAttackingCar)
+		{
+			attackingZombies = 0;
+			attackZombieAdded = false;
+		}*/
+
 		isAttackingCar = false;
 		car->SetIsDestroyed(true);
+
 	}
+
+	/*if (zombieHittingSound.getStatus() == sf::SoundSource::Stopped)
+		zombieHittingSound.play();*/
+
+	//if (attackingZombies == 1)
+	//{
+	//	
+	//}
+	//else if (attackingZombies == 2)
+	//{
+	//	if (zombieHittingTwoSound.getStatus() == sf::SoundSource::Stopped)
+	//		zombieHittingTwoSound.play();
+	//}
+	//else if (attackingZombies == 3)
+	//{
+	//	if (zombieHittingThreeSound.getStatus() == sf::SoundSource::Stopped)
+	//		zombieHittingThreeSound.play();
+	//}
+	//else if (attackingZombies == 4)
+	//{
+	//	if (zombieHittingFourSound.getStatus() == sf::SoundSource::Stopped)
+	//		zombieHittingFourSound.play();
+	//}
 }
 
 void Enemy::TakeDamage(float damage)
 {
 	health -= damage;
+
+
+	if(zombieHurtSound.getStatus() == sf::SoundSource::Stopped)
+		zombieHurtSound.play();
 
 	if (health <= 0)	
 		Die();
@@ -407,6 +563,9 @@ void Enemy::TakeDamage(float damage)
 void Enemy::Die()
 {
 	if (!isAlive) return;
+
+	/*if(attackingZombies > 0)
+		attackingZombies--;*/
 
 	SetAnimationFrameSize(deathAnimationFrameSize);
 
@@ -457,6 +616,7 @@ void Enemy::DeathTimer(float deltaTime)
 			isAttackingFence = false;	
 			isAttackingCar = false;
 			isAttackingPlayer = false;
+			isAttackingHouse = false;
 		}
 	}
 }
@@ -492,4 +652,19 @@ void Enemy::HealthBarAppearance()
 	{
 		healthBar->SetCurrentAnimation("fullBar");
 	}
+}
+
+void Enemy::ResetEnemy()
+{
+	isActive = false;
+	health = RandomNum::RandomRange(minHealth, maxHealth);
+	healthBar->SetMaxHealth(health);
+	isAlive = true;
+	deathTimer = 0;
+	SetAnimationFrameSize(animationFrameSize);
+	isAttackingPlayer = false;
+	isAttackingFence = false;
+	isAttackingCar = false;
+	isAttackingPlayer = false;
+	isAttackingHouse = false;
 }

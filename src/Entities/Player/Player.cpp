@@ -7,12 +7,29 @@ bool Player::hasShotgun;
 bool Player::hasUzi;
 bool Player::isAlive;
 
-int Player::score = 2000;
+int Player::score = 0;
+bool Player::playerStopSound;
 
 Player::Player(float speed, Weapon* gun, Weapon* shotgun, Weapon* uzi, float windowWidth, float windowHeight, sf::Vector2i animationFrameSize,
 	std::string imageFilePath,	sf::Vector2i spriteSheetSize)
 	: AnimatedEntity(animationFrameSize, imageFilePath, spriteSheetSize)
 {	
+
+	std::string insideFootstepsFilePath = "res\\audio\\player\\FloorFootsteps.mp3";
+	insideFootstepsBuffer.loadFromFile(insideFootstepsFilePath);
+
+	insideFootstepsSound.setBuffer(insideFootstepsBuffer);
+	insideFootstepsSound.setVolume(100);
+	insideFootstepsSound.setLoop(false);
+
+
+	std::string outsideFootstepsFilePath = "res\\audio\\player\\GrassFootstep.mp3";
+	outsideFootstepsBuffer.loadFromFile(outsideFootstepsFilePath);
+
+	outsideFootstepsSound.setBuffer(outsideFootstepsBuffer);
+	outsideFootstepsSound.setVolume(100);
+	outsideFootstepsSound.setLoop(false);
+		
 	resources = 150;
 
 	hoursSlept = 6;
@@ -77,6 +94,7 @@ Player::Player(float speed, Weapon* gun, Weapon* shotgun, Weapon* uzi, float win
 
 void Player::Input(sf::Event event)
 {	
+	if (SceneManager::SceneManager::GetDisplayEnding()) return;
 	if (!isAlive) return;
 	if (HoursInterface::GetIsOpen()) return;
 	if (SceneManager::GetIsTransitioning()) return;
@@ -86,11 +104,15 @@ void Player::Input(sf::Event event)
 	Movement();
 	LookDirection();
 
-	if (GetCurrentWeapon().GetTag() != Tag::Uzi)
-		FireWeapon(event);
-	
+	if (!SceneManager::GetIsTitleScene() && !SceneManager::GetIsDayTimeScene())
+	{
+		if (GetCurrentWeapon().GetTag() != Tag::Uzi)
+			FireWeapon(event);
 
-	SwitchWeapons();
+		SwitchWeapons();
+	}
+
+	
 }
 
 void Player::Update(float deltaTime)
@@ -98,75 +120,109 @@ void Player::Update(float deltaTime)
 	/*std::cout << sprite.getPosition().x << std::endl;
 	std::cout << sprite.getPosition().y << std::endl;*/
 		
-	if (!SceneManager::GetIsTransitioning())
-	{
-		if(!HoursInterface::GetIsOpen())
-			AnimatedEntity::Update(deltaTime);
-	}
+	if (!HoursInterface::GetIsOpen() && !playerStopSound)
+		AnimatedEntity::Update(deltaTime);
 
 	if (SceneManager::GetIsTransitioning())
 	{
 		direction = { 0, 0 };
 	}
 
+	UpdateSound();
+
+	if (playerStopSound || SceneManager::GetDisplayEnding())
+	{
+		insideFootstepsSound.stop();
+		outsideFootstepsSound.stop();
+	}
+
 	EButtonOff();
 
 	sf::Vector2f eButtonOffset = { 10, -25 };
 	eButton->Graphic().setPosition(sprite.getPosition() + eButtonOffset);
-
-	if (isAlive)
-	{		
-		if (!PopUpWindow::GetPopUpWindowOpen())
+	
+	if (!SceneManager::GetDisplayEnding())
+	{
+		if (isAlive)
 		{
-			if (!HoursInterface::GetIsOpen())
+			if (direction != sf::Vector2f({ 0, 0 }))
 			{
-				if (!SceneManager::GetIsTransitioning() && !DayTasksManager::GetScavengeResultsOpen())
+				if (!playerStopSound)
 				{
-					if (GetCurrentWeapon().GetTag() == Tag::Uzi)
-						FireUzi();
-				}
-
-				if (!DayTasksManager::GetScavengeResultsOpen())
-				{
-					if (SceneManager::GetIsTransitionToDay())
+					if (SceneManager::GetIsInsidePlayerHouse())
 					{
-						sprite.setPosition({ 461, 346 });
-						currentPos = { 461, 346 };
-						SceneManager::SetIsTransitionToDay(false);
-
+						if (insideFootstepsSound.getStatus() == sf::SoundSource::Stopped)
+							insideFootstepsSound.play();
 					}
-					else if (SceneManager::GetIsTransitionToInside())
+					else if (SceneManager::GetIsOutsidePlayerHouse())
 					{
-						sprite.setPosition({ 660, 511 });
-						currentPos = { 660, 511 };
-						SceneManager::SetIsTransitionToInside(false);
-					}
-					else if (SceneManager::GetIsTransitionToOutside())
-					{
-						sprite.setPosition({ 717, 413 });
-						currentPos = { 717, 413 };
-						SceneManager::SetIsTransitionToOutside(false);
-					}
-					else if (SceneManager::GetIsTransitionToNight())
-					{
-						sprite.setPosition({ 717, 413 });
-						currentPos = { 717, 413 };
-						SceneManager::SetIsTransitionToNight(false);
-					}
-					
-
-					if (!SceneManager::GetIsTransitioning())
-					{
-						ReloadWeapon(deltaTime);
-
-						weapons[currentWeapon]->Update(deltaTime, hoursSlept);
-
-						direction = VectorUtility::Normalize(direction);
-						currentPos += direction * speed * deltaTime;
+						if (outsideFootstepsSound.getStatus() == sf::SoundSource::Stopped)
+							outsideFootstepsSound.play();
 					}
 				}
 			}
-		}	
+			else
+			{
+				insideFootstepsSound.stop();
+				outsideFootstepsSound.stop();
+			}
+
+			if (!PopUpWindow::GetPopUpWindowOpen())
+			{
+				if (!HoursInterface::GetIsOpen())
+				{
+					if (!SceneManager::GetIsTransitioning() && !DayTasksManager::GetScavengeResultsOpen())
+					{
+						if (!SceneManager::GetIsTitleScene() && !SceneManager::GetIsDayTimeScene())
+						{
+							if (GetCurrentWeapon().GetTag() == Tag::Uzi)
+								FireUzi();
+						}
+
+					}
+
+					if (!DayTasksManager::GetScavengeResultsOpen())
+					{
+						if (SceneManager::GetIsTransitionToDay())
+						{
+							sprite.setPosition({ 461, 346 });
+							currentPos = { 461, 346 };
+							SceneManager::SetIsTransitionToDay(false);
+
+						}
+						else if (SceneManager::GetIsTransitionToInside())
+						{
+							sprite.setPosition({ 660, 511 });
+							currentPos = { 660, 511 };
+							SceneManager::SetIsTransitionToInside(false);
+						}
+						else if (SceneManager::GetIsTransitionToOutside())
+						{
+							sprite.setPosition({ 717, 413 });
+							currentPos = { 717, 413 };
+							SceneManager::SetIsTransitionToOutside(false);
+						}
+						else if (SceneManager::GetIsTransitionToNight())
+						{
+							sprite.setPosition({ 717, 413 });
+							currentPos = { 717, 413 };
+							SceneManager::SetIsTransitionToNight(false);
+						}
+
+
+						if (!SceneManager::GetIsTransitioning())
+						{
+							ReloadWeapon(deltaTime);
+
+							weapons[currentWeapon]->Update(deltaTime, hoursSlept);
+
+							direction = VectorUtility::Normalize(direction);
+							currentPos += direction * speed * deltaTime;
+						}
+					}
+				}
+			}
+		}
 	}	
 
 	if (!HoursInterface::GetIsOpen())
@@ -180,9 +236,9 @@ void Player::Update(float deltaTime)
 }
 
 void Player::Movement()
-{
+{	
 	direction = sf::Vector2f({ 0, 0 });
-
+		
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		direction += VectorUtility::UP + VectorUtility::LEFT;
@@ -218,8 +274,10 @@ void Player::Movement()
 	else
 	{
 		direction = sf::Vector2f({ 0, 0 });		
+		insideFootstepsSound.stop();
 	}		
 
+	
 }
 
 
@@ -294,9 +352,7 @@ void Player::FireWeapon(sf::Event event)
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		sf::Vector2i bulletDirection = Program::GetMousePosition();
-		
-		
-				
+					
 		if (!canShoot) return;		
 
 		weapons[currentWeapon]->Shoot(bulletDirection);
@@ -319,6 +375,8 @@ void Player::FireUzi()
 
 void Player::ReloadWeapon(float deltaTime)
 {
+	if (SceneManager::GetIsTitleScene() || SceneManager::GetIsDayTimeScene()) return;
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && !weapons[currentWeapon]->GetIsReloading())
 	{
 		weapons[currentWeapon]->SetIsReloading(true);
@@ -390,6 +448,12 @@ void Player::Die()
 
 	isAlive = false;	
 
+}
+
+void Player::UpdateSound()
+{
+	insideFootstepsSound.setVolume(100 * AudioManager::GetAudioRegulator());
+	outsideFootstepsSound.setVolume(100 * AudioManager::GetAudioRegulator());
 }
 
 void Player::ResetPlayer()

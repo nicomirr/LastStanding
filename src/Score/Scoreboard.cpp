@@ -14,7 +14,7 @@ Scoreboard::Scoreboard()
 
 		if (scoresFileWrite.is_open())
 		{
-			scoresFileWrite << "Sami,1400,6,Rescued\nNick,1100,6,Survived\nJohn,775,5,Dead\nElia,365,3,Dead\nJudi,280,2,Dead";
+			scoresFileWrite << "Sami,1200,6,Rescued\nNick,1100,6,Survived\nJohn,775,5,Dead\nElia,365,3,Dead\nJudi,280,2,Dead";
 			scoresFileWrite.close();
 		}
 	}
@@ -125,7 +125,14 @@ Scoreboard::Scoreboard()
 	scoreDay->setPosition(627, 425);
 	scoreStatus->setPosition(665, 425);
 	
-	
+	std::string newHighscorePopupImageFilePath = "res\\textures\\scoreboard\\NewScore.png";
+	sf::Vector2i newHighscorePopupSpriteSize = { 168, 107 };
+
+	newHighscorePopup = new Entity(newHighscorePopupImageFilePath, newHighscorePopupSpriteSize);
+
+	newHighscorePopup->Graphic().setOrigin(84, 54);
+	newHighscorePopup->Graphic().setPosition(630, 425);
+	newHighscorePopup->Graphic().setScale(3, 3);
 }
 
 void Scoreboard::ReadHighScores()
@@ -268,8 +275,12 @@ void Scoreboard::WriteHighScores()
 
 void Scoreboard::CheckForNewHighScore()
 {
+	std::cout << "Player score: " + std::to_string(Player::GetScore()) << std::endl;
+
 	for (int i = 0; i < playerScores.size(); i++)
 	{
+		std::cout << playerScores[i]->score << std::endl;
+
 		if (Player::GetScore() > playerScores[i]->score)
 		{
 			newHighscore = true;
@@ -311,6 +322,8 @@ void Scoreboard::AddNewHighScore()
 
 void Scoreboard::ResetScoreBoard()
 {
+	newHighscore = false;
+	inputNewHighscoreName = false;
 	newHighscoreChecked = false;
 }
 

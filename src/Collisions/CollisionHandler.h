@@ -18,6 +18,13 @@ private:
 	static float addSubstractHoursTimer;
 	static float okButtonTimer;
 
+	static sf::SoundBuffer doorBuffer;
+	static sf::Sound doorSound;
+
+	static sf::SoundBuffer bookBuffer;
+	static sf::Sound bookSound;
+
+
 public:
 	static void AddCollision(Entity* entity);
 	static void SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window, HoursInterface* carHoursInterface,
@@ -26,6 +33,8 @@ public:
 		PopUpWindow* carWindow, PopUpWindow* bookWindow, PopUpWindow* calendarWindow, PopUpWindow* boardWindow, PopUpWindow* bedWindow,
 		PopUpWindow* radioWindow);
 	static std::vector<Entity*> GetEntities() { return entities; };
+
+	static void CreateSounds();
 };
 
 /*

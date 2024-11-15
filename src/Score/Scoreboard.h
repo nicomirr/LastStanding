@@ -51,6 +51,9 @@ private:
 	sf::Text* scoreDay;
 	sf::Text* scoreStatus;
 	
+	Entity* newHighscorePopup;
+	
+
 	void ReadHighScores();
 	void WriteHighScores();
 
@@ -70,6 +73,8 @@ public:
 	bool GetInputNewHighscoreName() { return inputNewHighscoreName; }
 	void SetInputNewHighscoreName(bool value) { inputNewHighscoreName = value; }
 	void SetNewHighscoreName(std::string name) { newHighscoreName = name; }
+
+	Entity* GetNewHighScorePopup() { return newHighscorePopup; }
 
 	void CheckForNewHighScore();
 	void AddNewHighScore();

@@ -7,9 +7,30 @@ Weapon::Weapon(){}
 
 Weapon::Weapon(float fireRate, float reloadTime, int capacity, float originXPos, float originYPos, sf::Vector2i animationFrameSize, 
 	std::string weaponImageFilePath, sf::Vector2i weaponSpriteSheetSize, float bulletMinDamage, float bulletMaxDamage, float bulletSpeed, 
-	std::string bulletImageFilePath, sf::Vector2i bulletSpriteSheetSize, float bulletMaxPosX, float bulletMaxPosY)
+	std::string bulletImageFilePath, sf::Vector2i bulletSpriteSheetSize, float bulletMaxPosX, float bulletMaxPosY, std::string shootSoundFilePath,
+	std::string reloadFilePath)
 	: AnimatedEntity(animationFrameSize, weaponImageFilePath, weaponSpriteSheetSize)
 {
+	shootBuffer.loadFromFile(shootSoundFilePath);
+
+	shootSound.setBuffer(shootBuffer);
+	shootSound.setVolume(100);
+	shootSound.setLoop(false);
+
+	reloadBuffer.loadFromFile(reloadFilePath);
+
+	reloadSound.setBuffer(reloadBuffer);
+	reloadSound.setVolume(100);
+	reloadSound.setLoop(false);
+
+	std::string emptyWeaponFilePath = "res\\audio\\weapons\\EmptyWeapon.mp3";
+
+	emptyWeaponBuffer.loadFromFile(emptyWeaponFilePath);
+
+	emptyWeaponSound.setBuffer(emptyWeaponBuffer);
+	emptyWeaponSound.setVolume(100);
+	emptyWeaponSound.setLoop(false);
+
 	this->fireRate = fireRate;
 	this->capacity = capacity;
 	currentAmmo = this->capacity;
@@ -47,6 +68,19 @@ void Weapon::Update(float deltaTime, int hoursSlept)
 {
 	AnimatedEntity::Update(deltaTime);
 
+	UpdateSound();
+
+	if (isReloading)
+	{
+		if (!reloadingSoundPlayed)
+		{
+			reloadSound.play();
+			reloadingSoundPlayed = true;
+		}
+	}
+	else
+		reloadingSoundPlayed = false;
+
 	WeaponRotation();
 	FireTimer(deltaTime);
 	Reload(deltaTime);
@@ -58,15 +92,27 @@ void Weapon::Update(float deltaTime, int hoursSlept)
 }
 
 void Weapon::Shoot(sf::Vector2i bulletDirection)
-{		
-	if (fireTimer < fireRate) return;
-	if (currentAmmo <= 0) return;
+{
 	if (isReloading) return;
+	
+	if (fireTimer < fireRate) return;
+
+	if (currentAmmo <= 0)
+	{
+		if (emptyWeaponSound.getStatus() == sf::SoundSource::Stopped)
+		{
+			emptyWeaponSound.play();
+		}		
+		
+		return;
+	}
 
 	sf::Vector2f bulletTrajectory = sf::Vector2f(bulletDirection) - sprite.getPosition();
 	bulletTrajectory = VectorUtility::Normalize(bulletTrajectory);
 
 	currentAmmo--;
+
+	shootSound.play();
 
 	for (int i = 0; i < totalBullets; i++)
 	{
@@ -86,13 +132,25 @@ void Weapon::Shoot(sf::Vector2i bulletDirection)
 void Weapon::ShootUzi(sf::Vector2i bulletDirection)
 {	
 	if (fireTimer < fireRate) return;
-	if (currentAmmo <= 0) return;
+
 	if (isReloading) return;
+	
+	if (currentAmmo <= 0)
+	{
+		if (emptyWeaponSound.getStatus() == sf::SoundSource::Stopped)
+		{
+			emptyWeaponSound.play();
+		}
+		
+		return;
+	}
 
 	sf::Vector2f bulletTrajectory = sf::Vector2f(bulletDirection) - sprite.getPosition();
 	bulletTrajectory = VectorUtility::Normalize(bulletTrajectory);
 
 	currentAmmo--;
+
+	shootSound.play();
 
 	for (int i = 0; i < totalBullets; i++)
 	{
@@ -108,6 +166,12 @@ void Weapon::ShootUzi(sf::Vector2i bulletDirection)
 	}
 }
 
+void Weapon::UpdateSound()
+{
+	shootSound.setVolume(100 * AudioManager::GetAudioRegulator());
+	reloadSound.setVolume(100 * AudioManager::GetAudioRegulator());
+	emptyWeaponSound.setVolume(100 * AudioManager::GetAudioRegulator());
+}
 
 
 void Weapon::Reload(float deltaTime)

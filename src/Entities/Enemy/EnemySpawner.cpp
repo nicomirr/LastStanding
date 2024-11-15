@@ -30,11 +30,11 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	}
 
 	sf::Vector2f zombieScale = { 1.2f, 1.0f };
-	float zombieMinHealth = 21;
-	float zombieMaxHealth = 30;
+	float zombieMinHealth = 18;
+	float zombieMaxHealth = 24;
 	float zombieRegularSpeed = 70;
 	float zombieSpeedNearPlayer = 2.0f;
-	float zombieDamage = 10;
+	float zombieDamage = 4;
 	float zombieAttackDelay = 2.5f;
 	float zombieAnimationSpeed = 3;
 	float zombieDeathAnimationSpeed = 3;
@@ -44,11 +44,11 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	sf::Vector2i zombieSpriteSheetSize = { 146, 294 };
 
 	sf::Vector2f zombieKidScale = { 1.1f, 1.0f };
-	float zombieKidMinHealth = 16;
-	float zombieKidMaxHealth = 25;
+	float zombieKidMinHealth = 12;
+	float zombieKidMaxHealth = 17;
 	float zombieKidRegularSpeed = 100;
 	float zombieKidSpeedNearPlayer = 0.6f;
-	float zombieKidDamage = 5;
+	float zombieKidDamage = 3;
 	float zombieKidAttackDelay = 2.5f;
 	float zombieKidAnimationSpeed = 5;
 	float zombieKidDeathAnimationSpeed = 5;
@@ -58,11 +58,11 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	sf::Vector2i zombieKidSpriteSheetSize = { 108, 198 };
 
 	sf::Vector2f zombieFatScale = { 1.3f, 1.3f };
-	float zombieFatMinHealth = 33;
-	float zombieFatMaxHealth = 45;
+	float zombieFatMinHealth = 26;
+	float zombieFatMaxHealth = 30;
 	float zombieFatRegularSpeed = 55;
 	float zombieFatSpeedNearPlayer = 1.0f;
-	float zombieFatDamage = 20;
+	float zombieFatDamage = 6;
 	float zombieFatAttackDelay = 2.5f;
 	float zombieFatAnimationSpeed = 2;
 	float zombieFatDeathAnimationSpeed = 1;
@@ -128,7 +128,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveOneMaxSpawnEnemies = 2;
 	float waveOneMinSpawnTime = 4.5;
 	float waveOneMaxSpawnTime = 7;
-	float waveOneDuration = 30;
+	float waveOneDuration = 45;
 
 	//OLEADA 2
 
@@ -157,7 +157,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveTwoMaxSpawnEnemies = 2;
 	float waveTwoMinSpawnTime = 4.5;
 	float waveTwoMaxSpawnTime = 6;
-	float waveTwoDuration = 30;
+	float waveTwoDuration = 60;
 
 	//OLEADA 3
 
@@ -194,7 +194,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveThreeMaxSpawnEnemies = 2;
 	float waveThreeMinSpawnTime = 5.5;
 	float waveThreeMaxSpawnTime = 7;
-	float waveThreeDuration = 30;
+	float waveThreeDuration = 60;
 
 	//OLEADA 4
 
@@ -227,7 +227,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	int waveFourMaxSpawnEnemies = 2;
 	float waveFourMinSpawnTime = 5;
 	float waveFourMaxSpawnTime = 6.5;
-	float waveFourDuration = 30;
+	float waveFourDuration = 80;
 
 	//OLEADA 5
 
@@ -259,9 +259,9 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	int waveFiveMinSpawnEnemies = 2;
 	int waveFiveMaxSpawnEnemies = 3;
-	float waveFiveMinSpawnTime = 5;
-	float waveFiveMaxSpawnTime = 7;
-	float waveFiveDuration = 30;
+	float waveFiveMinSpawnTime = 6;
+	float waveFiveMaxSpawnTime = 9;
+	float waveFiveDuration = 80;
 
 
 	//OLEADA 6
@@ -292,11 +292,11 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	}
 
 
-	int waveSixMinSpawnEnemies = 3;
+	int waveSixMinSpawnEnemies = 2;
 	int waveSixMaxSpawnEnemies = 3;
-	float waveSixMinSpawnTime = 5;
-	float waveSixMaxSpawnTime = 7;
-	float waveSixDuration = 30;
+	float waveSixMinSpawnTime = 6;
+	float waveSixMaxSpawnTime = 8;
+	float waveSixDuration = 100;
 
 	
 
@@ -379,6 +379,9 @@ void EnemySpawner::Update(float deltaTime, sf::Vector2f playerPos)
 
 	waveTimer += deltaTime;
 
+	std::cout << (int)waveTimer << std::endl;
+	std::cout << waves[currentWaveIndex]->waveDuration - 10 << std::endl;
+
 	if (waveTimer >= (waves[currentWaveIndex]->waveDuration - 10))
 	{
 		TimeClock::StartClockRotation();
@@ -430,9 +433,10 @@ void EnemySpawner::ResetEnemySpawner()
 {
 	waveTimer = 0;
 
-	for (int j = 0; j < waves[currentWaveIndex]->enemies.size(); j++)
+	for (int i = 0; i < waves[currentWaveIndex]->enemies.size(); i++)
 	{
-		waves[currentWaveIndex]->enemies[j]->SetIsActive(false);
+		waves[currentWaveIndex]->enemies[i]->SetIsActive(false);
+		waves[currentWaveIndex]->enemies[i]->ResetEnemy();
 	}
 
 	currentWaveIndex = 0;

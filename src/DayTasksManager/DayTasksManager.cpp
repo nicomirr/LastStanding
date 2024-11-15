@@ -131,17 +131,17 @@ void DayTasksManager::Scavenge(int hours)
 	int randomNum = RandomNum::RandomRange(0, 100);
 
 	if (hours <= 2)
-		weaponFindChance = 20;		//10
+		weaponFindChance = 20;		
 	else if (hours <= 4)
-		weaponFindChance = 30;
-	else if (hours <= 6)
 		weaponFindChance = 45;
-	else if (hours <= 8)
-		weaponFindChance = 55;
-	else if (hours <= 10)
+	else if (hours <= 6)
 		weaponFindChance = 65;
+	else if (hours <= 8)
+		weaponFindChance = 70;
+	else if (hours <= 10)
+		weaponFindChance = 80;
 	else if (hours <= 12)
-		weaponFindChance = 75;
+		weaponFindChance = 90;
 	
 	if (randomNum <= weaponFindChance)
 	{

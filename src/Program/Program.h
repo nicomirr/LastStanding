@@ -2,6 +2,7 @@
 
 #include<iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "../Entities/Player/Player.h"
 #include "../Entities/Enemy/EnemySpawner.h"
 #include "../Entities/Enviroment/Fence.h"
@@ -23,6 +24,7 @@
 #include "../Entities/Enviroment/SOSSign.h"
 #include "../Entities/HUD/PopUpWindow.h"
 #include "../Score/Scoreboard.h"
+#include "../Audio/AudioManager.h"
 
 
 class Program
@@ -33,6 +35,15 @@ public:
 	static sf::Vector2i const GetMousePosition(){ return mousePosition; }
 
 private:
+
+	bool isPaused;
+	
+	Entity* pauseBackground;
+	sf::Text* pauseMainMenuButton;
+	sf::Text* pauseRetryButton;
+	sf::Text* pauseExitButton;
+	Entity* pauseCloseButton;
+
 	int windowWidth;
 	int windowHeight;
 
@@ -115,6 +126,19 @@ private:
 	Entity* mainMenuButton;
 	Entity* exitButton;
 
+	Entity* bedTutorialImage;
+	Entity* carTutorialImage;
+	Entity* toolboxTutorialImage;
+	Entity* bricksTutorialImage;
+	Entity* planksTutorialImage;
+	Entity* sosTutorialImage;
+
+	sf::Text* bedTutorialImageText;
+	sf::Text* carTutorialImageText;
+	sf::Text* toolboxTutorialImageText;
+	sf::Text* bricksTutorialImageText;
+	sf::Text* planksTutorialImageText;
+	sf::Text* sosTutorialImageText;
 
 	HoursInterface* carHoursInterface;
 	HoursInterface* toolboxHoursInterface;
@@ -145,8 +169,20 @@ private:
 	sf::Text* goodEndingText;
 	sf::Text* badEndingText;
 
+	sf::SoundBuffer windBuffer;
+	sf::Sound windSound;
+
+	sf::SoundBuffer zombieHordeBuffer;
+	sf::Sound zombieHordeSound;
+
+	sf::SoundBuffer horrorAmbienceBuffer;
+	sf::Sound horrorAmbienceSound;
+
 	bool isGoodEnding;
 	bool isBadEnding;
+
+	bool goodEndingPointsAdded;
+	bool badEndingPointsAdded;
 
 	float gameOverTimer;
 	float endingTimer;
@@ -231,12 +267,28 @@ private:
 
 	void CreateNewHighscoreNameText();
 
+	void CreateBedTutorialImage();
+	void CreateCarTutorialImage();
+	void CreateToolboxTutorialImage();
+	void CreateBricksTutorialImage();
+	void CreatePlanksTutorialImage();
+	void CreateSOSTutorialImage();
+
+	void CreateWindSound();
+	void CreateZombieHordeSound();
+	void CreateHorrorAmbienceSound();
+
+	void CreatePause();
+
 	void NightTimeUpdate(float deltaTime);	
 	void DayTimeUpdate(float deltaTime);
 
 	void UpdateHourInterfaces(float deltaTime);
 
 	void UpdateGameOver();
+	void UpdatePause();
+
+	void UpdateSound();
 
 	void DrawPlayer();
 	void DrawEButton();	
@@ -326,6 +378,10 @@ private:
 
 	void DrawSOSSign();
 
+	void DrawTutorial();
+
+	void DrawInputNewHighscore();
+
 	void DrawScores();
 
 	void DrawGameOverText(float delaTime);
@@ -340,6 +396,8 @@ private:
 	void DrawHUDBullets();
 	void DrawDate();
 	
+	void DrawPause();
+
 	void InputHighScoreName();
 
 	void DrawTransitionScreen();

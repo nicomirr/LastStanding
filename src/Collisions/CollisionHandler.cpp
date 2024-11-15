@@ -5,10 +5,37 @@ std::vector<Entity*> CollisionHandler::entities;
 float CollisionHandler::addSubstractHoursTimer;
 float CollisionHandler::okButtonTimer;
 
+sf::SoundBuffer CollisionHandler::doorBuffer;
+sf::Sound CollisionHandler::doorSound;
+
+sf::SoundBuffer CollisionHandler::bookBuffer;
+sf::Sound CollisionHandler::bookSound;
+
 void CollisionHandler::AddCollision(Entity* entity)
 {
 	entities.push_back(entity);
 }
+
+void CollisionHandler::CreateSounds()
+{
+	std::string doorFilePath = "res\\audio\\door\\Door.mp3";
+
+	doorBuffer.loadFromFile(doorFilePath);
+
+	doorSound.setBuffer(doorBuffer);
+	doorSound.setVolume(100);
+	doorSound.setLoop(false);
+
+
+	std::string bookFilePath = "res\\audio\\inside\\BookSound.mp3";
+
+	bookBuffer.loadFromFile(bookFilePath);
+
+	bookSound.setBuffer(bookBuffer);
+	bookSound.setVolume(100);
+	bookSound.setLoop(false);
+}
+
 
 void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window, HoursInterface* carHoursInterface,
 	HoursInterface* toolboxHoursInterface, HoursInterface* planksHoursInterface, HoursInterface* bricksHoursInterface,
@@ -68,19 +95,20 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 				}
-
-				if (entities[i]->GetTag() == Tag::Enemy && entities[j]->GetTag() == Tag::Fence)
+				else if (entities[j]->GetTag() == Tag::Bullet && entities[i]->GetTag() == Tag::Enemy)
 				{
-					if (static_cast<Enemy*>(entities[i])->GetIsActive())
+					if (static_cast<Bullet*>(entities[i])->GetIsActive())
 					{
-						if (entities[i]->onCollission(*entities[i], *entities[j]))
+						if (static_cast<Enemy*>(entities[i])->GetIsActive())
 						{
-							if (static_cast<Enemy*>(entities[i])->GetIsAlive() &&
-								!static_cast<Enemy*>(entities[i])->GetIsAttackingPlayer() &&
-								!static_cast<Fence*>(entities[j])->GetIsFenceBroken())
+							if (entities[j]->onCollission(*entities[j], *entities[i]))
 							{
-								static_cast<Enemy*>(entities[i])->SetIsAttackingFence(true);
-								static_cast<Enemy*>(entities[i])->Attack(static_cast<Fence*>(entities[j]), deltaTime);
+								if (static_cast<Enemy*>(entities[i])->GetIsAlive())
+								{
+									static_cast<Enemy*>(entities[i])->
+										TakeDamage(static_cast<Bullet*>(entities[j])->GetDamage());
+									static_cast<Bullet*>(entities[j])->SetIsActive(false);
+								}
 							}
 						}
 					}
@@ -102,7 +130,23 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 				}
-
+				else if (entities[j]->GetTag() == Tag::Enemy && entities[i]->GetTag() == Tag::Fence)
+				{
+					if (static_cast<Enemy*>(entities[j])->GetIsActive())
+					{
+						if (entities[j]->onCollission(*entities[j], *entities[i]))
+						{
+							if (static_cast<Enemy*>(entities[j])->GetIsAlive() &&
+								!static_cast<Enemy*>(entities[j])->GetIsAttackingPlayer() &&
+								!static_cast<Fence*>(entities[i])->GetIsFenceBroken())
+							{
+								static_cast<Enemy*>(entities[j])->SetIsAttackingFence(true);
+								static_cast<Enemy*>(entities[j])->Attack(static_cast<Fence*>(entities[i]), deltaTime);
+							}
+						}
+					}
+				}
+				
 
 				if (entities[i]->GetTag() == Tag::Enemy && entities[j]->GetTag() == Tag::House)
 				{
@@ -243,6 +287,22 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 		}
 	}
+
+
+
+	/*void PushEntitiesApart(Entity* entityA, Entity* entityB)
+	{
+		float distance = VectorUtility::Distance(entityA->Graphic().getPosition(), entityB->Graphic().getPosition());
+		float minDistance = entityA->GetCollissionRadius() + entityB->GetCollissionRadius();
+	
+		if (distance < minDistance)
+		{
+			float overlap = minDistance - distance;
+			sf::Vector2f direction = VectorUtility::Normalize(entityA->Graphic().getPosition() - entityB->Graphic().getPosition());
+			entityA->Graphic().setPosition(entityA->Graphic().getPosition() + direction * (overlap * 0.5f));
+			entityB->Graphic().setPosition(entityB->Graphic().getPosition() - direction * (overlap * 0.5f));
+		}
+	}*/	
 	else if (sceneManager->GetIsDayTimeScene())
 	{
 		sf::Vector2f relativePosition;
@@ -268,6 +328,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 						{
 							HoursInterface::SetIsOpen(false);
+							Player::SetStopSound(false);
 						}
 					}						
 					
@@ -280,6 +341,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 						if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
 						{
+							Player::SetStopSound(false);
 							HoursInterface::SetIsOpen(false);
 						}
 					}
@@ -352,6 +414,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 								if (Player::GetResources() - repairCost >= 0)
 								{
+									Player::SetStopSound(false);
+
 									sceneManager->SetIsTransitioning(true);
 									sceneManager->SetIsFenceTaskTransition(true);
 									sceneManager->SetIsTransitioningTask(true);
@@ -386,6 +450,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 								if (Player::GetResources() - repairCost >= 0)
 								{
+									Player::SetStopSound(false);
+
 									sceneManager->SetIsTransitioning(true);
 									sceneManager->SetIsToolboxTaskTransition(true);
 									sceneManager->SetIsTransitioningTask(true);
@@ -420,6 +486,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 								if (Player::GetResources() - repairCost >= 0)
 								{
+									Player::SetStopSound(false);
+
 									sceneManager->SetIsTransitioning(true);
 									sceneManager->SetIsHouseTaskTransition(true);
 									sceneManager->SetIsTransitioningTask(true);
@@ -449,6 +517,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (okButtonTimer >= waitTime)
 							{																
+								Player::SetStopSound(false);
+
 								sceneManager->SetIsTransitioning(true);
 								sceneManager->SetIsScavengeTaskTransition(true);
 								sceneManager->SetIsTransitioningTask(true);
@@ -473,6 +543,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (okButtonTimer >= waitTime)
 							{
+								Player::SetStopSound(false);
+
 								sceneManager->SetIsTransitioning(true);
 								sceneManager->SetIsSleepTaskTransition(true);
 								sceneManager->SetIsTransitioningTask(true);
@@ -500,6 +572,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 								if (Player::GetResources() - repairCost >= 0)
 								{
+									Player::SetStopSound(false);
+
 									sceneManager->SetIsTransitioning(true);
 									SOSSign::BuildSOSSign();
 									sceneManager->SetIsTransitioningTask(true);
@@ -529,6 +603,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 						{
+							Player::SetStopSound(false);
+
 							dayTasksManager->SetScavengeResultsOpen(false);
 							dayTasksManager->SetShowShotgunHasBeenFoundText(false);
 							dayTasksManager->SetShowUziHasBeenFoundText(false);
@@ -547,6 +623,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 						if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 						{
+							Player::SetStopSound(false);
+							
 							TimeClock::SetEndDayTextOpened(false);
 							sceneManager->SetTransitionToNight(true);
 							entities[i]->Graphic().setPosition(2000, 2000);
@@ -599,12 +677,18 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 								{
 									if (TimeClock::GetCurrentDay() <= 3)
 									{
+										
 										if (Radio::GetWasUsed())
-										{
-											sceneManager->SetIsTransitioning(true);
-
+										{																					
 											if (sceneManager->GetCanUseDoors())
+											{
+												doorSound.setVolume(100 * AudioManager::GetAudioRegulator());
+												doorSound.play();
+
+												sceneManager->SetIsTransitioning(true);
+												
 												sceneManager->SetIsTransitioningToOutside(true);
+											}
 										}
 										else
 										{
@@ -613,10 +697,16 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 									}
 									else
 									{
-										sceneManager->SetIsTransitioning(true);
 
 										if (sceneManager->GetCanUseDoors())
+										{
+											doorSound.setVolume(100 * AudioManager::GetAudioRegulator());
+											doorSound.play();
+
+											sceneManager->SetIsTransitioning(true);
+
 											sceneManager->SetIsTransitioningToOutside(true);
+										}
 									}
 
 									
@@ -638,6 +728,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 									{
 										if (Radio::GetWasUsed())
 										{
+											Player::SetStopSound(true);
+
 											Bed::GetHoursInterface()->SetIsActive(true);
 											HoursInterface::SetIsOpen(true);
 										}
@@ -648,6 +740,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 									}
 									else
 									{
+										Player::SetStopSound(true);
+
 										Bed::GetHoursInterface()->SetIsActive(true);
 										HoursInterface::SetIsOpen(true);
 									}
@@ -758,11 +852,15 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
 								if (TimeClock::GetHours() > 0)
-								{
-									sceneManager->SetIsTransitioning(true);
-
+								{							
 									if (sceneManager->GetCanUseDoors())
+									{					
+										doorSound.setVolume(100 * AudioManager::GetAudioRegulator());
+										doorSound.play();
+
+										sceneManager->SetIsTransitioning(true);
 										sceneManager->SetIsTransitioningToInside(true);
+									}
 								}
 																
 							}
@@ -777,6 +875,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (TimeClock::GetHours() > 0)
 								{
+									Player::SetStopSound(true);
+
 									carHoursInterface->SetIsActive(true);
 									HoursInterface::SetIsOpen(true);
 								}								
@@ -792,6 +892,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (TimeClock::GetHours() > 0)
 								{
+									Player::SetStopSound(true);
+
 									toolboxHoursInterface->SetIsActive(true);
 									HoursInterface::SetIsOpen(true);
 								}
@@ -808,6 +910,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (TimeClock::GetHours() > 0)
 								{
+									Player::SetStopSound(true);
+
 									planksHoursInterface->SetIsActive(true);
 									HoursInterface::SetIsOpen(true);
 								}								
@@ -823,6 +927,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							{
 								if (TimeClock::GetHours() > 0)
 								{
+									Player::SetStopSound(true);
+
 									bricksHoursInterface->SetIsActive(true);
 									HoursInterface::SetIsOpen(true);
 								}
@@ -842,6 +948,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 								{
 									if (TimeClock::GetHours() > 0)
 									{
+										Player::SetStopSound(true);
+
 										sosSignHoursInterface->SetIsActive(true);
 										HoursInterface::SetIsOpen(true);
 									}
@@ -870,6 +978,46 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 				{
 					relativePosition = entities[i]->Graphic().getPosition() - entities[j]->Graphic().getPosition();
 
+					float waitTime = 0.2f;
+
+
+					if (entities[i]->GetTag() == Tag::AddVolumeButton)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								if (addSubstractHoursTimer >= waitTime)
+								{
+									AudioManager::AddVolume();
+									addSubstractHoursTimer = 0;
+								}
+
+							}
+						}
+
+					}			
+
+					if (entities[i]->GetTag() == Tag::SubstractVolumeButton)
+					{
+						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+						{
+							sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
+							{
+								if (addSubstractHoursTimer >= waitTime)
+								{
+									AudioManager::ReduceVolume();
+									addSubstractHoursTimer = 0;
+								}
+							}
+						}
+
+					}
+
 					if (entities[i]->GetTag() == Tag::ClosePopUpWindow)
 					{
 						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -878,6 +1026,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 							{
+								Player::SetStopSound(false);
+
 								bedWindow->SetIsActive(false);
 								calendarWindow->SetIsActive(false);
 								boardWindow->SetIsActive(false);
@@ -897,6 +1047,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 							if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
 							{
+								Player::SetStopSound(false);
+
 								bedWindow->SetIsActive(false);
 								calendarWindow->SetIsActive(false);
 								boardWindow->SetIsActive(false);
@@ -908,6 +1060,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
+
 					if (entities[i]->GetTag() == Tag::OkPopUpWindowBed)
 					{
 						if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -916,6 +1069,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 							{
+								Player::SetStopSound(false);
+
 								PopUpWindow::SetPopUpWindowOpen(false);
 								
 								sceneManager->SetIsTransitioning(true);
@@ -923,7 +1078,9 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							}
 						}
 					}
-										
+					
+				
+
 					if (entities[i]->GetTag() == Tag::Player && ((entities[j]->GetTag() == Tag::Wall) || (entities[j]->GetTag() == Tag::Limit) ||
 						(entities[j]->GetTag() == Tag::Bed) || (entities[j]->GetTag() == Tag::Radio) || (entities[j]->GetTag() == Tag::Chair) ||
 						(entities[j]->GetTag() == Tag::Table)))
@@ -950,11 +1107,15 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-							{
+							{								
 								if (sceneManager->GetCanUseDoors())
-								{
+								{				
+									doorSound.setVolume(100 * AudioManager::GetAudioRegulator());
+									doorSound.play();
+
 									sceneManager->SetIsTransitioning(true);
-									sceneManager->SetIsTransitioningToOutside(true);															
+									sceneManager->SetIsTransitioningToOutside(true);	
+
 								}
 
 							}
@@ -967,6 +1128,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
+								Player::SetStopSound(true);
+
 								bedWindow->SetIsActive(true);
 								PopUpWindow::SetPopUpWindowOpen(true);
 							}
@@ -979,6 +1142,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
+								Player::SetStopSound(true);
+
 								radioWindow->SetIsActive(true);
 								PopUpWindow::SetPopUpWindowOpen(true);
 							}
@@ -992,6 +1157,11 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
+								Player::SetStopSound(true);
+
+								bookSound.setVolume(100 * AudioManager::GetAudioRegulator());
+								bookSound.play();
+
 								bookWindow->SetIsActive(true);
 								PopUpWindow::SetPopUpWindowOpen(true);
 							}
@@ -1004,6 +1174,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
+								Player::SetStopSound(true);
+
 								calendarWindow->SetIsActive(true);
 								PopUpWindow::SetPopUpWindowOpen(true);
 							}
@@ -1016,6 +1188,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{
+								Player::SetStopSound(true);
+
 								boardWindow->SetIsActive(true);
 								PopUpWindow::SetPopUpWindowOpen(true);
 							}
@@ -1041,6 +1215,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 							if (entities[i]->Graphic().getGlobalBounds().contains(mousePos))
 							{
+								Player::SetStopSound(false);
+
 								carWindow->SetIsActive(false);
 								PopUpWindow::SetPopUpWindowOpen(false);
 							}
@@ -1055,6 +1231,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 							if (entities[j]->Graphic().getGlobalBounds().contains(mousePos))
 							{
+								Player::SetStopSound(false);
+
 								carWindow->SetIsActive(false);	
 								PopUpWindow::SetPopUpWindowOpen(false);
 							}
@@ -1086,7 +1264,8 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						}
 					}
 
-					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside || entities[j]->GetTag() == Tag::CarCollider))
+					if (entities[i]->GetTag() == Tag::Player && (entities[j]->GetTag() == Tag::DoorColliderOutside || 
+						entities[j]->GetTag() == Tag::CarCollider))
 					{
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
@@ -1101,7 +1280,10 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 							{		
 								if (sceneManager->GetCanUseDoors())
-								{
+								{			
+									doorSound.setVolume(100 * AudioManager::GetAudioRegulator());
+									doorSound.play();
+
 									sceneManager->SetIsTransitioning(true);
 									sceneManager->SetIsTransitioningToInside(true);
 
@@ -1116,13 +1298,15 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 						if (entities[i]->onCollission(*entities[i], *entities[j]))
 						{
 							if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-							{								
+							{							
+								Player::SetStopSound(true);
+
 								carWindow->SetIsActive(true);
 								PopUpWindow::SetPopUpWindowOpen(true);
 							}
 						}
 					}
-									
+														
 				}
 
 			}
@@ -1132,6 +1316,7 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 	}
 	
 }
+
 
 
 

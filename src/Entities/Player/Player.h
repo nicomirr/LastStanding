@@ -13,7 +13,14 @@
 class Player :  public AnimatedEntity, public Moveable
 {
 private:
+	static bool playerStopSound;
 	static int score;
+
+	sf::SoundBuffer insideFootstepsBuffer;
+	sf::Sound insideFootstepsSound;
+
+	sf::SoundBuffer outsideFootstepsBuffer;
+	sf::Sound outsideFootstepsSound;
 
 	Entity* eButton;
 
@@ -63,6 +70,8 @@ public:
 	static void SetHasShotgun(bool value) { hasShotgun = true; }
 	static void SetHasUzi(bool value) { hasUzi = true; }
 
+	static void SetStopSound(bool value) { playerStopSound = value; }
+
 	static int GetScore() { return score; }
 	static void AddScore(int value) { score += value; }
 
@@ -74,6 +83,8 @@ public:
 	void EButtonOn();
 	void EButtonOff();
 	void Die();
+
+	void UpdateSound();
 
 	void ResetPlayer();
 	/*

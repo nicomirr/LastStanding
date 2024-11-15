@@ -135,6 +135,37 @@ void Program::Initialize()
 
 	CreateCreditsText();
 
+	CreateBedTutorialImage();
+
+	CreateCarTutorialImage();
+
+	CreateToolboxTutorialImage();
+
+	CreateBricksTutorialImage();
+
+	CreatePlanksTutorialImage();
+
+	CreateSOSTutorialImage();
+
+	CreateWindSound();
+
+	CreateZombieHordeSound();
+
+	CreateHorrorAmbienceSound();
+
+	CreatePause();
+
+	CollisionHandler::CreateSounds();
+
+	AudioManager::CreateButtonLeft();
+	AudioManager::CreateButtonRight();
+
+	AudioManager::CreateFont();
+	AudioManager::CreatePercentageText();
+
+	CollisionHandler::AddCollision(AudioManager::GetButtonLeft());
+	CollisionHandler::AddCollision(AudioManager::GetButtonRight());
+
 	for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
 	{
 		node->second->SetNodeState(CollisionHandler::GetEntities(), node->second);
@@ -187,7 +218,14 @@ void Program::Input()
 
 		window->setMouseCursor(cursor);
 
-		player->Input(event);
+		if (player->GetIsAlive() && !sceneManager->GetIsEnding() && !sceneManager->GetIsTitleScene())
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+				isPaused = true;
+		}
+			
+		if(!isPaused)
+			player->Input(event);
 
 		sf::Mouse mouse;
 	}
@@ -195,25 +233,81 @@ void Program::Input()
 
 void Program::Update()
 {	
+	if (!player->GetIsAlive() || sceneManager->GetIsEnding() || sceneManager->GetIsTitleScene())
+		isPaused = false;
+
+	UpdatePause();
+
 	mousePosition = sf::Mouse::getPosition(*window);
 	deltaTime = clock.restart().asSeconds();
 
-	sceneManager->Update(dayTasksManager, deltaTime);
+	sceneManager->Update(dayTasksManager, deltaTime, sosSign->GetSignBuilt());
 
 	Fence::GetHealthPercentage(fences);
 	car->GetHealthPercentage();
 	house->GetHealthPercentage();
 
+	AudioManager::Update();
+	UpdateSound();
 
-	if (sceneManager->GetIsNightTimeScene())
+	if (sceneManager->GetIsOutsidePlayerHouse())
 	{
-		NightTimeUpdate(deltaTime);
+		if (sceneManager->GetIsNightTimeScene())
+		{
+			windSound.stop();
+
+			if (gameOverTimer < 5 && endingTimer < 2)
+			{
+				if (!SceneManager::GetIsEnding())
+				{
+					if (zombieHordeSound.getStatus() == sf::SoundSource::Stopped)
+						zombieHordeSound.play();
+
+					if (horrorAmbienceSound.getStatus() == sf::SoundSource::Stopped)
+						horrorAmbienceSound.play();
+				}
+				else
+				{
+					horrorAmbienceSound.stop();
+					zombieHordeSound.stop();
+				}
+			}
+
+		}
+		else if (sceneManager->GetIsDayTimeScene() || sceneManager->GetIsTitleScene())
+		{
+			horrorAmbienceSound.stop();
+			zombieHordeSound.stop();
+
+
+			if (windSound.getStatus() == sf::SoundSource::Stopped)
+				windSound.play();
+		}		
 	}
-	else if (sceneManager->GetIsDayTimeScene())
+	else if (sceneManager->GetIsInsidePlayerHouse())
 	{
-		DayTimeUpdate(deltaTime);
+		if (windSound.getStatus() == sf::SoundSource::Playing)
+		{
+			windSound.stop();
+		}
+			horrorAmbienceSound.stop();
+			zombieHordeSound.stop();
 	}
-	else if (sceneManager->GetIsTitleScene())
+
+	if (!isPaused)
+	{
+		if (sceneManager->GetIsNightTimeScene())
+		{
+			NightTimeUpdate(deltaTime);
+		}
+		else if (sceneManager->GetIsDayTimeScene())
+		{
+			DayTimeUpdate(deltaTime);
+		}
+		
+	}
+	
+	if (sceneManager->GetIsTitleScene())
 	{
 		for (int i = 0; i < fences.size(); i++)
 		{
@@ -226,6 +320,7 @@ void Program::Update()
 
 		player->Update(deltaTime);
 	}
+
 	/*for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
 	{
 		node->second->Update(CollisionHandler::GetEntities(), node->second);				
@@ -236,11 +331,15 @@ void Program::Update()
 	if (sceneManager->GetIsGameOver())
 		UpdateGameOver();
 
-	InputHighScoreName();
+	if (gameOverTimer >= 5 || endingTimer >= 2)
+	{
+		zombieHordeSound.stop();
+		horrorAmbienceSound.stop();
+		InputHighScoreName();
+	}
 
 	CollisionHandler::SolveCollisions(deltaTime, sceneManager, window, carHoursInterface, toolboxHoursInterface, planksHoursInterface, bricksHoursInterface,
 		bed->GetHoursInterface(), sosSign->GetHoursInterface(), dayTasksManager, carWindow, bookWindow, calendarWindow, boardWindow, bedWindow, radioWindow);	
-
 
 }
 
@@ -323,6 +422,8 @@ void Program::Draw()
 		
 		DrawScores();
 
+		DrawTutorial();
+
 		DrawTransitionScreen();				
 
 	}
@@ -335,11 +436,12 @@ void Program::Draw()
 
 	DrawCreditsText();
 
+	DrawPause();
+
 	//if(endingTimer >= 5)			//DEBE PAUSARSE LO DE E
 		
-		
-	window->draw(*newHighscoreNameText);
-
+	if((gameOverTimer >= 5 || endingTimer >= 2 ) && scoreboard->GetInputNewHighscoreName())
+		DrawInputNewHighscore();
 
 	window->display();
 }
@@ -399,10 +501,13 @@ void Program::CreateWeapons()
 	float gunMaxBulletDamage = 6;
 	float bulletSpeed = 2000.0f;
 	
+	std::string gunshotFilePath = "res\\audio\\weapons\\pistol\\Gunshot.mp3";
+	std::string pistolReloadFilePath = "res\\audio\\weapons\\pistol\\ReloadSoundPistol.mp3";
+
 
 	gun = new Weapon(gunFireRate, gunReloadTime, gunCapacity, gunOriginX, gunOriginY, gunAnimationFrameSize, gunFilePath, gunSpriteSheetSize,
 		gunBulletMinDamage, gunMaxBulletDamage, bulletSpeed, bulletFilePath, bulletSpriteSheetSize, bulletMaxPosX,
-		bulletMaxPosY);
+		bulletMaxPosY, gunshotFilePath, pistolReloadFilePath);
 
 	gun->SetTag(Tag::Gun);
 	CollisionHandler::AddCollision(gun);
@@ -424,10 +529,13 @@ void Program::CreateWeapons()
 	float shotgunMaxBulletDamage = 20;
 	float shotgunBulletSpeed = 2000.0f;
 
+	std::string shotgunShotFilePath = "res\\audio\\weapons\\shotgun\\ShotgunShot.mp3";
+	std::string shotgunReloadFilePath = "res\\audio\\weapons\\shotgun\\ReloadSoundShotgun.mp3";
+
 
 	shotgun = new Weapon(shotgunFireRate, shotgunReloadTime, shotgunCapacity, shotgunOriginX, shotgunOriginY, shotgunAnimationFrameSize, shotgunFilePath, 
 		shotgunSpriteSheetSize,	shotgunBulletMinDamage, shotgunMaxBulletDamage, shotgunBulletSpeed, bulletFilePath, bulletSpriteSheetSize, bulletMaxPosX,
-		bulletMaxPosY);
+		bulletMaxPosY, shotgunShotFilePath, shotgunReloadFilePath);
 
 	shotgun->SetTag(Tag::Shotgun);
 	CollisionHandler::AddCollision(shotgun);
@@ -448,10 +556,13 @@ void Program::CreateWeapons()
 	float uziMaxBulletDamage = 3;
 	float uziBulletSpeed = 2000.0f;
 
+	std::string uziShotFilePath = "res\\audio\\weapons\\uzi\\UziShot.mp3";
+	std::string uziReloadFilePath = "res\\audio\\weapons\\uzi\\ReloadSoundUzi.mp3";
+
 
 	uzi = new Weapon(uziFireRate, uziReloadTime, uziCapacity, uziOriginX, uziOriginY, uziAnimationFrameSize, uziFilePath,
 		uziSpriteSheetSize, uziBulletMinDamage, uziMaxBulletDamage, uziBulletSpeed, bulletFilePath, bulletSpriteSheetSize, bulletMaxPosX,
-		bulletMaxPosY);
+		bulletMaxPosY, uziShotFilePath, uziReloadFilePath);
 
 	uzi->SetTag(Tag::Uzi);
 	CollisionHandler::AddCollision(uzi);
@@ -1457,7 +1568,7 @@ void Program::CreateGameOverOptions()
 
 void Program::CreateCreditsText()
 {
-	creditsText = new sf::Text("                       A Game by Nicolas Mironoff\n\n                                               Art\n         Zombie Apocalypse Tileset by Ittai Manero\n                         Modern interiors by limezu", *font, 13);
+	creditsText = new sf::Text("                       A Game by Nicolas Mironoff\n\n                                               Art\n         Zombie Apocalypse Tileset by Ittai Manero\n                         Modern interiors by limezu\n\n                                             Audio\n                            TileFreesound community", *font, 13);
 	creditsText->setFillColor(sf::Color(88, 83, 74, 255));
 	creditsText->setPosition(452, 400);
 }
@@ -1467,15 +1578,15 @@ void Program::CreateEndingTexts()
 	sf::Color color = sf::Color(88, 83, 74, 255);
 
 	goodEndingText = new sf::Text("									YOU WERE RESCUED\n\n  After building an SOS signal," 
-		" you were found by a rescue team.\n While on the chopper you learned form one of the survivors that\n"
-		"    the infection is wider than you thought. Things seems to be\n getting out  of control everywhere. For now you are safe, but who\n"
+		" you were found by a rescue team.\n While on the chopper you learned from one of the survivors that\n"
+		"    the infection is wider than you thought. Things seems to be\n getting out of control everywhere. For now you are safe, but who\n"
 		"								knows what comes next.\n\n									    Press 'E' to continue", *font, 35);
 	goodEndingText->setPosition(100, 290);
 	goodEndingText->setFillColor(color);
 
 	badEndingText = new sf::Text("									      YOU SURVIVED\n\n  It's been a while since the infection"
 		" started. You survived this long \n  on your own, but who knows how much more of this you can take. \n   Maybe the rescue team" 
-		"   that you missed for your last chance of\n							      survival. Just time will tell."
+		" that you missed was your last chance of\n							      survival. Just time will tell."
 		"\n\n									    Press 'E' to continue", *font, 35);
 	badEndingText->setPosition(67, 290);
 	badEndingText->setFillColor(color);
@@ -1486,7 +1597,181 @@ void Program::CreateNewHighscoreNameText()
 {
 	newHighscoreNameText = new sf::Text("", *font, 18);
 	newHighscoreNameText->setFillColor(sf::Color(125, 125, 125, 255));
-	newHighscoreNameText->setPosition(600, 440);
+	newHighscoreNameText->setPosition(460, 442);
+}
+
+void Program::CreateBedTutorialImage()
+{
+	std::string bedFilePath = "res\\textures\\enviroment\\interior\\Bed.png";
+	sf::Vector2i bedSpriteSheetSize = { 57, 95 };
+
+	bedTutorialImage = new Entity(bedFilePath, bedSpriteSheetSize);
+
+	bedTutorialImage->Graphic().setPosition(460, 430);
+	bedTutorialImage->Graphic().setScale(0.5, 0.5);
+
+	bedTutorialImage->Graphic().setRotation(-90);
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	bedTutorialImageText = new sf::Text("   You need 6\n     hours to\n  aim correctly.", *font, 12);
+	bedTutorialImageText->setPosition(510, 395);
+	bedTutorialImageText->setFillColor(color);
+}
+
+void Program::CreateCarTutorialImage()
+{
+	std::string carFilePath = "res\\textures\\enviroment\\Car.png";
+	sf::Vector2i carSpriteSheetSize = { 70, 122 };
+
+	carTutorialImage = new Entity(carFilePath, carSpriteSheetSize);
+
+	carTutorialImage->Graphic().setPosition(455, 480);
+	carTutorialImage->Graphic().setScale(0.45, 0.45);
+
+	carTutorialImage->Graphic().setRotation(-90);
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	carTutorialImageText = new sf::Text("      Get scrap\n   and weapons.", *font, 12);
+	carTutorialImageText->setPosition(510, 450);
+	carTutorialImageText->setFillColor(color);
+}
+
+void Program::CreateToolboxTutorialImage()
+{
+	std::string toolboxFilePath = "res\\textures\\enviroment\\Toolbox.png";
+	sf::Vector2i toolboxSpriteSheetSize = { 24, 22 };
+
+	toolboxTutorialImage = new Entity(toolboxFilePath, toolboxSpriteSheetSize);
+
+	toolboxTutorialImage->Graphic().setPosition(471, 495);
+	toolboxTutorialImage->Graphic().setScale(1.25, 1.25);
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	toolboxTutorialImageText = new sf::Text("   Fix your car.", *font, 12);
+	toolboxTutorialImageText->setPosition(510, 500);
+	toolboxTutorialImageText->setFillColor(color);
+}
+
+void Program::CreateBricksTutorialImage()
+{
+	std::string bricksFilePath = "res\\textures\\enviroment\\Bricks.png";
+	sf::Vector2i bricksSpriteSheetSize = { 40, 21 };
+
+	bricksTutorialImage = new Entity(bricksFilePath, bricksSpriteSheetSize);
+
+	bricksTutorialImage->Graphic().setPosition(608, 410);
+	bricksTutorialImage->Graphic().setScale(1, 1);
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	bricksTutorialImageText = new sf::Text("   Fix your house.\n      (game over \n      if destroyed)", *font, 12);
+	bricksTutorialImageText->setPosition(647, 395);
+	bricksTutorialImageText->setFillColor(color);
+}
+
+void Program::CreatePlanksTutorialImage()
+{
+	std::string planksFilePath = "res\\textures\\enviroment\\Planks.png";
+	sf::Vector2i planksSpriteSheetSize = { 45, 93 };
+
+	planksTutorialImage = new Entity(planksFilePath, planksSpriteSheetSize);
+
+	planksTutorialImage->Graphic().setPosition(600, 475);
+	planksTutorialImage->Graphic().setScale(0.6, 0.6);
+
+	planksTutorialImage->Graphic().setRotation(-90);
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	planksTutorialImageText = new sf::Text("   Fix fences.", *font, 12);
+	planksTutorialImageText->setPosition(660, 452);
+	planksTutorialImageText->setFillColor(color);
+}
+
+void Program::CreateSOSTutorialImage()
+{
+	std::string sosSignFilePath = "res\\textures\\enviroment\\SOSSign.png";
+	sf::Vector2i sosSignSpriteSheetSize = { 97, 36 };
+
+	sosTutorialImage = new Entity(sosSignFilePath, sosSignSpriteSheetSize);
+
+	sosTutorialImage->Graphic().setPosition(605, 495);
+	sosTutorialImage->Graphic().setScale(0.5, 0.5);
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	sosTutorialImageText = new sf::Text("   You have to\n       build it.", *font, 12);
+	sosTutorialImageText->setPosition(660, 490);
+	sosTutorialImageText->setFillColor(color);
+}
+
+void Program::CreateWindSound()
+{
+	std::string windFilePath = "res\\audio\\outside\\Wind.mp3";
+	windBuffer.loadFromFile(windFilePath);
+
+	windSound.setBuffer(windBuffer);
+	windSound.setVolume(100);
+	windSound.setLoop(true);
+}
+
+void Program::CreateZombieHordeSound()
+{
+	std::string zombieHordeFilePath = "res\\audio\\outside\\ZombieHorde.mp3";
+	zombieHordeBuffer.loadFromFile(zombieHordeFilePath);
+
+	zombieHordeSound.setBuffer(zombieHordeBuffer);
+	zombieHordeSound.setVolume(100);
+	zombieHordeSound.setLoop(false);
+}
+
+void Program::CreateHorrorAmbienceSound()
+{
+	std::string horrorAmbienceFilePath = "res\\audio\\outside\\HorrorAmbience.mp3";
+	horrorAmbienceBuffer.loadFromFile(horrorAmbienceFilePath);
+
+	horrorAmbienceSound.setBuffer(horrorAmbienceBuffer);
+	horrorAmbienceSound.setVolume(100);
+	horrorAmbienceSound.setLoop(true);
+}
+
+void Program::CreatePause()
+{
+	std::string backgroundImageFilePath = "res\\textures\\time\\HoursInterface.png";
+	sf::Vector2i backgroundSpriteSheetSize = { 168, 107 };
+	pauseBackground = new Entity(backgroundImageFilePath, backgroundSpriteSheetSize);
+
+	pauseBackground->Graphic().setOrigin(84, 53);
+	pauseBackground->Graphic().setPosition(600, 440);
+	pauseBackground->Graphic().setScale({ 2, 2 });
+	 
+
+	std::string buttonCloseImageFilePath = "res\\textures\\time\\ButtonClose.png";
+	sf::Vector2i buttonCloseSpriteSheetSize = { 10, 10 };
+	pauseCloseButton = new Entity(buttonCloseImageFilePath, buttonCloseSpriteSheetSize);
+
+	pauseCloseButton->Graphic().setOrigin(5, 5);
+	pauseCloseButton->Graphic().setPosition(730, 365);
+	pauseCloseButton->Graphic().setScale({ 2, 2 });
+
+
+	sf::Color color = sf::Color(88, 83, 74, 255);
+
+	pauseRetryButton = new sf::Text("Restart", *font, 22);
+	pauseRetryButton->setPosition(564, 393);
+	pauseRetryButton->setFillColor(color);
+
+	pauseMainMenuButton = new sf::Text("Main Menu", *font, 22);
+	pauseMainMenuButton->setPosition(543, 430);
+	pauseMainMenuButton->setFillColor(color);
+
+	pauseExitButton = new sf::Text("Exit", *font, 22);
+	pauseExitButton->setPosition(583, 468);
+	pauseExitButton->setFillColor(color);
+
 }
 
 
@@ -1553,21 +1838,60 @@ void Program::UpdateGameOver()
 {
 	sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) 
-	{		
-		if (restartText->getGlobalBounds().contains(mousePos)) 
+	if (!scoreboard->GetInputNewHighscoreName())
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
-			RestartGame();			
-		}
-		else if (mainMenuText->getGlobalBounds().contains(mousePos))
-		{		
-			GoMainMenu();
-		}
-		else if (exitText->getGlobalBounds().contains(mousePos))
-		{
-			exit(0);
+			if (restartText->getGlobalBounds().contains(mousePos))
+			{
+				RestartGame();
+			}
+			else if (mainMenuText->getGlobalBounds().contains(mousePos))
+			{
+				GoMainMenu();
+			}
+			else if (exitText->getGlobalBounds().contains(mousePos))
+			{
+				exit(0);
+			}
 		}
 	}
+	
+}
+
+void Program::UpdatePause()
+{
+	sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+
+	if (isPaused)
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			if (pauseRetryButton->getGlobalBounds().contains(mousePos))
+			{
+				RestartGame();
+			}
+			else if (pauseMainMenuButton->getGlobalBounds().contains(mousePos))
+			{
+				GoMainMenu();
+			}
+			else if (pauseExitButton->getGlobalBounds().contains(mousePos))
+			{
+				exit(0);
+			}
+			else if (pauseCloseButton->Graphic().getGlobalBounds().contains(mousePos))
+			{
+				isPaused = false;
+			}
+		}
+	}
+}
+
+void Program::UpdateSound()
+{
+	windSound.setVolume(100 * AudioManager::GetAudioRegulator());
+	zombieHordeSound.setVolume(100 * AudioManager::GetAudioRegulator());
+	horrorAmbienceSound.setVolume(100 * AudioManager::GetAudioRegulator());
 }
 
 
@@ -2037,6 +2361,32 @@ void Program::DrawDate()
 	window->draw(*timeClock->GetDateText());
 }
 
+void Program::DrawPause()
+{
+	if (isPaused)
+	{
+		pauseBackground->Graphic().setPosition(600, 440);
+		pauseCloseButton->Graphic().setPosition(730, 365);
+		pauseRetryButton->setPosition(570, 393);
+		pauseMainMenuButton->setPosition(547, 430);
+		pauseExitButton->setPosition(587, 468);
+
+		window->draw(pauseBackground->Graphic());
+		window->draw(*pauseMainMenuButton);
+		window->draw(*pauseRetryButton);
+		window->draw(*pauseExitButton);
+		window->draw(pauseCloseButton->Graphic());
+	}	
+	else
+	{
+		pauseBackground->Graphic().setPosition(2600, 440);
+		pauseCloseButton->Graphic().setPosition(2730, 365);
+		pauseRetryButton->setPosition(2570, 393);
+		pauseMainMenuButton->setPosition(2547, 430);
+		pauseExitButton->setPosition(2587, 468);
+	}
+}
+
 
 void Program::DrawTransitionScreen()
 {
@@ -2402,12 +2752,58 @@ void Program::DrawRadioWindow()
 		window->draw(radioWindow->GetButtonClose()->Graphic());
 
 		window->draw(*radioWindow->GetText());
+
+		window->draw(AudioManager::GetButtonLeft()->Graphic());
+		window->draw(AudioManager::GetButtonRight()->Graphic());
+
+		window->draw(*AudioManager::GetPercentageText());
 	}
 }
 
 void Program::DrawSOSSign()
 {	
 	window->draw(sosSign->Graphic());
+}
+
+void Program::DrawTutorial()
+{
+	if (bookWindow->GetIsActive())
+	{
+		window->draw(bedTutorialImage->Graphic());
+		window->draw(*bedTutorialImageText);
+
+		window->draw(carTutorialImage->Graphic());
+		window->draw(*carTutorialImageText);
+
+		window->draw(toolboxTutorialImage->Graphic());
+		window->draw(*toolboxTutorialImageText);
+		
+		window->draw(bricksTutorialImage->Graphic());
+		window->draw(*bricksTutorialImageText);
+
+		window->draw(planksTutorialImage->Graphic());
+		window->draw(*planksTutorialImageText);
+
+		window->draw(sosTutorialImage->Graphic());
+		window->draw(*sosTutorialImageText);
+		
+	}
+}
+
+void Program::DrawInputNewHighscore()
+{
+	if (scoreboard->GetInputNewHighscoreName())
+	{
+		std::string playerScore = "New score: " + std::to_string(player->GetScore());
+
+		sf::Text newHighscore(playerScore, *font, 25);
+		newHighscore.setPosition(540, 490);
+		newHighscore.setFillColor(sf::Color(70, 70, 70, 255));
+
+		window->draw(scoreboard->GetNewHighScorePopup()->Graphic());
+		window->draw(*newHighscoreNameText);
+		window->draw(newHighscore);
+	}	
 }
 
 void Program::DrawScores()
@@ -2425,7 +2821,6 @@ void Program::DrawGameOverText(float delaTime)
 {	
 	if (sceneManager->GetIsGameOver())
 	{		
-
 		if(gameOverTimer < 5)
 		{ 
 			gameOverTimer += deltaTime;
@@ -2438,9 +2833,9 @@ void Program::DrawGameOverText(float delaTime)
 		{
 			scoreboard->CheckForNewHighScore();
 
-			restartText->setPosition(612, 603);
-			mainMenuText->setPosition(594, 660);
-			exitText->setPosition(628, 720);
+			restartText->setPosition(600, 603);
+			mainMenuText->setPosition(582, 660);
+			exitText->setPosition(616, 720);
 
 			window->draw(*restartText);
 			window->draw(*mainMenuText);
@@ -2451,6 +2846,8 @@ void Program::DrawGameOverText(float delaTime)
 
 void Program::DrawEndingText()
 {
+	if (scoreboard->GetInputNewHighscoreName()) return;
+
 	if (!eEndingPressed)
 	{
 		if (isGoodEnding)
@@ -2476,8 +2873,6 @@ void Program::DrawHours()
 
 void Program::InputHighScoreName()
 {
-	if (player->GetIsAlive()) return;
-
 	if (scoreboard->GetInputNewHighscoreName())
 	{		
 		std::map <sf::Keyboard::Key, bool> keyPressed;
@@ -2543,21 +2938,37 @@ void Program::InputHighScoreName()
 void Program::Ending(float deltaTime)
 {
 	if (sceneManager->GetDisplayEnding())
-	{
+	{		
 		endingTimer += deltaTime;
 
 		if (endingTimer >= 2)
 		{
+			zombieHordeSound.stop();
+			horrorAmbienceSound.stop();
+
 			if (SOSSign::GetSignBuilt())
 			{
-				isGoodEnding = true;
+				if (!goodEndingPointsAdded)
+				{
+					isGoodEnding = true;
+					player->AddScore(500);
+					goodEndingPointsAdded = true;
+				}
 			}
 			else
 			{
-				isBadEnding = true;
+				if (!badEndingPointsAdded)
+				{
+					isBadEnding = true;
+					player->AddScore(150);
+					badEndingPointsAdded = true;
+				}
+				
 			}
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+			scoreboard->CheckForNewHighScore();
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E) && !scoreboard->GetInputNewHighscoreName())
 			{
 				eEndingPressed = true;
 			}
@@ -2578,12 +2989,15 @@ void Program::Ending(float deltaTime)
 
 void Program::RestartGame()
 {	
+	isPaused = false;
+
+	enemySpawner->ResetEnemySpawner();
+
 	player->ResetPlayer();
 
 	timeClock->ResetTimeClock();
 	sceneManager->ResetSceneManager();
 
-	enemySpawner->ResetEnemySpawner();
 
 	for (int i = 0; i < fences.size(); i++)
 		fences[i]->ResetFence();
@@ -2607,10 +3021,17 @@ void Program::RestartGame()
 	toMainMenuTimer = 0;
 
 	scoreboard->ResetScoreBoard();
+
+	goodEndingPointsAdded = false;
+	badEndingPointsAdded = false;	
 }
 
 void Program::GoMainMenu()
 {	
+	isPaused = false;
+
+	enemySpawner->ResetEnemySpawner();
+	
 	carWindow->SetIsActive(false);
 	bookWindow->SetIsActive(false);
 	calendarWindow->SetIsActive(false);
@@ -2623,7 +3044,6 @@ void Program::GoMainMenu()
 	timeClock->ResetTimeClock();
 	sceneManager->MainMenuSceneManager();
 
-	enemySpawner->ResetEnemySpawner();
 
 	for (int i = 0; i < fences.size(); i++)
 		fences[i]->ResetFence();
@@ -2647,4 +3067,7 @@ void Program::GoMainMenu()
 	toMainMenuTimer = 0;
 
 	scoreboard->ResetScoreBoard();
+
+	goodEndingPointsAdded = false;
+	badEndingPointsAdded = false;
 }
