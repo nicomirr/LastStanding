@@ -13,5 +13,6 @@ public:
 	Bed(std::string imageFilePath, sf::Vector2i spriteSheetSize);
 	static HoursInterface* GetHoursInterface() { return hoursInterface; }
 
+	void Destroy();
 };
 

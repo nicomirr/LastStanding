@@ -35,5 +35,7 @@ public:
 	static std::vector<Entity*> GetEntities() { return entities; };
 
 	static void CreateSounds();
+
+	static void Destroy();
 };
 

@@ -155,3 +155,24 @@ void Car::ResetCar()
 	isDestroyed = false;
 }
 
+void Car::Destroy()
+{
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (percentageText != nullptr)
+	{
+		delete percentageText;
+		percentageText = nullptr;
+	}
+
+	if (healthBar != nullptr)
+	{
+		delete healthBar;
+		healthBar = nullptr;
+	}
+}
+

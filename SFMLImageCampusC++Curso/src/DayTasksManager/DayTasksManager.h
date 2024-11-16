@@ -62,6 +62,6 @@ public:
 	void Scavenge(int hours);
 	void Sleep(int hours);
 
-	
+	void Destroy();
 };
 

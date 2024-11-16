@@ -51,6 +51,7 @@ private:
 	sf::Vector2f playerPos;
 	sf::Vector2f newPosition;
 	sf::Vector2f direction;
+
 	void EnemyDirection();
 	void Die();
 	void DeathTimer(float deltaTime);
@@ -96,4 +97,6 @@ public:
 	void UpdateSound();
 
 	void ResetEnemy();
+
+	void Destroy();
 };

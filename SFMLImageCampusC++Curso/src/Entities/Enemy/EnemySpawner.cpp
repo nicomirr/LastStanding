@@ -437,3 +437,30 @@ void EnemySpawner::ResetEnemySpawner()
 	currentWaveIndex = 0;
 
 }
+
+void EnemySpawner::Destroy()
+{
+	if (sceneManager != nullptr)
+	{
+		delete sceneManager;
+		sceneManager = nullptr;
+	}
+
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		if (enemies[i] != nullptr)
+		{
+			delete enemies[i];
+			enemies[i] = nullptr;
+		}
+	}
+
+	for (int i = 0; i < waves.size(); i++)
+	{
+		if (waves[i] != nullptr)
+		{
+			delete waves[i];
+			waves[i] = nullptr;
+		}
+	}
+}

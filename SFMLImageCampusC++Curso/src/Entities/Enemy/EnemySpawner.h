@@ -29,5 +29,6 @@ public:
 	std::vector<Enemy*> GetEnemies() { return enemies; }
 	void ResetEnemySpawner();
 	
+	void Destroy();
 };
 

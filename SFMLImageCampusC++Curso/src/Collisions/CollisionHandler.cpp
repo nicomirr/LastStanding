@@ -36,6 +36,18 @@ void CollisionHandler::CreateSounds()
 	bookSound.setLoop(false);
 }
 
+void CollisionHandler::Destroy()
+{
+	for (int i = 0; i < entities.size(); i++)
+	{
+		if (entities[i] != nullptr)
+		{
+			delete entities[i];
+			entities[i] = nullptr;
+		}		
+	}
+}
+
 
 void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManager, sf::RenderWindow* window, HoursInterface* carHoursInterface,
 	HoursInterface* toolboxHoursInterface, HoursInterface* planksHoursInterface, HoursInterface* bricksHoursInterface,

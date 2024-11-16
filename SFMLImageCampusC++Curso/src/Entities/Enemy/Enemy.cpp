@@ -389,3 +389,12 @@ void Enemy::ResetEnemy()
 	isAttackingPlayer = false;
 	isAttackingHouse = false;
 }
+
+void Enemy::Destroy()
+{
+	if (healthBar != nullptr)
+	{
+		delete healthBar;
+		healthBar = nullptr;
+	}
+}

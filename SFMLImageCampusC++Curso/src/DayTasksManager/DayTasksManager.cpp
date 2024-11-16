@@ -164,6 +164,71 @@ void DayTasksManager::Sleep(int hours)
 	Player::AddHoursSlept(hours);
 }
 
+void DayTasksManager::Destroy()
+{
+	for (int i = 0; i < fences.size(); i++)
+	{
+		if (fences[i] != nullptr)
+		{
+			delete fences[i];
+		}
+	}
+
+	if (car != nullptr)
+	{
+		delete car;
+		car = nullptr;
+	}
+
+	if (house != nullptr)
+	{
+		delete house;
+		house = nullptr;
+	}
+
+	if (background != nullptr)
+	{
+		delete background;
+		background = nullptr;
+	}
+
+	if (buttonClose != nullptr)
+	{
+		delete buttonClose;
+		buttonClose = nullptr;
+	}
+
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (resourcesFoundText != nullptr)
+	{
+		delete resourcesFoundText;
+		resourcesFoundText = nullptr;
+	}
+
+	if (resourcesText != nullptr)
+	{
+		delete resourcesText;
+		resourcesText = nullptr;
+	}
+
+	if (shotgunFoundText != nullptr)
+	{
+		delete shotgunFoundText;
+		shotgunFoundText = nullptr;
+	}
+
+	if (uziFoundText != nullptr)
+	{
+		delete uziFoundText;
+		uziFoundText = nullptr;
+	}
+}
+
 
 
 

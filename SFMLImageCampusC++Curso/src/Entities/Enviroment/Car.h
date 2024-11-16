@@ -45,5 +45,7 @@ public:
     sf::Text* GetPercentageText() { return percentageText; }
 
     void ResetCar();
+
+    void Destroy();
 };
 

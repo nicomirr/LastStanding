@@ -180,7 +180,12 @@ void Program::Initialize()
 
 void Program::DeInitialize()
 {
-
+	CollisionHandler::Destroy();
+	dayTasksManager->Destroy();
+	AudioManager::Destroy();
+	car->Destroy();
+	bed->Destroy();
+	enemySpawner->Destroy();
 
 	if (window != nullptr)
 	{

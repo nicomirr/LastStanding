@@ -36,4 +36,6 @@ public:
     static sf::Text* GetPercentageText() { return percentageText; }
 
     void ResetFence();
+
+    void Destroy();
 };
