@@ -33,7 +33,7 @@ public:
 	Program();
 	void Run();
 	static sf::Vector2i const GetMousePosition(){ return mousePosition; }
-	~Program();
+	
 
 private:
 

@@ -272,6 +272,393 @@ void Program::DeInitialize()
 		delete gun;
 		gun = nullptr;
 	}
+
+	if (shotgun != nullptr)
+	{
+		delete shotgun;
+		shotgun = nullptr;
+	}
+
+	if (uzi != nullptr)
+	{
+		delete uzi;
+		uzi = nullptr;
+	}
+
+	if (enemySpawner != nullptr)
+	{
+		delete enemySpawner;
+		enemySpawner = nullptr;
+	}
+
+	for (int i = 0; i < fences.size(); i++)
+	{
+		if (fences[i] != nullptr)
+		{
+			delete fences[i];
+			fences[i] = nullptr;
+		}
+	}
+
+	if (house != nullptr)
+	{
+		delete house;
+		house = nullptr;
+	}
+
+	if (car != nullptr)
+	{
+		delete car;
+		car = nullptr;
+	}
+
+	if (interiorFloor != nullptr)
+	{
+		delete interiorFloor;
+		interiorFloor = nullptr;
+	}
+
+	if (interiorUpWall != nullptr)
+	{
+		delete interiorUpWall;
+		interiorUpWall = nullptr;
+	}
+
+	if (limitLeft != nullptr)
+	{
+		delete limitLeft;
+		limitLeft = nullptr;
+	}
+
+	if (limitRight != nullptr)
+	{
+		delete limitRight;
+		limitRight = nullptr;
+	}
+
+	if (limitDown != nullptr)
+	{
+		delete limitDown;
+		limitDown = nullptr;
+	}
+
+	if (bed != nullptr)
+	{
+		delete bed;
+		bed = nullptr;
+	}
+
+	if (radio != nullptr)
+	{
+		delete radio;
+		radio = nullptr;
+	}
+
+	if (chairLeft != nullptr)
+	{
+		delete chairLeft;
+		chairLeft = nullptr;
+	}
+
+	if (chairRight != nullptr)
+	{
+		delete chairRight;
+		chairRight = nullptr;
+	}
+
+	if (table != nullptr)
+	{
+		delete table;
+		table = nullptr;
+	}
+
+	if (wardrobe != nullptr)
+	{
+		delete wardrobe;
+		wardrobe = nullptr;
+	}
+
+	if (doorColliderOutside != nullptr)
+	{
+		delete doorColliderOutside;
+		doorColliderOutside = nullptr;
+	}
+
+	if (doorColliderInside != nullptr)
+	{
+		delete doorColliderInside;
+		doorColliderInside = nullptr;
+	}
+
+	if (bedCollider != nullptr)
+	{
+		delete bedCollider;
+		bedCollider = nullptr;
+	}
+
+	if (radioCollider != nullptr)
+	{
+		delete radioCollider;
+		radioCollider = nullptr;
+	}
+
+	if (carCollider != nullptr)
+	{
+		delete carCollider;
+		carCollider = nullptr;
+	}
+
+	if (toolboxCollider != nullptr)
+	{
+		delete toolboxCollider;
+		toolboxCollider = nullptr;
+	}
+
+	if (planksCollider != nullptr)
+	{
+		delete planksCollider;
+		planksCollider = nullptr;
+	}
+
+	if (bricksCollider != nullptr)
+	{
+		delete bricksCollider;
+		bricksCollider = nullptr;
+	}
+
+	if (bookCollider != nullptr)
+	{
+		delete bookCollider;
+		bookCollider = nullptr;
+	}
+
+	if (calendarCollider != nullptr)
+	{
+		delete calendarCollider;
+		calendarCollider = nullptr;
+	}
+
+	if (boardCollider != nullptr)
+	{
+		delete boardCollider;
+		boardCollider = nullptr;
+	}
+
+	if (toolbox != nullptr)
+	{
+		delete toolbox;
+		toolbox = nullptr;
+	}
+
+	if (planks != nullptr)
+	{
+		delete planks;
+		planks = nullptr;
+	}
+
+	if (bricks != nullptr)
+	{
+		delete bricks;
+		bricks = nullptr;
+	}
+
+	if (book != nullptr)
+	{
+		delete book;
+		book = nullptr;
+	}
+
+	if (calendar != nullptr)
+	{
+		delete calendar;
+		calendar = nullptr;
+	}
+
+	if (board != nullptr)
+	{
+		delete board;
+		board = nullptr;
+	}
+
+	if (carWindow != nullptr)
+	{
+		delete carWindow;
+		carWindow = nullptr;
+	}
+
+	if (bookWindow != nullptr)
+	{
+		delete bookWindow;
+		bookWindow = nullptr;
+	}
+
+	if (calendarWindow != nullptr)
+	{
+		delete calendarWindow;
+		calendarWindow = nullptr;
+	}
+
+	if (boardWindow != nullptr)
+	{
+		delete boardWindow;
+		boardWindow = nullptr;
+	}
+
+	if (bedWindow != nullptr)
+	{
+		delete bedWindow;
+		bedWindow = nullptr;
+	}
+
+	if (radioWindow != nullptr)
+	{
+		delete radioWindow;
+		radioWindow = nullptr;
+	}
+
+	if (title != nullptr)
+	{
+		delete title;
+		title = nullptr;
+	}
+
+	if (mainMenuText != nullptr)
+	{
+		delete mainMenuText;
+		mainMenuText = nullptr;
+	}
+
+	if (exitButton != nullptr)
+	{
+		delete exitButton;
+		exitButton = nullptr;
+	}
+
+	if (bedTutorialImage != nullptr)
+	{
+		delete bedTutorialImage;
+		bedTutorialImage = nullptr;
+	}
+
+	if (carTutorialImage != nullptr)
+	{
+		delete carTutorialImage;
+		carTutorialImage = nullptr;
+	}
+
+	if (toolboxTutorialImage != nullptr)
+	{
+		delete toolboxTutorialImage;
+		toolboxTutorialImage = nullptr;
+	}
+
+	if (bricksTutorialImage != nullptr)
+	{
+		delete bricksTutorialImage;
+		bricksTutorialImage = nullptr;
+	}
+
+	if (planksTutorialImage != nullptr)
+	{
+		delete planksTutorialImage;
+		planksTutorialImage = nullptr;
+	}
+
+	if (sosTutorialImage != nullptr)
+	{
+		delete sosTutorialImage;
+		sosTutorialImage = nullptr;
+	}
+
+	if (bedTutorialImageText != nullptr)
+	{
+		delete bedTutorialImageText;
+		bedTutorialImageText = nullptr;
+	}
+
+	if (carTutorialImageText != nullptr)
+	{
+		delete carTutorialImageText;
+		carTutorialImageText = nullptr;
+	}
+
+	if (toolboxTutorialImageText != nullptr)
+	{
+		delete toolboxTutorialImageText;
+		toolboxTutorialImageText = nullptr;
+	}
+
+	if (bricksTutorialImageText != nullptr)
+	{
+		delete bricksTutorialImageText;
+		bricksTutorialImageText = nullptr;
+	}
+
+	if (planksTutorialImageText != nullptr)
+	{
+		delete planksTutorialImageText;
+		planksTutorialImageText = nullptr;
+	}
+
+	if (sosTutorialImageText != nullptr)
+	{
+		delete sosTutorialImageText;
+		sosTutorialImageText = nullptr;
+	}
+
+	if (carHoursInterface != nullptr)
+	{
+		delete carHoursInterface;
+		carHoursInterface = nullptr;
+	}
+
+	if (toolboxHoursInterface != nullptr)
+	{
+		delete toolboxHoursInterface;
+		toolboxHoursInterface = nullptr;
+	}
+
+	if (planksHoursInterface != nullptr)
+	{
+		delete planksHoursInterface;
+		planksHoursInterface = nullptr;
+	}
+
+	if (bricksHoursInterface != nullptr)
+	{
+		delete bricksHoursInterface;
+		bricksHoursInterface = nullptr;
+	}
+
+	if (sosSign != nullptr)
+	{
+		delete sosSign;
+		sosSign = nullptr;
+	}
+
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (newHighscoreNameText != nullptr)
+	{
+		delete newHighscoreNameText;
+		newHighscoreNameText = nullptr;
+	}
+
+	if (creditsText != nullptr)
+	{
+		delete creditsText;
+		creditsText = nullptr;
+	}
+	
+
+
+
+
+
 }
 
 
