@@ -115,9 +115,6 @@ void PathFinder::BreadthFirstSearch()
 
 		ExploreNeighbors();
 
-		//std::cout << currentSearchNode->GetCoordinates().x << std::endl;
-		//std::cout << currentSearchNode->GetCoordinates().y << std::endl << std::endl;
-
 		if (currentSearchNode->GetCoordinates() == destinationCoordinates)
 		{			
 			isRunning = false;

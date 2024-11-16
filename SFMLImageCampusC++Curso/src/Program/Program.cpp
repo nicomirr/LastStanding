@@ -176,8 +176,6 @@ void Program::Initialize()
 		node->second->Update(CollisionHandler::GetEntities(), node->second);
 	}
 
-	//pathfinder->GetNewPath();
-
 }
 
 void Program::DeInitialize()
@@ -192,6 +190,87 @@ void Program::DeInitialize()
 	{
 		delete player;
 		player = nullptr;
+	}
+
+	if (pauseBackground != nullptr)
+	{
+		delete pauseBackground;
+		pauseBackground = nullptr;
+	}
+
+	if (pauseMainMenuButton != nullptr)
+	{
+		delete pauseMainMenuButton;
+		pauseMainMenuButton = nullptr;
+	}
+
+	if (pauseRetryButton)
+	{
+		delete pauseRetryButton;
+		pauseRetryButton = nullptr;
+	}
+
+	if (pauseExitButton)
+	{
+		delete pauseExitButton;
+		pauseExitButton = nullptr;
+	}
+
+	if (pauseCloseButton != nullptr)
+	{
+		delete pauseCloseButton;
+		pauseCloseButton = nullptr;
+	}
+
+	if (scoreboard != nullptr)
+	{
+		delete scoreboard;
+		scoreboard = nullptr;
+	}
+
+	if (sceneManager != nullptr)
+	{
+		delete sceneManager;
+		sceneManager = nullptr;
+	}
+
+	if (hud != nullptr)
+	{
+		delete hud;
+		hud = nullptr;
+	}
+
+	if (timeClock != nullptr)
+	{
+		delete timeClock;
+		timeClock = nullptr;
+	}
+
+	if (skyNight != nullptr)
+	{
+		delete skyNight;
+		skyNight = nullptr;
+	}
+
+	for (int i = 0; i < floor.size(); i++)
+	{
+		if (floor[i] != nullptr)
+		{
+			delete floor[i];
+			floor[i] = nullptr;
+		}
+	}
+
+	if (baseAreaCollider != nullptr)
+	{
+		delete baseAreaCollider;
+		baseAreaCollider = nullptr;
+	}
+
+	if (gun != nullptr)
+	{
+		delete gun;
+		gun = nullptr;
 	}
 }
 
@@ -320,12 +399,7 @@ void Program::Update()
 
 		player->Update(deltaTime);
 	}
-
-	/*for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
-	{
-		node->second->Update(CollisionHandler::GetEntities(), node->second);				
-	}*/
-		
+			
 	Ending(deltaTime);
 
 	if (sceneManager->GetIsGameOver())
@@ -2446,22 +2520,6 @@ void Program::DrawDayTime()
 	
 	DrawTransitionScreen();
 
-
-
-	//ACTIVAR PARA TESTEO
-
-	/*DrawPlayerInHouse();
-
-	DrawTimeClock();
-
-	DrawHUD();
-
-	DrawDate();
-
-	DrawEButton();
-
-	DrawTransitionScreen();*/
-	
 }
 
 void Program::DrawInsideHouse()
@@ -3071,3 +3129,5 @@ void Program::GoMainMenu()
 	goodEndingPointsAdded = false;
 	badEndingPointsAdded = false;
 }
+
+

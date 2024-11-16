@@ -155,4 +155,3 @@ void Car::ResetCar()
 	isDestroyed = false;
 }
 
-//ESTADO DE AUTO DEBE AFECTAR BUSQUEDA

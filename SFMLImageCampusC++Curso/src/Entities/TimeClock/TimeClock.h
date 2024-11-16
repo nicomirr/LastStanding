@@ -73,4 +73,3 @@ public:
 	void ResetTimeClock();
 };
 
-//ADENTRO DE CARPETA RELEASE DE BIN. PARA ELLO EJECUTAR EN RELEASE

@@ -321,13 +321,8 @@ void SceneManager::SceneTransitionToInside()
 	}
 }
 
-
-//CONTINUAR ACA
-
 void SceneManager::TasksTransition(DayTasksManager* dayTaskManager)
-{
-	//en collisionhandler activar istransitioning
-	//un return para que no vuelva a ejecutarse?	
+{		
 	if (!isTransitioningTask) return;
 
 	if (sceneTransitionTasksProgressStart < 1.0f)

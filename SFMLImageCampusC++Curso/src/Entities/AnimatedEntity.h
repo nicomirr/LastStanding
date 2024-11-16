@@ -31,4 +31,3 @@ public:
 
 };
 
-//shift F12 se muestran TODAS las referencias

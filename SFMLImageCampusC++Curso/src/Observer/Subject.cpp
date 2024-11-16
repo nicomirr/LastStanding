@@ -14,7 +14,7 @@ void Subject::Detach(IObserver* observer)
 
 void Subject::SetState(bool newState)
 {
-	state = newState;	//EL STATE SE LLENA CON LO QUE QUIERO. ACA PONEMOS EL ISDESTROYED DEL AUTO.
+	state = newState;	
 }
 
 void Subject::NotifyObservers()

@@ -19,10 +19,10 @@ protected:
 
 public:
 
-	bool isValid = false;	//Permite encender y apagar un entity
+	bool isValid = false;	
 	virtual void Update(float deltaTime);
 
-	sf::Sprite& Graphic() { return sprite; }  //Simbolo & es pasaje por referencia
+	sf::Sprite& Graphic() { return sprite; }  
 
 	Entity();
 	Entity(std::string imageFilePath, sf::Vector2i spriteSheetSize);

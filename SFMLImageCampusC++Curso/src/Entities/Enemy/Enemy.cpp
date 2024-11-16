@@ -1,17 +1,5 @@
 #include "Enemy.h"
 
-//sf::SoundBuffer Enemy::zombieHittingBuffer;
-//sf::SoundBuffer Enemy::zombieHittingTwoBuffer;
-//sf::SoundBuffer Enemy::zombieHittingThreeBuffer;
-//sf::SoundBuffer Enemy::zombieHittingFourBuffer;
-
-//sf::Sound Enemy::zombieHittingSound;
-//sf::Sound Enemy::zombieHittingTwoSound;
-//sf::Sound Enemy::zombieHittingThreeSound;
-//sf::Sound Enemy::zombieHittingFourSound;
-
-//int Enemy::attackingZombies;
-
 Enemy::Enemy(GridManager* nodesGrid, PathFinder* pathfinder, sf::Vector2f scale, float minHealth, float maxHealth, float regularSpeed, 
 	float speedNearPlayer,	float damage, float attackDelay, float animationSpeed, float deathAnimationSpeed, sf::Vector2i animationFrameSize,
 	sf::Vector2i deathAnimationFrameSize, std::string imageFilePath, sf::Vector2i spriteSheetSize) 
@@ -23,35 +11,6 @@ Enemy::Enemy(GridManager* nodesGrid, PathFinder* pathfinder, sf::Vector2f scale,
 	zombieHurtSound.setBuffer(zombieHurtBuffer);
 	zombieHurtSound.setVolume(100);
 	zombieHurtSound.setLoop(false);
-
-
-	/*std::string  zombieHittingFilePath = "res\\audio\\enemies\\ZombieHitting2.mp3";
-	zombieHittingBuffer.loadFromFile(zombieHittingFilePath);
-
-	zombieHittingSound.setBuffer(zombieHittingBuffer);
-	zombieHittingSound.setVolume(100);
-	zombieHittingSound.setLoop(false);*/
-
-	/*std::string  zombieHittingTwoFilePath = "res\\audio\\enemies\\ZombieHitting2.mp3";
-	zombieHittingTwoBuffer.loadFromFile(zombieHittingTwoFilePath);
-
-	zombieHittingTwoSound.setBuffer(zombieHittingTwoBuffer);
-	zombieHittingTwoSound.setVolume(100);
-	zombieHittingTwoSound.setLoop(false);
-
-	std::string  zombieHittingThreeFilePath = "res\\audio\\enemies\\ZombieHitting3.mp3";
-	zombieHittingThreeBuffer.loadFromFile(zombieHittingThreeFilePath);
-
-	zombieHittingThreeSound.setBuffer(zombieHittingThreeBuffer);
-	zombieHittingThreeSound.setVolume(100);
-	zombieHittingThreeSound.setLoop(false);
-
-	std::string  zombieHittingFourFilePath = "res\\audio\\enemies\\ZombieHitting4.mp3";
-	zombieHittingFourBuffer.loadFromFile(zombieHittingFourFilePath);
-
-	zombieHittingFourSound.setBuffer(zombieHittingFourBuffer);
-	zombieHittingFourSound.setVolume(100);
-	zombieHittingFourSound.setLoop(false);*/
 
 	this->nodesGrid = nodesGrid;
 	this->pathfinder = pathfinder;		
@@ -177,13 +136,6 @@ void Enemy::EnemyMovement(float deltaTime)
 	sprite.setPosition(newPosition);
 	EnemyDirection();
 	
-	/*else
-	{
-		SetStartingNode();
-		FindPath();
-		FollowPath(deltaTime);
-	}*/
-
 }
 
 void Enemy::UpdateSound()
@@ -193,16 +145,7 @@ void Enemy::UpdateSound()
 
 void Enemy::SetStartingNode()
 {	
-	/*if (startingNodePos == sf::Vector2f{0, 0})
-	{
-		for (auto node = nodesGrid->GetNodesGrid().begin(); node != nodesGrid->GetNodesGrid().end(); ++node)
-		{
-			if (this->bounds.intersects(node->second->Graphic().getGlobalBounds()))
-			{
-				pathfinder->SetStartingNode(node->second->GetCoordinates());
-			}
-		}
-	}	*/
+	
 }
 
 void Enemy::FindPath()
@@ -214,128 +157,7 @@ void Enemy::FindPath()
 
 void Enemy::FollowPath(float deltaTime)
 {	
-	/*sf::Vector2f startPosition = sprite.getPosition();
-	sf::Vector2f endPosition = path[pathPosIndex]->Graphic().getPosition();
 	
-	direction = endPosition - startPosition;
-
-	float distanceToObjective = std::sqrt(std::pow(endPosition.x - startPosition.x, 2) +
-		std::pow(endPosition.y - startPosition.y, 2));
-	if (distanceToObjective > 0)
-	{
-		direction /= distanceToObjective;
-	}
-
-	newPosition = sprite.getPosition() + direction * speed * deltaTime;
-
-	sprite.setPosition(newPosition);	
-
-	pathTimer += deltaTime;
-
-	if (pathTimer >= 10)
-	{
-		if (pathPosIndex < path.size() - 1)
-		{
-			pathPosIndex++;
-
-		}
-
-		pathTimer -= 0;
-	}*/
-
-	//float travelPercent = 0.0f;
-	//sf::Vector2f startPosition;
-	//sf::Vector2f endPosition;
-
-	//// En tu función de actualización
-	//if (travelPercent < 1.0f)
-	//{
-	//	travelPercent += deltaTime * speed;
-
-	//	if (travelPercent > 1.0f) {
-	//		travelPercent = 1.0f;
-	//	}
-
-	//	sprite.setPosition(Lerp(startPosition, endPosition, travelPercent));
-	//}
-	//else
-	//{
-	//	// Mueve al siguiente punto de la ruta
-	//	if (currentIndex < path.size())
-	//	{
-	//		startPosition = sprite.getPosition();
-	//		endPosition = path[currentIndex]->Graphic().getPosition();
-	//		currentIndex++;
-	//		travelPercent = 0.0f; // Reinicia el porcentaje para el nuevo segmento
-	//	}
-	//}
-
-	//for (int i = 0; i < path.size(); i++)
-	//{
-	//	sf::Vector2f startPosition = sprite.getPosition();
-	//	sf::Vector2f endPosition = path[i]->Graphic().getPosition();
-	//	float travelPercent = 0.0f;
-
-	//	while (travelPercent < 1.0f)
-	//	{
-	//		travelPercent += deltaTime * speed;
-
-	//		if (travelPercent > 1.0f)
-	//			travelPercent = 1.0f;
-
-	//		sprite.setPosition(Lerp(startPosition, endPosition, travelPercent));
-
-	//		while (pathTimer < 2)
-	//		{
-	//			pathTimer += deltaTime;
-	//		}
-	//	}
-	//	
-	//}
-
-	//static int currentIndex = 0; // Índice del camino actual
-	//static float travelPercent = 0.0f; // Porcentaje de viaje
-	//static float pathTimer = 0.0f; // Temporizador para el retraso entre segmentos
-	//static bool isMoving = false; // Bandera para controlar el movimiento
-	//const float pathDelay = 2.0f; // Tiempo de espera entre movimientos
-
-	//// Si estamos moviendo, actualizamos la posición
-	//if (isMoving) {
-	//	travelPercent += deltaTime * speed; // Incrementa el porcentaje de viaje
-
-	//	// Limita travelPercent a un máximo de 1.0
-	//	if (travelPercent >= 1.0f) {
-	//		travelPercent = 1.0f; // Asegúrate de que no supere 1.0
-	//		currentIndex++; // Avanza al siguiente punto en el path
-	//		isMoving = false; // Detén el movimiento
-	//		pathTimer = 0.0f; // Reinicia el temporizador
-	//	}
-
-	//	// Actualiza la posición del sprite
-	//	if (currentIndex < path.size()) {
-	//		sf::Vector2f startPosition = sprite.getPosition();
-	//		sf::Vector2f endPosition = path[currentIndex]->Graphic().getPosition();
-	//		sprite.setPosition(Lerp(startPosition, endPosition, travelPercent));
-	//	}
-	//}
-	//else {
-	//	// Si no estamos moviendo, maneja el temporizador
-	//	pathTimer += deltaTime;
-
-	//	// Cuando se acaba el temporizador, comienza el movimiento
-	//	if (pathTimer >= pathDelay && currentIndex < path.size()) {
-	//		isMoving = true; // Comienza el movimiento
-	//		travelPercent = 0.0f; // Reinicia el porcentaje
-	//	}
-	//}
-
-	//// Si hemos llegado al final del path, reinicia o haz algo apropiado
-	//if (currentIndex >= path.size()) {
-	//	currentIndex = 0; // O cualquier lógica que necesites
-	//	isMoving = false; // Detén el movimiento
-	//}
-
-		
 }
 	
 
@@ -376,15 +198,7 @@ void Enemy::EnemyDirection()
 }
 
 void Enemy::Attack(Fence* fence, float deltaTime)
-{
-	//if (!attackZombieAdded)
-	//{
-	//	if (attackingZombies < 4)
-	//		attackingZombies++;
-
-	//	attackZombieAdded = true;
-	//}	
-
+{	
 	fenceObjective = fence;
 
 	if (!isAttackingCar)
@@ -406,42 +220,11 @@ void Enemy::Attack(Fence* fence, float deltaTime)
 		fence->ReceiveDamage(damage);
 		attackTimer -= attackDelay;
 	}
-
-	/*if (zombieHittingSound.getStatus() == sf::SoundSource::Stopped)
-		zombieHittingSound.play();*/
-
-	/*if (attackingZombies == 1)
-	{
-		
-	}*/
-	//else if (attackingZombies == 2)
-	//{
-	//	if (zombieHittingTwoSound.getStatus() == sf::SoundSource::Stopped)
-	//		zombieHittingTwoSound.play();
-	//}
-	//else if (attackingZombies == 3)
-	//{
-	//	if (zombieHittingThreeSound.getStatus() == sf::SoundSource::Stopped)
-	//		zombieHittingThreeSound.play();
-	//}
-	//else if (attackingZombies == 4)
-	//{
-	//	if (zombieHittingFourSound.getStatus() == sf::SoundSource::Stopped)
-	//		zombieHittingFourSound.play();
-	//}
 		
 }
 
 void Enemy::Attack(House* house, float deltaTime)
-{
-	//if (!attackZombieAdded)
-	//{
-	//	if (attackingZombies < 4)
-	//		attackingZombies++;
-
-	//	attackZombieAdded = true;
-	//}
-
+{	
 	if (sprite.getPosition().x > 600)
 	{
 		SetCurrentAnimation("leftAttack");
@@ -459,39 +242,10 @@ void Enemy::Attack(House* house, float deltaTime)
 		attackTimer -= attackDelay;
 	}
 
-	//if (zombieHittingSound.getStatus() == sf::SoundSource::Stopped)
-	//	zombieHittingSound.play();
-
-	/*if (attackingZombies == 1)
-	{
-		
-	}*/
-//	else if (attackingZombies == 2)
-//	{
-//		if (zombieHittingTwoSound.getStatus() == sf::SoundSource::Stopped)
-//			zombieHittingTwoSound.play();
-//	}
-//	else if (attackingZombies == 3)
-//	{
-//		if (zombieHittingThreeSound.getStatus() == sf::SoundSource::Stopped)
-//			zombieHittingThreeSound.play();
-//	}
-//	else if (attackingZombies == 4)
-//	{
-//		if (zombieHittingFourSound.getStatus() == sf::SoundSource::Stopped)
-//			zombieHittingFourSound.play();
-//	}
 }
 
 void Enemy::Attack(Car* car, float deltaTime)
 {
-	/*if (!attackZombieAdded)
-	{
-		if (attackingZombies < 4)
-			attackingZombies++;
-
-		attackZombieAdded = true;
-	}*/
 
 	if (sprite.getPosition().x > 430)
 	{
@@ -512,39 +266,9 @@ void Enemy::Attack(Car* car, float deltaTime)
 
 	if (car->GetHealthBar()->GetCurrentHealth() <= 0)
 	{
-		/*if (isAttackingCar)
-		{
-			attackingZombies = 0;
-			attackZombieAdded = false;
-		}*/
-
 		isAttackingCar = false;
 		car->SetIsDestroyed(true);
-
 	}
-
-	/*if (zombieHittingSound.getStatus() == sf::SoundSource::Stopped)
-		zombieHittingSound.play();*/
-
-	//if (attackingZombies == 1)
-	//{
-	//	
-	//}
-	//else if (attackingZombies == 2)
-	//{
-	//	if (zombieHittingTwoSound.getStatus() == sf::SoundSource::Stopped)
-	//		zombieHittingTwoSound.play();
-	//}
-	//else if (attackingZombies == 3)
-	//{
-	//	if (zombieHittingThreeSound.getStatus() == sf::SoundSource::Stopped)
-	//		zombieHittingThreeSound.play();
-	//}
-	//else if (attackingZombies == 4)
-	//{
-	//	if (zombieHittingFourSound.getStatus() == sf::SoundSource::Stopped)
-	//		zombieHittingFourSound.play();
-	//}
 }
 
 void Enemy::TakeDamage(float damage)
@@ -563,9 +287,6 @@ void Enemy::TakeDamage(float damage)
 void Enemy::Die()
 {
 	if (!isAlive) return;
-
-	/*if(attackingZombies > 0)
-		attackingZombies--;*/
 
 	SetAnimationFrameSize(deathAnimationFrameSize);
 

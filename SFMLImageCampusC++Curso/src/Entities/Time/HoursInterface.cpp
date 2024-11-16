@@ -177,7 +177,3 @@ void HoursInterface::AddHoursToSpend()
 	hoursToSpend++;
 	hoursToSpend = std::clamp(hoursToSpend, 1, TimeClock::GetHours());
 }
-//JUGADOR DEBE FRENAR AL ABRIRSE.
-
-//	DIBUJAR HORAS
-// SETEAR POSICION

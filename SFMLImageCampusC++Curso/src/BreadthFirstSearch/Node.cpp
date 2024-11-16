@@ -79,4 +79,3 @@ void Node::SetNodesColor()
 		sprite.setColor(blockedColor);
 	
 }
-//CREAR UN UPDATE PARA ACTUALIZAR COLORES?

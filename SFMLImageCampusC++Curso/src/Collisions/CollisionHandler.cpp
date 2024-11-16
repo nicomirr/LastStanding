@@ -1319,6 +1319,3 @@ void CollisionHandler::SolveCollisions(float deltaTime, SceneManager* sceneManag
 
 
 
-
-
-//COMPROBAR TAMBIEN LA DISTANCIA ENTRE OBJETOS PARA HACER O NO COMPROBACION DE COLISIONES.

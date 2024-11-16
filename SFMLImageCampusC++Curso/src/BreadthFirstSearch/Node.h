@@ -27,7 +27,7 @@ private:
 public:
 	Node();
 	void Update(std::vector<Entity*> entities, Node* node);
-	sf::Sprite& Graphic() { return sprite; }  //Simbolo & es pasaje por referencia
+	sf::Sprite& Graphic() { return sprite; }  
 	void SetNodeState(std::vector<Entity*> entities, Node* node);
 	void SetCoordinates(sf::Vector2f coordinates) { this->coordinates = coordinates; }
 	sf::Vector2f GetCoordinates() { return coordinates; }

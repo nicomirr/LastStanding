@@ -31,9 +31,3 @@ public:
 	
 };
 
-/*
-HACER UN VECTOR QUE CONTENGA LAS OLEADAS CON  CADA UNO DE LOS ENEMIGOS YA PREPARADOS (vectores para
-oleadas).
-
-
-*/

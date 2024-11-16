@@ -87,15 +87,7 @@ public:
 	void UpdateSound();
 
 	void ResetPlayer();
-	/*
-	0 hours = 10%
-	1 hours = 25%
-	2 hours = 40%
-	3 hours = 55%
-	4 hours = 75%
-	5 hours = 90%
-	6 hours = 100%	
-	*/
+	
 
 };
 

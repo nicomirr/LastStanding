@@ -53,9 +53,3 @@ enum class Tag
 	SOSSign
 };
 
-/*
-void CreateCarCollider();
-	void CreateToolboxCollider();
-	void CreatePlanksCollider();
-	void CreateBricksCollider();
-*/

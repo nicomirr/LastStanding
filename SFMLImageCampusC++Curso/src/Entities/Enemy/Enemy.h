@@ -13,21 +13,8 @@ class Enemy : public AnimatedEntity
 {
 private:
 
-	/*bool attackZombieAdded;
-	static int attackingZombies;*/
-
 	sf::SoundBuffer zombieHurtBuffer;
 	sf::Sound zombieHurtSound;
-
-	//static sf::SoundBuffer zombieHittingBuffer;
-	/*static sf::SoundBuffer zombieHittingTwoBuffer;
-	static sf::SoundBuffer zombieHittingThreeBuffer;
-	static sf::SoundBuffer zombieHittingFourBuffer;*/
-
-	//static sf::Sound zombieHittingSound;
-	/*static sf::Sound zombieHittingTwoSound;
-	static sf::Sound zombieHittingThreeSound;
-	static sf::Sound zombieHittingFourSound;*/
 
 	GridManager* nodesGrid;
 	PathFinder* pathfinder;	

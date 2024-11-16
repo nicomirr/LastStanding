@@ -256,20 +256,6 @@ void Scoreboard::WriteHighScores()
 
 		inputNewHighscoreName = false;
 
-		//SETEAR TEXTOS =
-		/*
-		scoreNames = new sf::Text(playerScores[0]->name + "\n" + playerScores[1]->name + "\n" + playerScores[2]->name + "\n" + 
-		playerScores[3]->name + "\n" + playerScores[4]->name, *font, 10);
-	scorePoints = new sf::Text(scoreOneString + "\n" + scoreTwoString + "\n" + scoreThreeString + "\n" + scoreFourString + "\n" + scoreFiveString,
-		*font, 10);
-	scoreDay = new sf::Text(std::to_string(playerScores[0]->day) + "\n" + std::to_string(playerScores[1]->day) + "\n" +
-		std::to_string(playerScores[2]->day) + "\n" + std::to_string(playerScores[3]->day) + "\n" +
-		std::to_string(playerScores[4]->day), *font, 10);
-	scoreStatus = new sf::Text(playerScores[0]->status + "\n" + playerScores[1]->status + "\n" + playerScores[2]->status + "\n" +
-		playerScores[3]->status + "\n" + playerScores[4]->status, *font, 10);
-		
-		
-		*/
 	}
 }
 

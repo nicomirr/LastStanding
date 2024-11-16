@@ -8,7 +8,7 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 	currentWaveIndex = 0;
 	totalWaves = 6;
 	enemyIndex = 0;
-	//1200*880
+	
 	float xSpawnPos = 0;
 	float ySpawnPos = 0;
 
@@ -132,8 +132,6 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	//OLEADA 2
 
-	//ALGO PASA QUE TIENEN MUCHA VIDA
-
 	std::vector<Enemy*> waveTwoEnemies;
 	
 	normalZombiesIndex = 0;
@@ -169,9 +167,6 @@ EnemySpawner::EnemySpawner(GridManager* nodesGrid, PathFinder* pathfinder, Scene
 
 	for (int i = 0; i < totalEnemies; i++)
 	{
-		/*waveThreeEnemies.push_back(enemies[normalZombiesIndex]);
-		normalZombiesIndex++;*/
-
 		if (i > 40)
 		{
 			waveThreeEnemies.push_back(enemies[fatZombiesIndex]);
@@ -442,5 +437,3 @@ void EnemySpawner::ResetEnemySpawner()
 	currentWaveIndex = 0;
 
 }
-
-//EVITAR QUE SPAWNEER EN MISMO LUGART

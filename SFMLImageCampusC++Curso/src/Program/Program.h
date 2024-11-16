@@ -33,6 +33,7 @@ public:
 	Program();
 	void Run();
 	static sf::Vector2i const GetMousePosition(){ return mousePosition; }
+	~Program();
 
 private:
 
@@ -412,19 +413,3 @@ private:
 
 };
 
-/*
-x = 912
-y = 420
-
-*/
-
-/*
-#include CAMBIOS:
-Si queremos acceder desde aca a una subcarpeta que se encuentre en la carpeta "src", deberemos
-ir hacia atrás, hasta llegar a la carpeta "src". Una vez en esta carpeta, allí si podemos crear
-el camino hacia el archivo que se encuentra en la subcarpeta de "src". Para volver hacia atrás
-se utiliza siempre "../". Para acceder, por ejemplo, a nuestro archivo "Player.h" desde "Program.h"
-podemos hacer lo siguiente: "#include ../Entities/Player/Player.h". Vamos hacia atrás y luego
-accedemos a todas las carpetas que haga falta hasta llegar a "Player.h".
-
-*/

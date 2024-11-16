@@ -1,8 +1,8 @@
 #include "TimeClock.h"
 
 int TimeClock::day = 1;
-bool TimeClock::isNight = true;		//true 
-bool TimeClock::isDay = false;			//false
+bool TimeClock::isNight = true;		
+bool TimeClock::isDay = false;			
 bool TimeClock::startClockRotation = false;
 bool TimeClock::endDayTextOpened = false;
 int TimeClock::hours = 0;
@@ -142,7 +142,7 @@ void TimeClock::ClockRotation(float deltaTime)
 		skyNight->Graphic().setColor(color);
 	}
 
-	if ((int)sprite.getRotation() != 180)	//TARDA 10 segundos
+	if ((int)sprite.getRotation() != 180)	
 		sprite.rotate(15 * deltaTime);
 	else
 		startClockRotation = false;

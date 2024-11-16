@@ -35,9 +35,7 @@ GridManager::GridManager()
 	}
 
 
-	//NO IMPORTA DONDE ESTA INSERTADO EN EL DICCIONARIO
-	//EN EL DICCIONARIO SE VA A BUSCAR EL NODO QUE SEA OBJETIVO
-	//VA A SER SIEMPRE MISMO UNICO OBJETIVO
+	
 }
 
 Node* GridManager::GetNode(sf::Vector2f coordinates)
@@ -49,9 +47,7 @@ Node* GridManager::GetNode(sf::Vector2f coordinates)
 		return node->second;
 	}
 
-	//it se compara con end() ya que end() no apunta a un elemento válido. Si find() no encuentra la clave deseada, devuelve un
-	//iterador igual a end() por lo que si find() es igual a end(), la clave no existe,  si find() es diferente a end() la clave 
-	//existe.
+	
 }
 
 void GridManager::ResetNodes()
