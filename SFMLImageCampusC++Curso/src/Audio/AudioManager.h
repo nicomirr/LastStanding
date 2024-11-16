@@ -36,5 +36,7 @@ public:
 	static void AudioPercentageStatus();
 	static void AddVolume();
 	static void ReduceVolume();
+
+	static void Destroy();
 };
 

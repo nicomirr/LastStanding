@@ -180,6 +180,8 @@ void Program::Initialize()
 
 void Program::DeInitialize()
 {
+
+
 	if (window != nullptr)
 	{
 		delete window;
@@ -653,11 +655,36 @@ void Program::DeInitialize()
 		delete creditsText;
 		creditsText = nullptr;
 	}
-	
 
+	if (restartText != nullptr)
+	{
+		delete restartText;
+		restartText = nullptr;
+	}
 
+	if (mainMenuText != nullptr)
+	{
+		delete mainMenuText;
+		mainMenuText = nullptr;
+	}
 
+	if (exitText != nullptr)
+	{
+		delete exitText;
+		exitText = nullptr;
+	}
 
+	if (goodEndingText != nullptr)
+	{
+		delete goodEndingText;
+		goodEndingText = nullptr;
+	}
+
+	if (badEndingText != nullptr)
+	{
+		delete badEndingText;
+		badEndingText = nullptr;
+	}
 
 }
 

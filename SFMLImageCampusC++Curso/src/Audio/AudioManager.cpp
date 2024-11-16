@@ -75,3 +75,31 @@ void AudioManager::ReduceVolume()
 	audioRegulator -= 0.1f;
 	audioRegulator = std::clamp(audioRegulator, 0.0f, 1.0f);
 }
+
+void AudioManager::Destroy()
+{
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (percentageText != nullptr)
+	{
+		delete percentageText;
+		percentageText = nullptr;
+	}
+
+	if (buttonLeft != nullptr)
+	{
+		delete buttonLeft;
+		buttonLeft = nullptr;
+	}
+
+	if (buttonRight != nullptr)
+	{
+		delete buttonRight;
+		buttonRight = nullptr;
+	}
+
+}
