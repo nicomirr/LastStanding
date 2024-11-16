@@ -1,23 +1,36 @@
+<p align="center">
+  <a href="https://nicomironoff.itch.io/last-standing">
+  </a> 
+</p>
+
 # Last standing
 
-**Last standing**  
-It's been a while since the outbreak started. You been alone since then. No other survivors. Just you and the surrounding dead. Manage your base during the day. Fight your way through the night. Time is the essence. Every decision counts.
-  
+It's been a while since the outbreak started. You been alone since then. No other survivors. Just you and the surrounding dead. Manage your base during the day.
+Fight your way through the night. Time is the essence. Every decision counts.  
 Will you survive?
 
----
+This is a game developed by a student from <a href="https://www.imagecampus.edu.ar/">Image Campus</a>
 
-## This is a game being developed by a student from **Image Campus**
+<p align="center">
+  <a href="https://www.imagecampus.edu.ar/">
+    <img src="logo-image-campus.png" alt="Image Campus"/>
+  </a> 
+</p>
 
----
 
 ## Credits
-- **Nicolas Mironoff** - Programming 
-- **Ittai Manero Assets** - Art  
-- **Limezu Assets** - Art
-- **Freesound community** - Audio  
 
----
+- **Nicolas Mironoff** - *Programming*
+- **Ittai Manero Assets** - *Art*
+- **Limezu Assets** - *Art*
+- **Freesound community** - *Audio*
+
+This game was also possible thanks to the support of these professors:
+
+- **Federico Olive**
+- **Franco Fioretti**
+
 
 ## Links
-Download it from Itch.io: [https://nicomironoff.itch.io/last-standing](https://nicomironoff.itch.io/last-standing)
+
+Download it from itch.io: https://https://nicomironoff.itch.io/last-standing
