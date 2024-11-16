@@ -33,4 +33,4 @@ This game was also possible thanks to the support of these professors:
 
 ## Links
 
-Download it from itch.io: https://https://nicomironoff.itch.io/last-standing
+Download it from itch.io: https://nicomironoff.itch.io/last-standing
