@@ -166,5 +166,7 @@ public:
 	void MainMenuSceneManager();
 
 	void UpdateSound();
+
+	void Destroy();
 };
 

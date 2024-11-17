@@ -71,5 +71,7 @@ public:
 	static void ResetClockAndLight() { resetClockAndLight = true; }
 
 	void ResetTimeClock();
+
+	void Destroy();
 };
 

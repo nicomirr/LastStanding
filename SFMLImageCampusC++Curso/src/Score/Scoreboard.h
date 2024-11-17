@@ -81,5 +81,7 @@ public:
 
 	void ResetScoreBoard();
 
+	void Destroy();
+
 };
 

@@ -14,8 +14,8 @@ private:
 	sf::Font* font;
 	sf::Text* buildPercentageText;
 
-	sf::FloatRect GetBounds() override;
 	static HoursInterface* hoursInterface;
+	sf::FloatRect GetBounds() override;
 
 public:
 	SOSSign(sf::Vector2i animationFrameSize, std::string imageFilePath,
@@ -32,5 +32,7 @@ public:
 	static bool GetSignBuilt() { return signBuilt; }
 
 	void ResetSOSSign();
+
+	void Destroy();
 };
 

@@ -313,8 +313,77 @@ void Scoreboard::ResetScoreBoard()
 	newHighscoreChecked = false;
 }
 
+void Scoreboard::Destroy()
+{
+	for (int i = 0; i < playerScores.size(); i++)
+	{
+		if (playerScores[i] != nullptr)
+		{
+			delete playerScores[i];
+			playerScores[i] = nullptr;
+		}
+	}
 
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
 
+	if (nameText != nullptr)
+	{
+		delete nameText;
+		nameText = nullptr;
+	}
+
+	if (scoreText != nullptr)
+	{
+		delete scoreText;
+		scoreText = nullptr;
+	}
+
+	if (dayText != nullptr)
+	{
+		delete dayText;
+		dayText = nullptr;
+	}
+
+	if (statusText != nullptr)
+	{
+		delete statusText;
+		statusText = nullptr;
+	}
+
+	if (scoreNames != nullptr)
+	{
+		delete scoreNames;
+		scoreNames = nullptr;
+	}
+
+	if (scorePoints != nullptr)
+	{
+		delete scorePoints;
+		scorePoints = nullptr;
+	}
+
+	if (scoreDay != nullptr)
+	{
+		delete scoreDay;
+		scoreDay = nullptr;
+	}
+
+	if (scoreStatus != nullptr)
+	{
+		delete scoreStatus;
+		scoreStatus = nullptr;
+	}
+
+	if (newHighscorePopup)
+	{
+		delete newHighscorePopup;
+		newHighscorePopup = nullptr;
+	}
+}
 
 
 ScoreData::ScoreData(){}

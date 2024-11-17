@@ -162,5 +162,50 @@ void TimeClock::ResetTimeClock()
 
 }
 
+void TimeClock::Destroy()
+{
+	if (endDayText != nullptr)
+	{
+		delete endDayText;
+		endDayText = nullptr;
+	}
+
+	if (background != nullptr)
+	{
+		delete background;
+		background = nullptr;
+	}
+
+	if (buttonClose != nullptr)
+	{
+		delete buttonClose;
+		buttonClose = nullptr;
+	}
+
+	if (font != nullptr)
+	{
+		delete font; 
+		font = nullptr;
+	}
+
+	if (dateText != nullptr)
+	{
+		delete dateText;
+		dateText = nullptr;
+	}
+
+	if (timeText != nullptr)
+	{
+		delete timeText;
+		timeText = nullptr;
+	}
+
+	if (skyNight != nullptr)
+	{
+		delete skyNight;
+		skyNight = nullptr;
+	}
+}
+
 
 

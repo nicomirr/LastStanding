@@ -637,3 +637,13 @@ void SceneManager::UpdateSound()
 {
 	helicopterSound.setVolume(100 * AudioManager::GetAudioRegulator());
 }
+
+void SceneManager::Destroy()
+{
+	if (blackScreenTransition != nullptr)
+	{
+		delete blackScreenTransition;
+		blackScreenTransition = nullptr;
+	}
+
+}

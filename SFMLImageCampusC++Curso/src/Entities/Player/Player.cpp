@@ -478,5 +478,16 @@ void Player::Destroy()
 		delete eButton;
 		eButton = nullptr;
 	}
+
+	for (int i = 0; i < weapons.size(); i++)
+	{
+		weapons[i]->Destroy();
+		
+		if (weapons[i] != nullptr)
+		{
+			delete weapons[i];
+			weapons[i] = nullptr;
+		}
+	}
 }
 

@@ -83,6 +83,29 @@ void SOSSign::ResetSOSSign()
 	signBuilt = false;
 }
 
+void SOSSign::Destroy()
+{
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (buildPercentageText != nullptr)
+	{
+		delete buildPercentageText;
+		buildPercentageText = nullptr;
+	}
+
+	hoursInterface->Destroy();
+
+	if (hoursInterface != nullptr)
+	{
+		delete hoursInterface;
+		hoursInterface = nullptr;
+	}
+}
+
 sf::FloatRect SOSSign::GetBounds()
 {
 	sf::FloatRect bounds = sprite.getGlobalBounds();

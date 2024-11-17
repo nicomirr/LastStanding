@@ -206,6 +206,14 @@ void Program::DeInitialize()
 
 	radio->Destroy();
 
+	sceneManager->Destroy();
+
+	scoreboard->Destroy();
+
+	sosSign->Destroy();
+
+	timeClock->Destroy();
+
 	for (int i = 0; i < fences.size(); i++)
 	{
 		fences[i]->Destroy();

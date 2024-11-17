@@ -173,7 +173,6 @@ void Weapon::UpdateSound()
 	emptyWeaponSound.setVolume(100 * AudioManager::GetAudioRegulator());
 }
 
-
 void Weapon::Reload(float deltaTime)
 {
 	if (isReloading)
@@ -208,5 +207,17 @@ void Weapon::FireTimer(float deltaTime)
 	if (fireTimer < fireRate)
 	{
 		fireTimer += deltaTime;
+	}
+}
+
+void Weapon::Destroy()
+{
+	for (int i = 0; i < bullets.size(); i++)
+	{
+		if (bullets[i] != nullptr)
+		{
+			delete bullets[i];
+			bullets[i] = nullptr;
+		}
 	}
 }

@@ -49,5 +49,6 @@ public:
 
 	void UpdateSound();
 
+	void Destroy();
 };
 
