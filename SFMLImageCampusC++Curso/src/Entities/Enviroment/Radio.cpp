@@ -195,3 +195,42 @@ void Radio::ResetRadio()
 	listenRadioTimer = 0;
 }
 
+void Radio::Destroy()
+{
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (radioText != nullptr)
+	{
+		delete radioText;
+		radioText = nullptr;
+	}
+
+	if (checkRadioText)
+	{
+		delete checkRadioText;
+		checkRadioText = nullptr;
+	}
+
+	if (radioDialogueText)
+	{
+		delete radioDialogueText;
+		radioDialogueText = nullptr;
+	}
+
+	if (radioMessageText)
+	{
+		delete radioMessageText;
+		radioMessageText = nullptr;
+	}
+
+	if (radioMessageDialogueText)
+	{
+		delete radioMessageDialogueText;
+		radioMessageDialogueText = nullptr;
+	}
+}
+

@@ -157,6 +157,8 @@ void Car::ResetCar()
 
 void Car::Destroy()
 {
+
+
 	if (font != nullptr)
 	{
 		delete font;

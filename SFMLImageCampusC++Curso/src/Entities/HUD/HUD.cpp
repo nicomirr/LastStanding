@@ -82,4 +82,37 @@ void HUD::HUDAppearance()
 	
 }
 
+void HUD::Destroy()
+{
+	if (gunAmmoHolder != nullptr)
+	{
+		delete gunAmmoHolder;
+		gunAmmoHolder = nullptr;
+	}
+
+	if (shotgunAmmoHolder != nullptr)
+	{
+		delete shotgunAmmoHolder;
+		shotgunAmmoHolder = nullptr;
+	}
+
+	if (uziAmmoHolder != nullptr)
+	{
+		delete uziAmmoHolder;
+		uziAmmoHolder = nullptr;
+	}
+
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (ammoText != nullptr)
+	{
+		delete ammoText;
+		ammoText = nullptr;
+	}
+}
+
 

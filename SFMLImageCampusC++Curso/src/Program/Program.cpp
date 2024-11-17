@@ -186,6 +186,30 @@ void Program::DeInitialize()
 	car->Destroy();
 	bed->Destroy();
 	enemySpawner->Destroy();
+	
+	planksHoursInterface->Destroy();
+	toolboxHoursInterface->Destroy();
+	bricksHoursInterface->Destroy();
+	carHoursInterface->Destroy();
+
+	house->Destroy();
+	hud->Destroy();
+
+	player->Destroy();
+
+	carWindow->Destroy();
+	bookWindow->Destroy();
+	calendarWindow->Destroy();
+	boardWindow->Destroy();
+	bedWindow->Destroy();
+	radioWindow->Destroy();
+
+	radio->Destroy();
+
+	for (int i = 0; i < fences.size(); i++)
+	{
+		fences[i]->Destroy();
+	}
 
 	if (window != nullptr)
 	{

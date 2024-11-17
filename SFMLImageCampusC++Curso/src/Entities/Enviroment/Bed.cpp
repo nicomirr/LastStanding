@@ -28,6 +28,8 @@ sf::FloatRect Bed::GetBounds()
 
 void Bed::Destroy()
 {
+	hoursInterface->Destroy();
+
 	if (hoursInterface != nullptr)
 	{
 		delete hoursInterface;

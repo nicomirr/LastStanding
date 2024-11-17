@@ -36,5 +36,7 @@ public:
     sf::Text* GetPercentageText() { return percentageText; }
 
     void ResetHouse();
+
+    void Destroy();
 };
 

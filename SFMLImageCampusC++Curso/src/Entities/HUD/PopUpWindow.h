@@ -35,5 +35,7 @@ public:
 
 	static bool GetPopUpWindowOpen() { return popUpWindowOpen; }
 	static void SetPopUpWindowOpen(bool value) { popUpWindowOpen = value; }
-};
 
+	void Destroy();
+
+};

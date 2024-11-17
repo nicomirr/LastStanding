@@ -30,5 +30,7 @@ public:
 
 
 	sf::Text* GetAmmoText() { return ammoText; }
+
+	void Destroy();
 };
 

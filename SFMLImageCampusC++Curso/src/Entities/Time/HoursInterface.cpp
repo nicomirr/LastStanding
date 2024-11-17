@@ -177,3 +177,84 @@ void HoursInterface::AddHoursToSpend()
 	hoursToSpend++;
 	hoursToSpend = std::clamp(hoursToSpend, 1, TimeClock::GetHours());
 }
+
+void HoursInterface::Destroy()
+{
+	if (background != nullptr)
+	{
+		delete background;
+		background = nullptr;
+	}
+
+	if (buttonRight != nullptr)
+	{
+		delete buttonRight;
+		buttonRight = nullptr;
+	}
+
+	if (buttonLeft != nullptr)
+	{
+		delete buttonLeft;
+		buttonLeft = nullptr;
+	}
+
+	if (buttonClose != nullptr)
+	{
+		delete buttonClose;
+		buttonClose = nullptr;
+	}
+
+	if (buttonOk != nullptr)
+	{
+		delete buttonOk;
+		buttonOk = nullptr;
+	}
+
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (interfaceText != nullptr)
+	{
+		delete interfaceText;
+		interfaceText = nullptr;
+	}
+
+	if (hoursLeftText != nullptr)
+	{
+		delete hoursLeftText;
+		hoursLeftText = nullptr;
+	}
+
+	if (hoursToSpendText != nullptr)
+	{
+		delete hoursToSpendText;
+		hoursToSpendText = nullptr;
+	}
+
+	if (resourcesText != nullptr)
+	{
+		delete resourcesText;
+		resourcesText = nullptr;
+	}
+
+	if (scrapCostText != nullptr)
+	{
+		delete scrapCostText;
+		scrapCostText = nullptr;
+	}
+
+	if (hoursSleptText != nullptr)
+	{
+		delete hoursSleptText;
+		hoursSleptText = nullptr;
+	}
+
+	if (notEnoughScrapText != nullptr)
+	{
+		delete notEnoughScrapText;
+		notEnoughScrapText = nullptr;
+	}
+}

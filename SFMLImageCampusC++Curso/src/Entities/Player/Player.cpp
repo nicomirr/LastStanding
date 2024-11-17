@@ -471,3 +471,12 @@ void Player::ResetPlayer()
 
 }
 
+void Player::Destroy()
+{
+	if (eButton != nullptr)
+	{
+		delete eButton;
+		eButton = nullptr;
+	}
+}
+

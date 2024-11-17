@@ -68,3 +68,42 @@ void PopUpWindow::Update()
 	}
 
 }
+
+void PopUpWindow::Destroy()
+{
+	if (font != nullptr)
+	{
+		delete font;
+		font = nullptr;
+	}
+
+	if (text != nullptr)
+	{
+		delete text;
+		text = nullptr;
+	}
+
+	if (background != nullptr)
+	{
+		delete background;
+		background = nullptr;
+	}
+
+	if (buttonClose != nullptr)
+	{
+		delete buttonClose;
+		buttonClose = nullptr;
+	}
+
+	if (okButton != nullptr)
+	{
+		delete okButton;
+		okButton = nullptr;
+	}
+
+	if (cancelButton != nullptr)
+	{
+		delete cancelButton;
+		cancelButton = nullptr;
+	}
+}

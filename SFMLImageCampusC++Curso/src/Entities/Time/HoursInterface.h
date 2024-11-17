@@ -60,7 +60,7 @@ public:
 	sf::Text* GetResourcesText() { return resourcesText; }
 	sf::Text* GetScrapCostText() { return scrapCostText; }
 	sf::Text* GetHoursSleptText() { return hoursSleptText; }
-	
+
 	static sf::Text* GetNotEnoughScrapText() { return notEnoughScrapText; }
 
 	static bool GetIsOpen() { return isOpen; }
@@ -75,5 +75,7 @@ public:
 	static int GetHoursToSpend() { return hoursToSpend; }
 
 	static void ResetHoursToSpend() { hoursToSpend = 1; }
+
+	void Destroy();
 
 };

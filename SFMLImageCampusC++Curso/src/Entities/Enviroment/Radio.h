@@ -64,5 +64,7 @@ public:
 	void ListenRadio(float deltaTime, SceneManager* sceneManager, sf::Vector2f playerPos);
 
 	void ResetRadio();
+
+	void Destroy();
 };
 

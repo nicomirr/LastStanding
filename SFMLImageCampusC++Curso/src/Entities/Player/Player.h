@@ -88,6 +88,7 @@ public:
 
 	void ResetPlayer();
 	
+	void Destroy();
 
 };
 

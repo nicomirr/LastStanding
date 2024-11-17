@@ -37,5 +37,5 @@ public:
 
     void ResetFence();
 
-    void Destroy();
+   void Destroy();
 };
