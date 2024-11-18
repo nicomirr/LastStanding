@@ -981,6 +981,13 @@ void Program::CreateWindow()
 	window = new sf::RenderWindow(sf::VideoMode(windowWidth, windowHeight), "Last Standing", sf::Style::Close);
 
 	window->setFramerateLimit(60);
+
+	sf::Image icon;
+
+	icon.loadFromFile("res\\icon\\Icon.png");
+
+	window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
 }
 
 void Program::CreateSceneManager()
