@@ -26,6 +26,10 @@
  
  - **Federico Olive**
  - **Franco Fioretti**
+
+## Technologies used
+- SFML
+- C++
   
  ## Links
  
