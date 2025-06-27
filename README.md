@@ -35,7 +35,7 @@
 - Object pooling
 - Enemy AI
 - Custom-built collisions and physics
-- Custom-built animation controller
+- Custom-built animations controller
 - Custom-built Saving System for high scores
   
  ## Links
